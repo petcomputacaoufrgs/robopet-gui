@@ -124,9 +124,9 @@ void drawRobot(int team, int x, int y, double theta)
 
 	gotoxy(FieldToGui(x, y));
 	printf("%c", output_directions[direction]);
-	object.push_back(Pair(x, y));
+	object.push_back(Pair(FieldToGui(x, y)));
 
-	showMsg("robot: (%f, %f) -> (%f, %f)", x, y, FieldToGui(x, y));
+	showMsg("robot: (%5i, %5i) -> (%5i, %5i)", x, y, FieldToGui(x, y));
 }
 
 void drawBall(double x, double y)
@@ -134,7 +134,7 @@ void drawBall(double x, double y)
 	//graphics dependent code
 	gotoxy(FieldToGui(x, y));
 	printf("%c", output_ball);
-	object.push_back(Pair(x, y));
+	object.push_back(Pair(FieldToGui(x, y)));
 
 }
 
@@ -190,3 +190,4 @@ int main(int argc, char** argv) {
 		send();
 	}
 }
+
