@@ -1,28 +1,85 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
+#include <vector>
+#include <utility>
 
 #include "ssl_client.h"
 #include "ssl_server.h"
+#include "vector.h"
 
-#define GUI_WIDTH 75
-#define GUI_HEIGHT 50
+#define GUI_HEIGHT 44
+#define GUI_WIDTH (3 * (GUI_HEIGHT) / 2)
 
-#define FIELD_WIDTH 6.05
-#define FIELD_HEIGHT 4.05
+#define FIELD_WIDTH 6050
+#define FIELD_HEIGHT 4050
+
+#define MAX_ROBOTS 5
+
+#define FieldToGui(x, y) (GUI_WIDTH * (x) / FIELD_WIDTH), (GUI_HEIGHT * (y) / FIELD_HEIGHT)
 
 RoboCupSSLServer guitoai(PORT_GUI_TO_AI, IP_GUI_TO_AI);
 RoboCupSSLClient aitogui(PORT_AI_TO_GUI, IP_AI_TO_GUI);
 
+enum Directions {
+	Direction_Up,
+	Direction_Down,
+	Direction_Left,
+	Direction_Right,
+	Direction_Total
+};
+const char output_directions[Direction_Total + 1] = "^v<>",
+		   output_ball = 'o';
+
 int DEBUG = 1;
+
+struct Robot
+{
+	Vector position;
+	double theta;
+	int direction;
+} robot[TEAM_TOTAL][MAX_ROBOTS];
+int robot_total[TEAM_TOTAL];
+
+struct Ball {
+	Vector position;
+} ball;
+
+typedef std::pair<int, int> Pair;
+std::vector<Pair > object;
+
+void drawRobot(int team, int x, int y, double theta);
+void showMsg(const char *str, ...);
+
+void getch()
+{
+	scanf("%*c");
+}
 
 void receive()
 {
 	SSL_WrapperPacket packet;
 	if (aitogui.receive(packet) && packet.has_aitogui()) {
-		printf("----------------------------");
-		printf("Received AI-To-GUI!\n");
-		
-		
+		//printf("----------------------------");
+		//printf("Received AI-To-GUI!\n");
+
+		AIToGUI data = packet.aitogui();
+
+		robot_total[TEAM_BLUE] = data.blue_robots_size();
+		for(int i = 0; i < robot_total[TEAM_BLUE]; i++) {
+			robot[TEAM_BLUE][i].position = Vector(data.blue_robots(i).current_x(),
+										data.blue_robots(i).current_y());
+			robot[TEAM_BLUE][i].theta = data.blue_robots(i).current_theta();
+		}
+
+		robot_total[TEAM_YELLOW] = data.yellow_robots_size();
+		for(int i = 0; i < robot_total[TEAM_YELLOW]; i++) {
+			robot[TEAM_YELLOW][i].position = Vector(data.yellow_robots(i).current_x(),
+										data.yellow_robots(i).current_y());
+			robot[TEAM_YELLOW][i].theta = data.yellow_robots(i).current_theta();
+		}
+
+		ball.position = Vector(data.ball().x(), data.ball().y());
 	}
 }
 
@@ -35,66 +92,73 @@ void send()
 	 guitoaiPacket->set_nada(0);
 
 	 guitoai.send(packet);
-	printf("Sent GUI-To-AI\n");
+	//printf("Sent GUI-To-AI\n");
 }
 
-
-
-void clrscr(void) {
-	for (int i = 0; i < 100; i++)
-		putchar('\n');
+void init_screen()
+{
+	//graphics dependent code
+	clrscr();
 }
 
-int gotoxy(int x, int y) {
-	char essq[100]; // String variable to hold the escape sequence
-	char xstr[100]; // Strings to hold the x and y coordinates
-	char ystr[100]; // Escape sequences must be built with characters
+void clear_screen()
+{
+	for(unsigned int i = 0; i < object.size(); i++) {
+		gotoxy(object[i].first, object[i].second);
+		printf(" ");
+	}
+	object.clear();
 
-	/*
-	** Convert the screen coordinates to strings
-	*/
+	/* clears the botton of the screen
+	for(int i = 0; i < GUI_WIDTH; i++) {
+		gotoxy(i, GUI_HEIGHT + 1);
+		printf(" ");
+	} //*/
+}
 
-	sprintf(xstr, "%d", x);
-	sprintf(ystr, "%d", y);
+void drawRobot(int team, int x, int y, double theta)
+{
+	//graphics dependent code
+	int direction = theta / 90;
+	assert("Theta em radianos??" && direction >= 0 && direction < Direction_Total);
 
-	/*
-	** Build the escape sequence (vertical move)
-	*/
+	gotoxy(FieldToGui(x, y));
+	printf("%c", output_directions[direction]);
+	object.push_back(Pair(x, y));
 
-	essq[0] = '\0';
-	strcat(essq, "\033[");
-	strcat(essq, ystr);
+	showMsg("robot: (%f, %f) -> (%f, %f)", x, y, FieldToGui(x, y));
+}
 
-	/*
-	** Described in man terminfo as vpa=\E[%p1%dd
-	** Vertical position absolute
-	*/
+void drawBall(double x, double y)
+{
+	//graphics dependent code
+	gotoxy(FieldToGui(x, y));
+	printf("%c", output_ball);
+	object.push_back(Pair(x, y));
 
-	strcat(essq, "d");
+}
 
-	/*
-	** Horizontal move
-	** Horizontal position absolute
-	*/
-
-	strcat(essq, "\033[");
-	strcat(essq, xstr);
-
-	// Described in man terminfo as hpa=\E[%p1%dG
-	strcat(essq, "G");
-
-	/*
-	** Execute the escape sequence
-	** This will move the cursor to x, y
-	*/
-
-	printf("%s", essq);
-	return 0;
+void showMsg(const char *str, ...)
+{
+	char msg[100];
+	va_list params;
+	va_start(params, str);
+	vsprintf(msg, str, params);
+	va_end(params);
+	gotoxy(0, GUI_HEIGHT + 1);
+	printf("%s", msg);
 }
 
 void process()
 {
-	
+	for(int team = 0; team < TEAM_TOTAL; team++)
+		for(int i = 0; i < robot_total[team]; i++) {
+			drawRobot(team, robot[team][i].position.getX(),
+				   		 	robot[team][i].position.getY(),
+				   		 	robot[team][i].theta);
+		}
+	drawBall(ball.position.getX(), ball.position.getY());
+	//showMsg("ball: (%f, %f)", ball.position.getX(), ball.position.getY());
 }
 
 int main(int argc, char** argv) {
@@ -118,7 +182,9 @@ int main(int argc, char** argv) {
 	getchar();
 	guitoai.open();
 
+	clrscr();
 	while(1) {
+		clear_screen();
 		receive();
 		process();
 		send();
