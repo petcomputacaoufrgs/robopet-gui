@@ -27,9 +27,10 @@ enum Directions {
 	Direction_Down,
 	Direction_Left,
 	Direction_Right,
+	Direction_Undefined,
 	Direction_Total
 };
-const char output_directions[Direction_Total + 1] = "^v<>",
+const char output_directions[Direction_Total + 1] = "^v<>x",
 		   output_ball = 'o';
 
 int DEBUG = 1;
@@ -120,17 +121,24 @@ void clear_screen()
 	} //*/
 }
 
-void drawRobot(int team, int x, int y, double theta)
+void drawRobot(int team, int x, int y, double graus)
 {
+#define DELTA 0.9
+
+    double theta = graus * M_PI / 180;
 	//graphics dependent code
-	int direction = theta / 90;
-	assert("Theta em radianos??" && direction >= 0 && direction < Direction_Total);
+	int direction = theta * 2 / M_PI;
+	//assert("Theta em graus??" && direction >= 0 && direction < Direction_Total);
 
 	gotoxy(FieldToGui(x, y));
+
+	if(direction < 0 || direction > Direction_Total) direction = Direction_Undefined;
+
 	printf("%c", output_directions[direction]);
 	object.push_back(Pair(FieldToGui(x, y)));
 
 	showMsg("robot: (%5i, %5i) -> (%5i, %5i)", x, y, FieldToGui(x, y));
+
 
     cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
 
@@ -138,8 +146,16 @@ void drawRobot(int team, int x, int y, double theta)
     cr->set_source_rgba(team == TEAM_YELLOW, team == TEAM_YELLOW , team == TEAM_BLUE, 0.8);
     cr->fill_preserve();
     cr->restore();
-    cr->stroke(); //_preserve
-    //cr->clip();
+    cr->stroke();
+
+    // frente
+    cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, 0.01, theta - DELTA, theta + DELTA);
+
+    cr->save();
+    cr->set_source_rgba(!(team == TEAM_YELLOW), !(team == TEAM_YELLOW), !(team == TEAM_BLUE), 0.8);
+    cr->fill_preserve();
+    cr->restore();
+    cr->stroke();
 }
 
 void drawBall(double x, double y)
@@ -230,25 +246,6 @@ protected:
         cr->restore();
 
         process();
-    /*
-        cr->arc(ball.position.getX() / FIELD_WIDTH, ball.position.getY() / FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
-
-        cr->save();
-        cr->set_source_rgba(1.0, 0.0, 0.0, 0.8);
-        cr->fill_preserve();
-        cr->restore();
-        cr->stroke_preserve();
-        cr->clip();
-
-
-        cr->arc(ball.position.getX() / FIELD_WIDTH, ball.position.getY() / FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
-
-        cr->save();
-        cr->set_source_rgba(1.0, 0.0, 0.0, 0.8);
-        cr->fill_preserve();
-        cr->restore();
-        cr->stroke_preserve();
-        cr->clip();//*/
       }
 
       return true;
