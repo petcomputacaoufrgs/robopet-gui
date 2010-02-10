@@ -19,6 +19,11 @@
 
 #define FieldToGui(x, y) (GUI_WIDTH * (x) / FIELD_WIDTH), (GUI_HEIGHT * (y) / FIELD_HEIGHT)
 
+#define MIN_NUM(x, y) ((x) < (y) ? (x) : (y))
+
+#define ROBOT_RADIUS 90
+#define BALL_RADIUS 22.5
+
 RoboCupSSLServer guitoai(PORT_GUI_TO_AI, IP_GUI_TO_AI);
 RoboCupSSLClient aitogui(PORT_AI_TO_GUI, IP_AI_TO_GUI);
 
@@ -140,7 +145,7 @@ void drawRobot(int team, int x, int y, double graus)
 	showMsg("robot: (%5i, %5i) -> (%5i, %5i)", x, y, FieldToGui(x, y));
 
 
-    cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
+    cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, ROBOT_RADIUS / (float) FIELD_HEIGHT, 0, 2 * M_PI);
 
     cr->save();
     cr->set_source_rgba(team == TEAM_YELLOW, team == TEAM_YELLOW , team == TEAM_BLUE, 0.8);
@@ -149,7 +154,7 @@ void drawRobot(int team, int x, int y, double graus)
     cr->stroke();
 
     // frente
-    cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, 0.01, theta - DELTA, theta + DELTA);
+    cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, ROBOT_RADIUS / (float) FIELD_HEIGHT, theta - DELTA, theta + DELTA);
 
     cr->save();
     cr->set_source_rgba(!(team == TEAM_YELLOW), !(team == TEAM_YELLOW), !(team == TEAM_BLUE), 0.8);
@@ -165,7 +170,7 @@ void drawBall(double x, double y)
 	printf("%c", output_ball);
 	object.push_back(Pair(FieldToGui(x, y)));
 
-    cr->arc(x / FIELD_WIDTH, y / FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
+    cr->arc(x / FIELD_WIDTH, y / FIELD_HEIGHT, BALL_RADIUS / FIELD_HEIGHT, 0, 2 * M_PI);
 
     cr->save();
     cr->set_source_rgba(1.0, 0.5, 0.0, 0.8);
@@ -236,7 +241,7 @@ protected:
         }
 
         // scale to unit square
-        cr->scale(width, height);
+        cr->scale(MIN_NUM(width, height), MIN_NUM(width, height));
         //cr->translate(0.5, 0.5); //(0, 0) to center of window
         cr->set_line_width(0.001);
 
