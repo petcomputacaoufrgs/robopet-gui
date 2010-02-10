@@ -145,6 +145,7 @@ void drawRobot(int team, int x, int y, double graus)
 	showMsg("robot: (%5i, %5i) -> (%5i, %5i)", x, y, FieldToGui(x, y));
 
 
+#ifdef USING_GTK
     cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, ROBOT_RADIUS / (float) FIELD_HEIGHT, 0, 2 * M_PI);
 
     cr->save();
@@ -161,6 +162,7 @@ void drawRobot(int team, int x, int y, double graus)
     cr->fill_preserve();
     cr->restore();
     cr->stroke();
+#endif
 }
 
 void drawBall(double x, double y)
@@ -170,6 +172,7 @@ void drawBall(double x, double y)
 	printf("%c", output_ball);
 	object.push_back(Pair(FieldToGui(x, y)));
 
+#ifdef USING_GTK
     cr->arc(x / FIELD_WIDTH, y / FIELD_HEIGHT, BALL_RADIUS / FIELD_HEIGHT, 0, 2 * M_PI);
 
     cr->save();
@@ -178,6 +181,7 @@ void drawBall(double x, double y)
     cr->restore();
     cr->stroke(); //_preserve
     //cr->clip();
+#endif
 }
 
 void showMsg(const char *str, ...)
@@ -203,7 +207,9 @@ void process()
 	//showMsg("ball: (%f, %f)", ball.position.getX(), ball.position.getY());
 	fflush(stdout);
 
+#ifdef USING_GTK
 	cr->clip();
+#endif
 }
 
 
@@ -289,7 +295,7 @@ int main(int argc, char** argv) {
 	guitoai.open();
 
 	clrscr();
-	/*
+	//*
 	while(1) {
 		clear_screen();
 		receive();
