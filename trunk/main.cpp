@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <vector>
 #include <utility>
+#include <gtkmm.h>
 
 #include "ssl_client.h"
 #include "ssl_server.h"
@@ -45,6 +46,8 @@ struct Ball {
 	Vector position;
 } ball;
 
+Cairo::RefPtr<Cairo::Context> cr;
+
 typedef std::pair<int, int> Pair;
 std::vector<Pair > object;
 
@@ -80,6 +83,7 @@ void receive()
 		}
 
 		ball.position = Vector(data.ball().x(), data.ball().y());
+		//printf("ball(%5i, %5i)\n", (int) ball.position.getX(), (int) ball.position.getY());
 	}
 }
 
@@ -127,6 +131,15 @@ void drawRobot(int team, int x, int y, double theta)
 	object.push_back(Pair(FieldToGui(x, y)));
 
 	showMsg("robot: (%5i, %5i) -> (%5i, %5i)", x, y, FieldToGui(x, y));
+
+    cr->arc(x / (float) FIELD_WIDTH, y / (float) FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
+
+    cr->save();
+    cr->set_source_rgba(team == TEAM_YELLOW, team == TEAM_YELLOW , team == TEAM_BLUE, 0.8);
+    cr->fill_preserve();
+    cr->restore();
+    cr->stroke(); //_preserve
+    //cr->clip();
 }
 
 void drawBall(double x, double y)
@@ -136,6 +149,14 @@ void drawBall(double x, double y)
 	printf("%c", output_ball);
 	object.push_back(Pair(FieldToGui(x, y)));
 
+    cr->arc(x / FIELD_WIDTH, y / FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
+
+    cr->save();
+    cr->set_source_rgba(1.0, 0.5, 0.0, 0.8);
+    cr->fill_preserve();
+    cr->restore();
+    cr->stroke(); //_preserve
+    //cr->clip();
 }
 
 void showMsg(const char *str, ...)
@@ -159,35 +180,129 @@ void process()
 		}
 	drawBall(ball.position.getX(), ball.position.getY());
 	//showMsg("ball: (%f, %f)", ball.position.getX(), ball.position.getY());
+	fflush(stdout);
+
+	cr->clip();
 }
 
+
+class Clock : public Gtk::DrawingArea
+{
+public:
+  Clock() {
+    Glib::signal_timeout().connect( sigc::mem_fun(*this, &Clock::on_timeout), 10 );
+
+#ifndef GLIBMM_DEFAULT_SIGNAL_HANDLERS_ENABLED
+    signal_expose_event().connect(sigc::mem_fun(*this, &Clock::on_expose_event), false);
+#endif
+  }
+  virtual ~Clock(){}
+
+protected:
+  virtual bool on_expose_event(GdkEventExpose* event) {
+      // This is where we draw on the window
+      Glib::RefPtr<Gdk::Window> window = get_window();
+      if(window)
+      {
+        Gtk::Allocation allocation = get_allocation();
+        const int width = allocation.get_width();
+        const int height = allocation.get_height();
+
+        cr = window->create_cairo_context();
+
+        if(event)
+        {
+            // clip to the area indicated by the expose event so that we only
+            // redraw the portion of the window that needs to be redrawn
+            cr->rectangle(event->area.x, event->area.y,
+                    event->area.width, event->area.height);
+            cr->clip();
+        }
+
+        // scale to unit square
+        cr->scale(width, height);
+        //cr->translate(0.5, 0.5); //(0, 0) to center of window
+        cr->set_line_width(0.001);
+
+        cr->save(); //background
+        cr->set_source_rgba(0.337, 0.612, 0.117, 0.9);   // green
+        cr->paint();
+        cr->restore();
+
+        process();
+    /*
+        cr->arc(ball.position.getX() / FIELD_WIDTH, ball.position.getY() / FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
+
+        cr->save();
+        cr->set_source_rgba(1.0, 0.0, 0.0, 0.8);
+        cr->fill_preserve();
+        cr->restore();
+        cr->stroke_preserve();
+        cr->clip();
+
+
+        cr->arc(ball.position.getX() / FIELD_WIDTH, ball.position.getY() / FIELD_HEIGHT, 0.01, 0, 2 * M_PI);
+
+        cr->save();
+        cr->set_source_rgba(1.0, 0.0, 0.0, 0.8);
+        cr->fill_preserve();
+        cr->restore();
+        cr->stroke_preserve();
+        cr->clip();//*/
+      }
+
+      return true;
+  }
+
+  bool on_timeout() {
+		clear_screen();
+		//printf("drawning\n");
+		receive();
+		//process(); //inside on_expose_event
+		send();
+
+        // force our program to redraw the entire window.
+        Glib::RefPtr<Gdk::Window> win = get_window();
+        if (win)
+        {
+            Gdk::Rectangle r(0, 0, get_allocation().get_width(),
+                    get_allocation().get_height());
+            win->invalidate_rect(r, false);
+        }
+        return true;
+  }
+};
+
 int main(int argc, char** argv) {
+	Gtk::Main kit(argc, argv);
+
+
 	printf("GUI Running!\n");
 	printf("Set terminal size to %i %i\n", GUI_WIDTH, GUI_HEIGHT + 1);
 
 	aitogui.open(false);
-
-	/*
-	while(1) {
-		int i, j;
-		scanf("%i %i", &i, &j);
-		clrscr();
-		gotoxy(i, j);
-		printf("x");
-		gotoxy(0, GUI_HEIGHT + 1);
-		printf(">");
-	}//*/
 
 	printf("Press <Enter> to open connection with client...\n");
 	getchar();
 	guitoai.open();
 
 	clrscr();
+	/*
 	while(1) {
 		clear_screen();
 		receive();
 		process();
 		send();
-	}
+	}//*/
+
+   Gtk::Window win;
+   win.set_title("GUI");
+   win.maximize();
+
+   Clock c;
+   win.add(c);
+   c.show();
+
+   Gtk::Main::run(win);
 }
 

@@ -33,4 +33,5 @@ all: gui
 
 gui: main.cpp $(AI_OBJECTS) $(PROTOBUF_O)
 	@echo $@
-	@$(CC) -o $@ $^ $(FLAGS) `pkg-config --cflags --libs protobuf`
+	@$(CC) -o $@ $^ $(FLAGS) `pkg-config gtkmm-2.4 --cflags --libs protobuf`
+
