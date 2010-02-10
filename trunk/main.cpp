@@ -211,7 +211,7 @@ class Clock : public Gtk::DrawingArea
 {
 public:
   Clock() {
-    Glib::signal_timeout().connect( sigc::mem_fun(*this, &Clock::on_timeout), 10 );
+    Glib::signal_timeout().connect( sigc::mem_fun(*this, &Clock::on_timeout), 1);
 
 #ifndef GLIBMM_DEFAULT_SIGNAL_HANDLERS_ENABLED
     signal_expose_event().connect(sigc::mem_fun(*this, &Clock::on_expose_event), false);
