@@ -295,8 +295,13 @@ int main(int argc, char** argv) {
 	guitoai.open();
 
 	clrscr();
-	//*
+	int scrCount = 0;
 	while(1) {
+	    scrCount++;
+	    if(scrCount == SCR_CLEAR_DELAY) {
+	        scrCount = 0;
+	        clrscr();
+	    }
 		clear_screen();
 		receive();
 		process();
