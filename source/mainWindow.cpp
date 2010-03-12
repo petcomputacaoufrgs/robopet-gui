@@ -10,7 +10,6 @@ MainWindow::MainWindow() {}
 
 MainWindow::MainWindow(string name)
 {
-        cout<<"oie"<<endl;
         configuraGL();
 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);

@@ -49,6 +49,7 @@ class MainWindow
 
 	//Fim Callbacks
 	private:
+            
 		GtkWidget *window;
 		GtkWidget *soccer_field;
 		GdkGLConfig *glconfig;
