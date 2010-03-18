@@ -1,19 +1,15 @@
 NEW ROBOPET-GUI LINKERS:
 
-../../robopet-ai/lib/point.o
-../../robopet-ai/lib/movingObject.o
-../../robopet-ai/lib/rrt.o
-../../robopet-ai/lib/player.o
-../../robopet-communication/ssl_client.o
-../../robopet-communication/ssl_server.o
-../../robopet-communication/udp_netraw.o
-../../robopet-communication/message_gui_to_ai.pb.o
-../../robopet-communication/message_ai_to_gui.pb.o
+../../robopet-ai/lib/point.o ../../robopet-ai/lib/movingObject.o ../../robopet-ai/lib/rrt.o ../../robopet-ai/lib/player.o ../../robopet-ai/lib/vector.o ../../robopet-communication/ssl_client.o ../../robopet-communication/ssl_server.o ../../robopet-communication/message_gui_to_ai.pb.o ../../robopet-communication/message_ai_to_gui.pb.o ../../robopet-communication/messages_robocup_ssl_wrapper.pb.o
 ../../robopet-communication/message_ai_to_radio.pb.o
-../../robopet-communication/messages_robocup_ssl_detection.pb.o ../../robopet-communication/messages_robocup_ssl_geometry.pb.o ../../robopet-communication/messages_robocup_ssl_refbox_log.pb.o ../../robopet-communication/messages_robocup_ssl_wrapper.pb.o
-../../robopet-communication/message_tracker_to_ai.pb.o
-../../robopet-communication/message_sim_to_tracker.pb.o
 ../../robopet-communication/message_ai_to_sim.pb.o
+../../robopet-communication/message_ai_to_tracker.pb.o
+../../robopet-communication/message_radio_to_tracker.pb.o
+../../robopet-communication/message_sim_to_tracker.pb.o
+../../robopet-communication/messages_robocup_ssl_detection.pb.o ../../robopet-communication/messages_robocup_ssl_geometry.pb.o ../../robopet-communication/messages_robocup_ssl_refbox_log.pb.o
+../../robopet-communication/message_tracker_to_ai.pb.o
+../../robopet-communication/udp_netraw.o
+
 
 
 

@@ -17,6 +17,9 @@
 #include "point.h"
 #include "communication.h"
 
+#include "ssl_client.h"
+#include "ssl_server.h"
+
 #include <string>
 #include <vector>
 
