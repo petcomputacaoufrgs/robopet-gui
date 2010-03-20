@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="62">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Arquivos de cabeçalho"
+                   projectFiles="true">
+      <itemPath>/grupos/RoboPET/ROBOPET ANTIGO - EVITE USAR - USE O NOVO/GUI/GUI/header/GUIPlayer.h</itemPath>
+      <itemPath>/grupos/RoboPET/ROBOPET ANTIGO - EVITE USAR - USE O NOVO/GUI/GUI/header/GuiBall.h</itemPath>
+      <itemPath>../header/communication.h</itemPath>
+      <itemPath>../header/constantes.h</itemPath>
+      <itemPath>../header/displaySettings.h</itemPath>
+      <itemPath>../header/drawing.h</itemPath>
+      <itemPath>../header/game.h</itemPath>
+      <itemPath>/grupos/RoboPET/ROBOPET ANTIGO - EVITE USAR - USE O NOVO/GUI/GUI/header/interface.h</itemPath>
+      <itemPath>../header/mainWindow.h</itemPath>
+      <itemPath>../header/pathplan.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Arquivos de código-fonte"
+                   projectFiles="true">
+      <itemPath>../source/communication.cpp</itemPath>
+      <itemPath>../source/displaySettings.cpp</itemPath>
+      <itemPath>../source/drawing.cpp</itemPath>
+      <itemPath>../source/game.cpp</itemPath>
+      <itemPath>../source/interface.cpp</itemPath>
+      <itemPath>../source/main.cpp</itemPath>
+      <itemPath>../source/mainWindow.cpp</itemPath>
+      <itemPath>../source/pathplan.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Arquivos de recurso"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Arquivos importantes"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../header</Elem>
+    <Elem>../source</Elem>
+    <Elem>../../robopet-ai/lib</Elem>
+    <Elem>../../robopet-communication</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>../header</pElem>
+            <pElem>../../robopet-ai/lib</pElem>
+            <pElem>../../robopet-communication/packets</pElem>
+            <pElem>../../robopet-communication/proto</pElem>
+            <pElem>../../robopet-communication/socket</pElem>
+            <pElem>../../robopet-communication</pElem>
+          </incDir>
+          <commandLine>`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>../../robopet-communication/packets</pElem>
+            <pElem>../../robopet-communication/proto</pElem>
+            <pElem>../../robopet-communication/socket</pElem>
+            <pElem>../../robopet-ai/lib</pElem>
+            <pElem>../../robopet-communication</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+          </linkerLibItems>
+          <commandLine>../../robopet-ai/lib/point.o ../../robopet-ai/lib/movingObject.o ../../robopet-ai/lib/rrt.o ../../robopet-ai/lib/player.o ../../robopet-ai/lib/vector.o ../../robopet-communication/ssl_client.o ../../robopet-communication/ssl_server.o ../../robopet-communication/message_gui_to_ai.pb.o ../../robopet-communication/message_ai_to_gui.pb.o ../../robopet-communication/messages_robocup_ssl_wrapper.pb.o ../../robopet-communication/message_ai_to_radio.pb.o ../../robopet-communication/message_ai_to_sim.pb.o ../../robopet-communication/message_ai_to_tracker.pb.o ../../robopet-communication/message_radio_to_tracker.pb.o ../../robopet-communication/message_sim_to_tracker.pb.o ../../robopet-communication/messages_robocup_ssl_detection.pb.o ../../robopet-communication/messages_robocup_ssl_geometry.pb.o ../../robopet-communication/messages_robocup_ssl_refbox_log.pb.o ../../robopet-communication/message_tracker_to_ai.pb.o ../../robopet-communication/udp_netraw.o `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
