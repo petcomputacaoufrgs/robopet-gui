@@ -3,6 +3,8 @@
 
 #include "ball.h"
 
+#include "displaySettings.h"
+
 
 
 class GuiBall: public Ball

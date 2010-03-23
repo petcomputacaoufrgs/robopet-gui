@@ -5,7 +5,6 @@
 using namespace std;
 
 
-
 MainWindow::MainWindow() {}
 
 MainWindow::MainWindow(string name)
@@ -21,97 +20,7 @@ MainWindow::MainWindow(string name)
         communicationClient = NULL;
         listenToAI();
 
-        for(int i = 0; i < MAX_JOGADORES; ++i)
-        {
-            playersTeam1[i] = GUIPlayer();
-            playersTeam2[i] = GUIPlayer();
-        }
-	ball = GuiBall();
-}
-
-void MainWindow::openCommunication(int port, char* host)
-{
-    communicationClient = new GUIClient(port,host);
-    cout<<"Ready to receive AI Packets..."<<endl;
-    communicationClient->open(false);
-}
-
-void MainWindow::closeCommunication()
-{
-    delete communicationClient;
-    printf("Communication closed.\n");
-}
-
-
-void MainWindow::listenToAI()
-{
-    if(communicationClient)
-    {
-        SSL_WrapperPacket packet;
-        if(communicationClient->receive(packet))
-        {
-            cout<<"opa, recebi um pacote"<<endl;
-
-            if(packet.has_aitogui())
-            {
-                cout<<"opa, esse pacote eh meu!"<<endl;
-
-				cout << "numero de jogadores azuis: " << packet.aitogui().blue_robots_size() <<endl;
-				cout << "numero de jogadores amarelos: " << packet.aitogui().yellow_robots_size() <<endl;
-
-                for(int i = 0; i < MAX_JOGADORES && i < packet.aitogui().blue_robots_size(); ++i) {
-
-                    playersTeam1[i].setCurrentPosition( packet.aitogui().blue_robots(i).current_x() ,
-                                                        packet.aitogui().blue_robots(i).current_y() );
-                    playersTeam1[i].setCurrentAngle( packet.aitogui().blue_robots(i).current_theta() );
-                    //------
-
-                    cout << packet.aitogui().blue_robots(i).current_x() << endl;
-                    cout << packet.aitogui().blue_robots(i).current_y() << endl;
-
-                    playersTeam1[i].setFuturePosition( packet.aitogui().blue_robots(i).future_x() ,
-                                                       packet.aitogui().blue_robots(i).future_y() );
-                    playersTeam1[i].setFutureAngle( packet.aitogui().blue_robots(i).future_theta() );
-                    //------
-
-                    playersTeam1[i].setPastPosition( packet.aitogui().blue_robots(i).past_x() ,
-                                                     packet.aitogui().blue_robots(i).past_y() );
-
-                    playersTeam1[i].hasUpdatedInfo = true;
-
-                }
-
-                for(int i = 0; i < MAX_JOGADORES && i < packet.aitogui().yellow_robots_size(); ++i) {
-
-                    playersTeam2[i].setCurrentPosition( packet.aitogui().yellow_robots(i).current_x() ,
-                                                        packet.aitogui().yellow_robots(i).current_y() );
-                    playersTeam2[i].setCurrentAngle( packet.aitogui().yellow_robots(i).current_theta() );
-                    //------
-
-                    playersTeam2[i].setFuturePosition( packet.aitogui().yellow_robots(i).future_x() ,
-                                                       packet.aitogui().yellow_robots(i).future_y() );
-                    playersTeam2[i].setFutureAngle( packet.aitogui().yellow_robots(i).future_theta() );
-                    //------
-
-                    playersTeam2[i].setPastPosition( packet.aitogui().yellow_robots(i).past_x() ,
-                                                     packet.aitogui().yellow_robots(i).past_y() );
-
-                    playersTeam2[i].hasUpdatedInfo = true;
-                }
-
-
-                ball.setCurrentPosition( packet.aitogui().ball().x(),
-                                         packet.aitogui().ball().y()  );
-
-                ball.setFuturePosition(  packet.aitogui().ball().past_x(),
-                                         packet.aitogui().ball().past_y()  );
-
-                ball.hasUpdatedInfo = true;
-            }
-
-        }
-    }
-    //else printf("Communication Client NULL!\n");
+	game.ball = GuiBall();
 }
 
 
@@ -203,7 +112,7 @@ void MainWindow::drawWorld()
 
 	pathplan.draw();
 
-	ball.draw(displaySettings);
+	game.ball.draw(displaySettings);
 }
 
 
