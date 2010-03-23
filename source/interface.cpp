@@ -1,8 +1,10 @@
 #include<iostream>
+#include <fstream>
 
 
 #include "interface.h"
 
+#define INITIAL_HOST " "
 
 
 //////////////////////////////////////////////////
@@ -84,15 +86,15 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 
 		Point initialpos;
 		if(isTime1)
-			initialpos.setXY( mw->playersTeam1[jogador].getCurrentPosition().getX(),
-                                          mw->playersTeam1[jogador].getCurrentPosition().getY());
+			initialpos.setXY( mw->game.playersTeam1[jogador].getCurrentPosition().getX(),
+                                          mw->game.playersTeam1[jogador].getCurrentPosition().getY());
 		else
-			initialpos.setXY( mw->playersTeam2[jogador].getCurrentPosition().getX(),
-                                          mw->playersTeam2[jogador].getCurrentPosition().getY());
+			initialpos.setXY( mw->game.playersTeam2[jogador].getCurrentPosition().getX(),
+                                          mw->game.playersTeam2[jogador].getCurrentPosition().getY());
 
 		mw->pathplan = Pathplan(initialpos,pathplanIndex,checkPrintFull); //carrega configura��es na classe Pathplan
 
-		mw->pathplan.fillEnv(mw->playersTeam1, mw->playersTeam2); //configura matriz de posi��es
+		mw->pathplan.fillEnv(mw->game.playersTeam1, mw->game.playersTeam2); //configura matriz de posi��es
 
 
 		gtk_button_set_label((GtkButton*)widget, "Running...");
@@ -125,19 +127,19 @@ void playerManualControl(GtkWidget *widget, gpointer data)
 		switch(  direction[1]  ) {
 
 				case 's':
-                                        mw->playersTeam1[jogadorIndex].setCurrentPositionY( mw->playersTeam1[jogadorIndex].getCurrentPosition().getY() + stepsize );
+                                        mw->game.playersTeam1[jogadorIndex].setCurrentPositionY( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getY() + stepsize );
 					break;
 
 				case 'w':
-					mw->playersTeam1[jogadorIndex].setCurrentPositionY( mw->playersTeam1[jogadorIndex].getCurrentPosition().getY() - stepsize );
+					mw->game.playersTeam1[jogadorIndex].setCurrentPositionY( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getY() - stepsize );
 					break;
 
 				case 'a':
-					mw->playersTeam1[jogadorIndex].setCurrentPositionX( mw->playersTeam1[jogadorIndex].getCurrentPosition().getX() - stepsize );
+					mw->game.playersTeam1[jogadorIndex].setCurrentPositionX( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getX() - stepsize );
 					break;
 
 				case 'd':
-					mw->playersTeam1[jogadorIndex].setCurrentPositionX( mw->playersTeam1[jogadorIndex].getCurrentPosition().getX() + stepsize );
+					mw->game.playersTeam1[jogadorIndex].setCurrentPositionX( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getX() + stepsize );
 					break;
 
 		}
@@ -145,19 +147,19 @@ void playerManualControl(GtkWidget *widget, gpointer data)
 		switch(  direction[1]  ) {
 
 				case 's':
-                                        mw->playersTeam2[jogadorIndex].setCurrentPositionY( mw->playersTeam2[jogadorIndex].getCurrentPosition().getY() + stepsize );
+                                        mw->game.playersTeam2[jogadorIndex].setCurrentPositionY( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getY() + stepsize );
 					break;
 
 				case 'w':
-					mw->playersTeam2[jogadorIndex].setCurrentPositionY( mw->playersTeam2[jogadorIndex].getCurrentPosition().getY() - stepsize );
+					mw->game.playersTeam2[jogadorIndex].setCurrentPositionY( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getY() - stepsize );
 					break;
 
 				case 'a':
-					mw->playersTeam2[jogadorIndex].setCurrentPositionX( mw->playersTeam2[jogadorIndex].getCurrentPosition().getX() - stepsize );
+					mw->game.playersTeam2[jogadorIndex].setCurrentPositionX( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getX() - stepsize );
 					break;
 
 				case 'd':
-					mw->playersTeam2[jogadorIndex].setCurrentPositionX( mw->playersTeam2[jogadorIndex].getCurrentPosition().getX() + stepsize );
+					mw->game.playersTeam2[jogadorIndex].setCurrentPositionX( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getX() + stepsize );
 					break;
 
 		}
@@ -187,6 +189,24 @@ void openConnectionButton(GtkWidget *widget, gpointer data)
 	}
 }
 
+void getLocalIPButton(GtkWidget *widget, gpointer data)
+{
+        //decodifica��o dos parametros
+	typeParameters* parametros = (typeParameters*) data;
+	MainWindow* mw = parametros->mw;
+        GtkWidget* hostEntry = (GtkWidget*)parametros->widgets[0];
+
+        //use linux command to get the local IP
+        system( "ifconfig -a | grep 'inet end.:' | cut -f13-13 -d' ' > ip.txt");
+            ifstream file;
+            file.open ("ip.txt", fstream::out);
+            char ip[20]; file.getline(ip,20);
+            file.close();
+        system( "rm ip.txt");
+
+        gtk_entry_set_text((GtkEntry*)hostEntry,ip);
+}
+
 
 
 
@@ -208,10 +228,13 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* label_pathplanners = gtk_label_new("Pathplanner: ");
 	GtkWidget* pathplanners = gtk_combo_box_new_text();
 		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 1, "RRT");
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 2, "A*");
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 2, "A* (disabled)");
 		gtk_combo_box_set_active( GTK_COMBO_BOX(pathplanners), 0);
-	GtkWidget* jogador = gtk_spin_button_new_with_range(0, MAX_JOGADORES-1, 1); //spinner � limitado pela constante MAX_JOGADORES (isso n�o deve ficar assim)
-	GtkWidget* jogadorLabel = gtk_label_new("Jogador: ");
+	//GtkWidget* jogador = gtk_spin_button_new_with_range(0, MAX_JOGADORES-1, 1); //spinner � limitado pela constante MAX_JOGADORES (isso n�o deve ficar assim)
+	/*GtkWidget* jogadores = gtk_combo_box_new_text();
+                GtkWidget* jogadorLabel = gtk_label_new("Jogador: ");
+                mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
+                */
 	GtkWidget* time1 = gtk_radio_button_new_with_label(NULL,"Amarelo");
 	GtkWidget* time2 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1)),"Azul");
 	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
@@ -228,8 +251,8 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_box_pack_start(GTK_BOX(pathplannersBox), label_pathplanners, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(pathplannersBox), pathplanners, false, false, 0);
 	GtkWidget* jogadorBox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox), jogadorLabel, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox), jogador, false, false, 0);
+		//gtk_box_pack_start(GTK_BOX(jogadorBox), jogadorLabel, false, false, 0);
+		//gtk_box_pack_start(GTK_BOX(jogadorBox), jogadores, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(jogadorBox), time1, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(jogadorBox), time2, false, false, 0);
 	//GtkWidget* finalPosBox = gtk_hbox_new (FALSE, 0);
@@ -257,7 +280,7 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	static typeParameters parametros1;
 	parametros1.mw = mw;
 	parametros1.widgets.push_back(pathplanners);
-	parametros1.widgets.push_back(jogador);
+	//parametros1.widgets.push_back(jogadores);
 	parametros1.widgets.push_back(time1);
 	parametros1.widgets.push_back(time2);
 	parametros1.widgets.push_back(checkPrintFull);
@@ -316,6 +339,7 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_left, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_down, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_right, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(controleslateraisBox), gtk_label_new("(to control via keyboard press Alt + w/a/s/d)"), false, false, 0);
 			//gtk_widget_set_size_request(controleslateraisBox,100,20);
 	GtkWidget* controle_bola = gtk_hbox_new (FALSE, 0);
 		gtk_box_pack_start(GTK_BOX(controle_bola), label_bolax, false, false, 0);
@@ -384,7 +408,7 @@ void createDisplayTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_toggle_button_set_active((GtkToggleButton*)playerIndex,TRUE);
 			mw->displaySettings.checkPlayerIndex = playerIndex;
 	GtkWidget* playerFuture = gtk_check_button_new_with_label("show Future");
-                //gtk_toggle_button_set_active((GtkToggleButton*)playerFuture,TRUE);
+                gtk_toggle_button_set_active((GtkToggleButton*)playerFuture,TRUE);
 			mw->displaySettings.checkPlayerFuture = playerFuture;
 	GtkWidget* ballShow = gtk_check_button_new_with_label("show Ball");
 		gtk_toggle_button_set_active((GtkToggleButton*)ballShow,TRUE);
@@ -429,7 +453,9 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
         GtkWidget* portEntry = gtk_spin_button_new_with_range(0, 65536, 1);
             gtk_spin_button_set_value((GtkSpinButton*)portEntry,8100);
         GtkWidget* hostEntry = gtk_entry_new_with_max_length(15);
-            gtk_entry_set_text((GtkEntry*)hostEntry,"143.54.12.116");
+            gtk_entry_set_text((GtkEntry*)hostEntry,INITIAL_HOST);
+        GtkWidget* button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
+
 
 
 	//hboxes
@@ -441,6 +467,7 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
         GtkWidget* box2 = gtk_hbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(box2), gtk_label_new("Host: "), false, false, 0);
             gtk_box_pack_start(GTK_BOX(box2), hostEntry, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(box2), button_getlocalip, false, false, 0);
 
 	//vboxes
 	GtkWidget* menuBox = gtk_vbox_new (FALSE, 0);
@@ -460,6 +487,13 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
 	parametros.widgets.push_back(hostEntry);
 
 	g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(openConnectionButton), &parametros);
+
+
+        static typeParameters parametros2;
+	parametros2.mw = mw;
+	parametros2.widgets.push_back(hostEntry);
+
+	g_signal_connect(G_OBJECT(button_getlocalip), "clicked", G_CALLBACK(getLocalIPButton), &parametros2);
 
 
 
@@ -482,6 +516,22 @@ GtkWidget* createNotebook(MainWindow* mw)
 
 	return notebook;
 }
+
+GtkWidget* createLateralMenu(MainWindow* mw)
+{
+    GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
+
+
+
+    GtkWidget* jogadores = gtk_combo_box_new_text();
+                mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
+        gtk_box_pack_start(GTK_BOX(lateralMenu), jogadores, false, false, 0);
+
+
+
+    return lateralMenu;
+}
+
 
 GtkWidget* createGameControl(MainWindow* mw)
 {
@@ -506,10 +556,10 @@ void about()
 	  gtk_widget_destroy (dialog);
 }
 
-void newWindow()
+/*void newWindow()
 {
     MainWindow *newWindow = new MainWindow("NewWindow");
-}
+}*/
 
 GtkWidget* createMenuBar(GtkWidget *window)
 {
@@ -518,7 +568,8 @@ GtkWidget* createMenuBar(GtkWidget *window)
 
   static GtkItemFactoryEntry menu_items[] = {
   { "/_File",         NULL,         NULL, 0, "<Branch>" },
-  { "/File/_New Window",     "<control>N", newWindow, 0, NULL },
+  //{ "/File/_New Window",     "<control>N", newWindow, 0, NULL },
+  { "/File/_New Game",     "<control>N", 0, 0, NULL },
   { "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
   { "/File/Quit",     "<control>Q", gtk_main_quit, 0, NULL },
   /*{ "/_Options",      NULL,         NULL, 0, "<Branch>" },*/
@@ -534,29 +585,15 @@ GtkWidget* createMenuBar(GtkWidget *window)
 
   accel_group = gtk_accel_group_new ();
 
-  /* This function initializes the item factory.
-     Param 1: The type of menu - can be GTK_TYPE_MENU_BAR, GTK_TYPE_MENU,
-              or GTK_TYPE_OPTION_MENU.
-     Param 2: The path of the menu.
-     Param 3: A pointer to a gtk_accel_group.  The item factory sets up
-              the accelerator table while generating menus.
-  */
-
   item_factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, "<main>", accel_group);
 
-  /* This function generates the menu items. Pass the item factory,
-     the number of items in the array, the array itself, and any
-     callback data for the the menu items. */
   gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
 
-  /* Attach the new accelerator group to the window. */
   gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
 
 
-  /* Finally, return the actual menu bar created by the item factory. */
   return gtk_item_factory_get_widget (item_factory, "<main>");
 }
-
 
 
 void MainWindow::createInterface()
@@ -571,11 +608,18 @@ void MainWindow::createInterface()
 	GtkWidget* notebook = createNotebook(this);
 	//GtkWidget* gameControl = createGameControl(this);
 
+        
+        GtkWidget* lateralMenu = createLateralMenu(this);
 
 
-	GtkWidget* vbox = gtk_vbox_new (FALSE, 0); //vertical box que corresponde � tela inteira
+
+        GtkWidget* hbox = gtk_hbox_new (FALSE, 0); //horiztal box that is the whole program window
+            gtk_box_pack_start(GTK_BOX(hbox), soccer_field, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(hbox), lateralMenu, false, false, 0);
+
+        GtkWidget* vbox = gtk_vbox_new (FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), menuBar, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), soccer_field, false, false, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), hbox, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), notebook, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), gtk_hseparator_new(), false, false, 0);
 	//gtk_box_pack_start(GTK_BOX(vbox), gameControl, false, false, 0);

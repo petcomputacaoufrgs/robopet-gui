@@ -16,6 +16,7 @@
 #include "displaySettings.h"
 #include "point.h"
 #include "communication.h"
+#include "game.h"
 
 #include "ssl_client.h"
 #include "ssl_server.h"
@@ -57,7 +58,7 @@ class MainWindow
 		GtkWidget *soccer_field;
 		GdkGLConfig *glconfig;
 		guint timeout_handler_id;
-		GtkWidget *statusBar;
+		//GtkWidget *statusBar;
 
 
 		void configuraGL();
@@ -69,29 +70,24 @@ class MainWindow
 		void createInterface();
 
 
-		//globais feias
+		//globais relativas à interface
 		int cursorEvent; //indica um "estado" da interface pendente de um clique do mouse
-
-		//Callback estranha, conferir se precisa mesmo:
-		//gboolean visibilityNotifyEvent(GtkWidget *widget, GdkEventVisibility *event, gpointer data);
 
 	public:
 		MainWindow();
 		~MainWindow() {};
 		MainWindow(string title);
 
+                //Comunicação (communication.cpp)
+                GUIClient * communicationClient;
                 void openCommunication(int port, char* host);
                 void closeCommunication();
                 void listenToAI();
+                
 
-                GUIClient * communicationClient;
-
-		//itens de jogo
-		GuiBall ball;
-		GUIPlayer playersTeam1[MAX_JOGADORES];
-		GUIPlayer playersTeam2[MAX_JOGADORES];
-		Pathplan pathplan; //armazena configura��es referentes ao pathplanning
-		DisplaySettings displaySettings;
+                Game game; //game things
+		Pathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		DisplaySettings displaySettings; //configurations about the information to display on the field
 
 };
 

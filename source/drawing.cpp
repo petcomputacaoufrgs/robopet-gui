@@ -64,17 +64,39 @@ void drawField()
 }
 void MainWindow::drawPlayers()
 {
-	for(int i=0;i<MAX_JOGADORES;i++){
+	vector<GUIPlayer>::iterator it;
+        it = game.playersTeam1.begin();
+        for(int i=0; it<game.playersTeam1.end(); it++, i++) {
 		glColor3f(YELLOW);
-		playersTeam1[i].draw(i,displaySettings);
+		(*it).draw(i,displaySettings);
 	}
-	
-	for(int i=0;i<MAX_JOGADORES;i++){
+
+        it = game.playersTeam2.begin();
+        for(int i=0; it<game.playersTeam2.end(); it++, i++) {
 		glColor3f(BLUE);
-		playersTeam2[i].draw(i,displaySettings);
+		(*it).draw(i,displaySettings);
 	}
 }
 
+void GUIPlayer::draw(int index, DisplaySettings settings)
+{
+    if(this->hasUpdatedInfo) {
+
+        double posx = MM_TO_PIX( this->getCurrentPosition().getX() );
+	double posy = MM_TO_PIX( this->getCurrentPosition().getY() );
+
+
+	if( settings.isCheckPlayerBody() )
+		drawBody( posx, posy);
+	if( settings.isCheckPlayerAngle() )
+		drawAngle(posx, posy, this->getCurrentAngle());
+	if( settings.isCheckPlayerIndex() )
+		drawIndex(posx, posy, index);
+	if( settings.isCheckPlayerFuture() )
+		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) , MM_TO_PIX( this->getFuturePosition().getY() ));
+
+    }
+}
 
 void GUIPlayer::drawBody(float centerX, float centerY)
 {
@@ -109,26 +131,6 @@ void GUIPlayer::drawVector(float startX, float startY, float endX, float endY)
 
 	drawLine(endX, endY-ROBOT_RADIUS/2, endX, endY+ROBOT_RADIUS/2);
 	drawLine(endX-ROBOT_RADIUS/2, endY, endX+ROBOT_RADIUS/2, endY);
-}
-
-void GUIPlayer::draw(int index, DisplaySettings settings)
-{
-    if(! this->hasUpdatedInfo) {
-
-        double posx = MM_TO_PIX( this->getCurrentPosition().getX() );
-	double posy = MM_TO_PIX( this->getCurrentPosition().getY() );
-
-
-	if( settings.isCheckPlayerBody() )
-		drawBody( posx, posy);
-	if( settings.isCheckPlayerAngle() )
-		drawAngle(posx, posy, this->getCurrentAngle());
-	if( settings.isCheckPlayerIndex() )
-		drawIndex(posx, posy, index);
-	if( settings.isCheckPlayerFuture() )
-		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) , MM_TO_PIX( this->getFuturePosition().getY() ));
-
-    }
 }
 
 void GuiBall::draw(DisplaySettings settings)

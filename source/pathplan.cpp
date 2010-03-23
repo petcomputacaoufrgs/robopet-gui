@@ -39,7 +39,7 @@ void Pathplan::fillEnv_playerBox(int x, int y, int safetyCells)
 
 }
 
-void Pathplan::fillEnv(GUIPlayer playersTeam1[],GUIPlayer playersTeam2[])
+void Pathplan::fillEnv(vector<GUIPlayer> playersTeam1,vector<GUIPlayer> playersTeam2)
 {
 	int centerx, centery;
 
@@ -48,18 +48,19 @@ void Pathplan::fillEnv(GUIPlayer playersTeam1[],GUIPlayer playersTeam2[])
 			env[i][j] = LIVRE;
 
 
-	for(int i=0;i<MAX_JOGADORES;i++){
+        vector<GUIPlayer>::iterator it;
+        for(it=playersTeam1.begin(); it<playersTeam1.end(); it++) {
 
-		//time1
-		centerx = (int)MM_TO_CELLS(playersTeam1[i].getCurrentPosition().getX());
-		centery = (int)MM_TO_CELLS(playersTeam1[i].getCurrentPosition().getY());
-		fillEnv_playerBox(centerx,centery,4);
+            centerx = (int)MM_TO_CELLS((*it).getCurrentPosition().getX());
+            centery = (int)MM_TO_CELLS((*it).getCurrentPosition().getY());
+            fillEnv_playerBox(centerx,centery,4);
+        }
+        
+        for(it=playersTeam2.begin(); it<playersTeam2.end(); it++) {
 
-		
-		//time2
-		centerx = (int)MM_TO_CELLS(playersTeam2[i].getCurrentPosition().getX());
-		centery = (int)MM_TO_CELLS(playersTeam2[i].getCurrentPosition().getY());
-		fillEnv_playerBox(centerx,centery,4);
+            centerx = (int)MM_TO_CELLS((*it).getCurrentPosition().getX());
+            centery = (int)MM_TO_CELLS((*it).getCurrentPosition().getY());
+            fillEnv_playerBox(centerx,centery,4);
 	}
 
 }

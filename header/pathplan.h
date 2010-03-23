@@ -1,6 +1,8 @@
 #ifndef CLASS_PATHPLAN
 #define CLASS_PATHPLAN
 
+#include <vector>
+
 #include <gtk/gtk.h>
 #include <gtk/gtkgl.h>
 
@@ -45,7 +47,7 @@ class Pathplan
 		void runPathplan();
 
 		void draw();
-		void fillEnv(GUIPlayer playersTeam1[],GUIPlayer playersTeam2[]);
+		void fillEnv(vector<GUIPlayer> playersTeam1,vector<GUIPlayer> playersTeam2);
 
 
 

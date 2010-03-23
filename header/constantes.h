@@ -3,8 +3,22 @@
 
 #include "rrt.h"
 
+
+
+
+
+// MACROS
+
 #define PRINTVAR(x) cout << #x << " = " << x << endl //imprime vari�vel x com seu nome e seu valor
 
+
+
+
+
+
+
+
+// MEDIDAS
 
 #define PI 3.14159265
 
@@ -55,10 +69,20 @@
 #define BALL_RADIUS BALL_RADIUS_MM * PIX_PER_MM / 2
 
 
-#define MAX_JOGADORES 5 //por time
 
 
-//cores para drawing
+
+
+
+//CONFIGURAÇÔES
+#define IS_VERBOSE 0
+
+
+
+
+
+
+//CORES
 #define DARK_GREEN   0.0, 0.5, 0.0
 #define YELLOW  1, 1, 0
 #define BLUE  0, 0, 1
