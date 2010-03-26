@@ -80,7 +80,7 @@ void MainWindow::drawPlayers()
 
 void GUIPlayer::draw(int index, DisplaySettings settings)
 {
-    if(this->hasUpdatedInfo) {
+    //if(this->hasUpdatedInfo) {
 
         double posx = MM_TO_PIX( this->getCurrentPosition().getX() );
 	double posy = MM_TO_PIX( this->getCurrentPosition().getY() );
@@ -95,7 +95,7 @@ void GUIPlayer::draw(int index, DisplaySettings settings)
 	if( settings.isCheckPlayerFuture() )
 		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) , MM_TO_PIX( this->getFuturePosition().getY() ));
 
-    }
+    //}
 }
 
 void GUIPlayer::drawBody(float centerX, float centerY)

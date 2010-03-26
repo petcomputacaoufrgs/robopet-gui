@@ -3,8 +3,9 @@
 
 
 #include "interface.h"
+#include "ssl_server.h"
 
-#define INITIAL_HOST " "
+#define INITIAL_HOST IP_AI_TO_GUI
 
 
 //////////////////////////////////////////////////
@@ -78,19 +79,22 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 
 		//decodifica��o dos par�metros
 		int pathplanIndex = gtk_combo_box_get_active((GtkComboBox*)parametros->widgets[0]);
-		int jogador = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
-		int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
-		int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[3]);
+		//int jogador = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
+		//int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
+		//int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[3]);
 		int checkPrintFull = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[4]);
+
+                int playerTeam, playerIndex;
+                playerIndex = mw->getSelectedPlayer(playerTeam);
 
 
 		Point initialpos;
-		if(isTime1)
-			initialpos.setXY( mw->game.playersTeam1[jogador].getCurrentPosition().getX(),
-                                          mw->game.playersTeam1[jogador].getCurrentPosition().getY());
+		if(playerTeam==1)
+			initialpos.setXY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX(),
+                                          mw->game.playersTeam1[playerIndex].getCurrentPosition().getY());
 		else
-			initialpos.setXY( mw->game.playersTeam2[jogador].getCurrentPosition().getX(),
-                                          mw->game.playersTeam2[jogador].getCurrentPosition().getY());
+			initialpos.setXY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX(),
+                                          mw->game.playersTeam2[playerIndex].getCurrentPosition().getY());
 
 		mw->pathplan = Pathplan(initialpos,pathplanIndex,checkPrintFull); //carrega configura��es na classe Pathplan
 
@@ -106,6 +110,22 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 	}
 }
 
+int MainWindow::getSelectedPlayer(int &playerTeam)
+{
+        int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
+        int nPlayersTeam1 = this->game.getNplayersTeam1();
+        int nPlayersTeam2 = this->game.getNplayersTeam2();
+
+        int playerIndex;
+        
+        comboBoxIndex < nPlayersTeam1?  playerTeam = 1 : playerTeam = 2;
+
+        playerTeam == 1?  playerIndex = comboBoxIndex : playerIndex = comboBoxIndex - nPlayersTeam1;
+
+
+        return playerIndex;
+
+}
 
 
 void playerManualControl(GtkWidget *widget, gpointer data)
@@ -113,53 +133,54 @@ void playerManualControl(GtkWidget *widget, gpointer data)
 {
 	//decodifica��o dos parametros
 	typeParameters* parametros = (typeParameters*) data;
-	int jogadorIndex = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
-	int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[1]);
-	int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
-	//int stepsize = gtk_progress_get_value((GtkProgress*)parametros->widgets[3]);
-	int stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[3]);
+        //int jogadorIndex = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
+	//int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[1]);
+	//int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
+	//int stepsize = gtk_progress_get_value((GtkProgress*)parametros->widgets[3]); //PROGRESS BAR
+	int stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
 	MainWindow* mw = parametros->mw;
 
-
+        int playerTeam, playerIndex;
+        playerIndex = mw->getSelectedPlayer(playerTeam);
 
 	string direction = gtk_button_get_label((GtkButton*)widget);
-	if( isTime1 )
+	if( playerTeam == 1 )
 		switch(  direction[1]  ) {
 
 				case 's':
-                                        mw->game.playersTeam1[jogadorIndex].setCurrentPositionY( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getY() + stepsize );
+                                        mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() + stepsize );
 					break;
 
 				case 'w':
-					mw->game.playersTeam1[jogadorIndex].setCurrentPositionY( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getY() - stepsize );
+					mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() - stepsize );
 					break;
 
 				case 'a':
-					mw->game.playersTeam1[jogadorIndex].setCurrentPositionX( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getX() - stepsize );
+					mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() - stepsize );
 					break;
 
 				case 'd':
-					mw->game.playersTeam1[jogadorIndex].setCurrentPositionX( mw->game.playersTeam1[jogadorIndex].getCurrentPosition().getX() + stepsize );
+					mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() + stepsize );
 					break;
 
 		}
-	else //isTime2
+	else if( playerTeam == 2)
 		switch(  direction[1]  ) {
 
 				case 's':
-                                        mw->game.playersTeam2[jogadorIndex].setCurrentPositionY( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getY() + stepsize );
+                                        mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() + stepsize );
 					break;
 
 				case 'w':
-					mw->game.playersTeam2[jogadorIndex].setCurrentPositionY( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getY() - stepsize );
+					mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() - stepsize );
 					break;
 
 				case 'a':
-					mw->game.playersTeam2[jogadorIndex].setCurrentPositionX( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getX() - stepsize );
+					mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() - stepsize );
 					break;
 
 				case 'd':
-					mw->game.playersTeam2[jogadorIndex].setCurrentPositionX( mw->game.playersTeam2[jogadorIndex].getCurrentPosition().getX() + stepsize );
+					mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() + stepsize );
 					break;
 
 		}
@@ -235,8 +256,8 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
                 GtkWidget* jogadorLabel = gtk_label_new("Jogador: ");
                 mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
                 */
-	GtkWidget* time1 = gtk_radio_button_new_with_label(NULL,"Amarelo");
-	GtkWidget* time2 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1)),"Azul");
+	//GtkWidget* time1 = gtk_radio_button_new_with_label(NULL,"Amarelo");
+	//GtkWidget* time2 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1)),"Azul");
 	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
             gtk_toggle_button_set_active((GtkToggleButton*)checkPrintFull,TRUE);
 	GtkWidget* checkPrintObstacles = gtk_check_button_new_with_label("Print obstacles");
@@ -253,8 +274,8 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* jogadorBox = gtk_hbox_new (FALSE, 0);
 		//gtk_box_pack_start(GTK_BOX(jogadorBox), jogadorLabel, false, false, 0);
 		//gtk_box_pack_start(GTK_BOX(jogadorBox), jogadores, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox), time1, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox), time2, false, false, 0);
+//		gtk_box_pack_start(GTK_BOX(jogadorBox), time1, false, false, 0);
+		//gtk_box_pack_start(GTK_BOX(jogadorBox), time2, false, false, 0);
 	//GtkWidget* finalPosBox = gtk_hbox_new (FALSE, 0);
 	//	gtk_box_pack_start(GTK_BOX(finalPosBox), xpos, false, false, 0);
 	//	gtk_box_pack_start(GTK_BOX(finalPosBox), finalposx, false, false, 0);
@@ -281,8 +302,8 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	parametros1.mw = mw;
 	parametros1.widgets.push_back(pathplanners);
 	//parametros1.widgets.push_back(jogadores);
-	parametros1.widgets.push_back(time1);
-	parametros1.widgets.push_back(time2);
+	//parametros1.widgets.push_back(time1);
+	//parametros1.widgets.push_back(time2);
 	parametros1.widgets.push_back(checkPrintFull);
 
 	g_signal_connect(G_OBJECT(ok), "clicked", G_CALLBACK(pathplanButton), &parametros1);
@@ -303,10 +324,10 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 
 	//widgets
 
-	GtkWidget* jogador2 = gtk_spin_button_new_with_range(0, MAX_JOGADORES-1, 1);
-	GtkWidget* jogadorLabel2 = gtk_label_new("Jogador: ");
-	GtkWidget* time1_aba3 = gtk_radio_button_new_with_label(NULL,"Amarelo");
-	GtkWidget* time2_aba3 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1_aba3)),"Azul");
+	//GtkWidget* jogador2 = gtk_spin_button_new_with_range(0, MAX_JOGADORES-1, 1);
+	//GtkWidget* jogadorLabel2 = gtk_label_new("Jogador: ");
+	//GtkWidget* time1_aba3 = gtk_radio_button_new_with_label(NULL,"Amarelo");
+	//GtkWidget* time2_aba3 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1_aba3)),"Azul");
 	//GtkWidget* stepsize = gtk_hscale_new_with_range(0, 500, 1);
 	//	gtk_widget_set_size_request(stepsize, 100, 15);
 	GtkWidget* stepsize = gtk_spin_button_new_with_range(0, 500, 1);
@@ -325,13 +346,13 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 
 
 	//hboxes
-	GtkWidget* timesBox2 = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(timesBox2), time1_aba3, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(timesBox2), time2_aba3, false, false, 0);
-	GtkWidget* jogadorBox2 = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox2), jogadorLabel2, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox2), jogador2, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(jogadorBox2), timesBox2, false, false, 0);
+	//GtkWidget* timesBox2 = gtk_hbox_new (FALSE, 0);
+	//	gtk_box_pack_start(GTK_BOX(timesBox2), time1_aba3, false, false, 0);
+	//	gtk_box_pack_start(GTK_BOX(timesBox2), time2_aba3, false, false, 0);
+	//GtkWidget* jogadorBox2 = gtk_hbox_new (FALSE, 0);
+	//	gtk_box_pack_start(GTK_BOX(jogadorBox2), jogadorLabel2, false, false, 0);
+	//	gtk_box_pack_start(GTK_BOX(jogadorBox2), jogador2, false, false, 0);
+	//	gtk_box_pack_start(GTK_BOX(jogadorBox2), timesBox2, false, false, 0);
 	GtkWidget* controleslateraisBox = gtk_hbox_new (FALSE, 0);
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), gtk_label_new("stepsize: "), false, false, 0);
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), stepsize, false, false, 0);
@@ -351,7 +372,7 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 
 	//vboxes
 	GtkWidget* menu3Box = gtk_vbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(menu3Box), jogadorBox2, false, false, 0);
+		//gtk_box_pack_start(GTK_BOX(menu3Box), jogadorBox2, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(menu3Box), controleslateraisBox, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(menu3Box), controle_bola, false, false, 0);
 
@@ -360,13 +381,13 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 	////////////////
 	//// SINAIS ////
 
-	//  clique dos bot�es de controle manual
+	//  clique dos botoes de controle manual
 	static typeParameters parametros3;
 	parametros3.mw = mw;
-	parametros3.widgets.push_back(jogador2);
-	parametros3.widgets.push_back(time1_aba3);
-	parametros3.widgets.push_back(time2_aba3);
-	parametros3.widgets.push_back(stepsize);
+	//parametros3.widgets.push_back(jogador2);
+	//parametros3.widgets.push_back(time1_aba3);
+	//parametros3.widgets.push_back(time2_aba3);
+        parametros3.widgets.push_back(stepsize);
 
 	g_signal_connect(G_OBJECT(control_left), "clicked", G_CALLBACK(playerManualControl), &parametros3);
 	g_signal_connect(G_OBJECT(control_right), "clicked", G_CALLBACK(playerManualControl), &parametros3);
@@ -374,7 +395,7 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 	g_signal_connect(G_OBJECT(control_down), "clicked", G_CALLBACK(playerManualControl), &parametros3);
 
 
-	//  clique bot�o "set Bola pos"
+	//  clique botao "set Bola pos"
 	static typeParameters parametros4;
 	parametros4.mw = mw;
 	parametros4.widgets.push_back(bolax);
@@ -451,7 +472,7 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
 	//widgets
         GtkWidget* button = gtk_toggle_button_new_with_label("Open Communication");
         GtkWidget* portEntry = gtk_spin_button_new_with_range(0, 65536, 1);
-            gtk_spin_button_set_value((GtkSpinButton*)portEntry,8100);
+            gtk_spin_button_set_value((GtkSpinButton*)portEntry,PORT_AI_TO_GUI);
         GtkWidget* hostEntry = gtk_entry_new_with_max_length(15);
             gtk_entry_set_text((GtkEntry*)hostEntry,INITIAL_HOST);
         GtkWidget* button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
@@ -525,7 +546,9 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 
     GtkWidget* jogadores = gtk_combo_box_new_text();
                 mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
-        gtk_box_pack_start(GTK_BOX(lateralMenu), jogadores, false, false, 0);
+    gtk_box_pack_start(GTK_BOX(lateralMenu), gtk_label_new("Players:     "), false, false, 0);
+    gtk_box_pack_start(GTK_BOX(lateralMenu), jogadores, false, false, 0);
+
 
 
 
@@ -605,11 +628,11 @@ void MainWindow::createInterface()
 	GtkWidget* menuBar = createMenuBar(this->window);
 
 
-	GtkWidget* notebook = createNotebook(this);
-	//GtkWidget* gameControl = createGameControl(this);
+	GtkWidget* lateralMenu = createLateralMenu(this);
 
-        
-        GtkWidget* lateralMenu = createLateralMenu(this);
+
+        GtkWidget* notebook = createNotebook(this);
+	//GtkWidget* gameControl = createGameControl(this);
 
 
 

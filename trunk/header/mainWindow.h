@@ -36,7 +36,7 @@ using namespace std;
 
 class MainWindow
 {
-	//Callbacks
+	//GTK Callbacks
 	friend void timeoutAdd(GtkWidget *widget, MainWindow* mw);
 	friend void timeoutRemove(GtkWidget *widget, MainWindow* mw);
 	friend gboolean renderScene(GtkWidget * widget, GdkEvent *event, gpointer data);
@@ -44,15 +44,14 @@ class MainWindow
 	friend gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *event, gpointer data);
 	friend void realize(GtkWidget *widget,  MainWindow* mw, gpointer data);
 
-	//Callbacks de Interface (onde p�r essas biroscas???)
+	//Interface Callbacks
 	friend void pathplanButton(GtkWidget *widget, gpointer data);
 	friend void playerManualControl(GtkWidget *widget, gpointer data);
 	friend void setBolaPos(GtkWidget *widget, gpointer data);
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
 
 
-	//Fim Callbacks
-	private:
+        private:
             
 		GtkWidget *window;
 		GtkWidget *soccer_field;
@@ -72,6 +71,7 @@ class MainWindow
 
 		//globais relativas à interface
 		int cursorEvent; //indica um "estado" da interface pendente de um clique do mouse
+                int getSelectedPlayer(int &playerTeam);
 
 	public:
 		MainWindow();
