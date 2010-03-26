@@ -75,7 +75,7 @@
 
 
 //CONFIGURAÇÔES
-#define IS_VERBOSE 0
+#define IS_VERBOSE 1
 
 
 

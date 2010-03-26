@@ -17,6 +17,9 @@ MainWindow::MainWindow(string name)
 
         createMWindow("RoboPet GUI");
 
+        //game.updateNplayersTeam1(3);
+        //game.updateNplayersTeam2(3);
+
         communicationClient = NULL;
         listenToAI();
 

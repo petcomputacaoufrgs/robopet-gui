@@ -96,6 +96,8 @@ void MainWindow::listenToAI()
 
                 game.ball.hasUpdatedInfo = true;
 
+                    if(IS_VERBOSE) cout << "* bola: " << game.ball.getCurrentPosition().getX() << "," << game.ball.getCurrentPosition().getY() << "\t\t\t *" << endl;
+
                     if(IS_VERBOSE) cout << "*------------------------------------------------*" << endl << endl;
             }
 

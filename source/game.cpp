@@ -61,14 +61,14 @@ void Game::updatePlayersComboBox()
 
         for(int i=0; i < nplayersTeam1; i++) {
 
-            sprintf (buffer, "Blue player %i", i+1);
+            sprintf (buffer, "Yellow player %i", i);
 
             gtk_combo_box_insert_text( GTK_COMBO_BOX(playersComboBox), i, buffer);
         }
 
         for(int i=0; i < nplayersTeam2; i++) {
 
-            sprintf (buffer, "Yellow player %i", i+1);
+            sprintf (buffer, "Blue player %i", i);
 
             gtk_combo_box_insert_text( GTK_COMBO_BOX(playersComboBox), nplayersTeam1+i, buffer);
         }
