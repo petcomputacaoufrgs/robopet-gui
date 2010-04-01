@@ -5,7 +5,7 @@
 using namespace std;
 
 
-MainWindow::MainWindow() {}
+//MainWindow::MainWindow() {}
 
 MainWindow::MainWindow(string name)
 {
@@ -17,10 +17,15 @@ MainWindow::MainWindow(string name)
 
         createMWindow("RoboPet GUI");
 
-        //game.updateNplayersTeam1(3);
-        //game.updateNplayersTeam2(3);
+        pushStatusMessage("GUI initialized.");
 
-        communicationClient = NULL;
+
+        game.updateNplayersTeam1(3);
+        game.updateNplayersTeam2(3);
+
+
+        aitoguiClient = NULL;
+        guitoaiServer = NULL;
         listenToAI();
 
 	game.ball = GuiBall();
@@ -106,6 +111,13 @@ gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *ev
 }
 
 
+void MainWindow::iterate()
+{
+        listenToAI();
+
+	drawWorld();
+}
+
 
 void MainWindow::drawWorld()
 {
@@ -137,12 +149,7 @@ gboolean exposeEvent(GtkWidget * widget, GdkEvent *event, gpointer data)
 	glLoadIdentity();
 
 
-
-        mw->listenToAI();
-
-	mw->drawWorld();
-
-
+        mw->iterate();
 
 
 	if (gdk_gl_drawable_is_double_buffered(gldrawable))

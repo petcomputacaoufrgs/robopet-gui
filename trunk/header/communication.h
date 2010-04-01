@@ -5,7 +5,7 @@
 #include "ssl_server.h"
 
 
-typedef RoboCupSSLClient GUIClient;
+//typedef RoboCupSSLClient GUIClient;
 
 /*class GUIClient
 {

@@ -50,6 +50,7 @@ class MainWindow
 	friend void setBolaPos(GtkWidget *widget, gpointer data);
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
 
+        friend GtkWidget* createLateralMenu(MainWindow* mw);
 
         private:
             
@@ -65,24 +66,37 @@ class MainWindow
 		void createMWindow(string title);
 		void drawWorld();
 		void drawPlayers();
+                void iterate();
 
 		void createInterface();
 
 
-		//globais relativas à interface
+
+		//Interface variables
 		int cursorEvent; //indica um "estado" da interface pendente de um clique do mouse
+                GtkWidget* textView;
+                GtkWidget* statusBar;
+
+                //Interface functions
                 int getSelectedPlayer(int &playerTeam);
+                void pushStatusMessage(string msg);
+                void fillTextView(char text[]);
+
 
 	public:
 		MainWindow();
 		~MainWindow() {};
 		MainWindow(string title);
 
-                //Comunicação (communication.cpp)
-                GUIClient * communicationClient;
-                void openCommunication(int port, char* host);
-                void closeCommunication();
+                //Funções de Comunicação (communication.cpp)
+                RoboCupSSLClient * aitoguiClient;
+                RoboCupSSLServer * guitoaiServer;
+                void openClient(int port, char* host);
+                void openServer(int port, char* host);
+                void closeClient();
+                void closeServer();
                 void listenToAI();
+                void sendToAI();
                 
 
                 Game game; //game things

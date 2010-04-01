@@ -5,7 +5,16 @@
 #include "interface.h"
 #include "ssl_server.h"
 
-#define INITIAL_HOST IP_AI_TO_GUI
+
+
+#define CLIENT_INITIAL_PORT PORT_AI_TO_GUI
+#define CLIENT_INITIAL_HOST IP_AI_TO_GUI
+
+#define SERVER_INITIAL_PORT PORT_GUI_TO_AI
+#define SERVER_INITIAL_HOST IP_GUI_TO_AI
+
+
+
 
 
 //////////////////////////////////////////////////
@@ -32,10 +41,9 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 		case CURSOR_EVENT_PATHPLAN:
 
-			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) ) {
-
+			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
+                        {
 				mw->pathplan.finalpos.setXY( PIX_TO_MM(event->x), PIX_TO_MM(event->y));
-
 				mw->pathplan.runPathplan();
 
 				mw->cursorEvent = CURSOR_EVENT_NOTHING;
@@ -46,12 +54,19 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 }
 
+void MainWindow::fillTextView(char text[])
+{
+    if( this->textView ) {
 
+        GtkTextBuffer *text_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(this->textView));
+        gtk_text_buffer_set_text (text_buffer, text, -1);
+    }
+}
 
 
 void setBolaPos(GtkWidget *widget, gpointer data)
 {
-/*
+
 	//decodifica��o dos par�metros
 	typeParameters* parametros = (typeParameters*) data;
 
@@ -60,8 +75,8 @@ void setBolaPos(GtkWidget *widget, gpointer data)
 	int bolay = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
 
 
-	mw->bola.setXY(bolax, bolay);
-*/
+	mw->game.ball.setCurrentPosition(Point(bolax, bolay));
+
 }
 
 
@@ -82,7 +97,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		//int jogador = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
 		//int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
 		//int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[3]);
-		int checkPrintFull = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[4]);
+		int checkPrintFull = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[1]);
 
                 int playerTeam, playerIndex;
                 playerIndex = mw->getSelectedPlayer(playerTeam);
@@ -102,10 +117,12 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 
 
 		gtk_button_set_label((GtkButton*)widget, "Running...");
+                //mw->pushStatusMessage("Pathplanning is running.");
 		mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
 	}
 	else{
-		gtk_button_set_label((GtkButton*)widget, "Set Final Position");
+		gtk_button_set_label((GtkButton*)widget, "Set Destination");
+                //mw->pushStatusMessage("Waiting for destination definition.");
 		mw->pathplan.isDrawn = false;
 	}
 }
@@ -187,7 +204,7 @@ void playerManualControl(GtkWidget *widget, gpointer data)
 
 }
 
-void openConnectionButton(GtkWidget *widget, gpointer data)
+void clientCommunicationButton(GtkWidget *widget, gpointer data)
 {
     //decodifica��o dos parametros
 	typeParameters* parametros = (typeParameters*) data;
@@ -198,13 +215,36 @@ void openConnectionButton(GtkWidget *widget, gpointer data)
 
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget)  ) {
 
-		mw->openCommunication(port, host);
+		mw->openClient(port, host);
 
 		gtk_button_set_label((GtkButton*)widget, "Disconnect");
 	}
 	else{
 
-                mw->closeCommunication();
+                mw->closeClient();
+
+		gtk_button_set_label((GtkButton*)widget, "Open Connection");
+	}
+}
+
+void serverCommunicationButton(GtkWidget *widget, gpointer data)
+{
+    //decodifica��o dos parametros
+	typeParameters* parametros = (typeParameters*) data;
+	MainWindow* mw = parametros->mw;
+	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
+	char *host = (char*) gtk_entry_get_text((GtkEntry*)parametros->widgets[1]);
+
+
+	if( gtk_toggle_button_get_active((GtkToggleButton*)widget)  ) {
+
+		mw->openServer(port, host);
+
+		gtk_button_set_label((GtkButton*)widget, "Disconnect");
+	}
+	else{
+
+                mw->closeServer();
 
 		gtk_button_set_label((GtkButton*)widget, "Open Connection");
 	}
@@ -215,7 +255,10 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
         //decodifica��o dos parametros
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
-        GtkWidget* hostEntry = (GtkWidget*)parametros->widgets[0];
+        GtkWidget* clientHostEntry = (GtkWidget*)parametros->widgets[0];
+        GtkWidget* serverHostEntry = (GtkWidget*)parametros->widgets[1];
+        GtkWidget* client_getIpButton = (GtkWidget*)parametros->widgets[2];
+        GtkWidget* server_getIpButton = (GtkWidget*)parametros->widgets[3];
 
         //use linux command to get the local IP
         system( "ifconfig -a | grep 'inet end.:' | cut -f13-13 -d' ' > ip.txt");
@@ -225,17 +268,25 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
             file.close();
         system( "rm ip.txt");
 
-        gtk_entry_set_text((GtkEntry*)hostEntry,ip);
+        if( widget == client_getIpButton )
+            gtk_entry_set_text((GtkEntry*)clientHostEntry,ip);
+        else
+            gtk_entry_set_text((GtkEntry*)serverHostEntry,ip);
+}
+
+void MainWindow::pushStatusMessage(string msg)
+{
+    if( statusBar )
+        gtk_statusbar_push((GtkStatusbar*)statusBar, gtk_statusbar_get_context_id((GtkStatusbar*)statusBar,"general use"), msg.c_str());
 }
 
 
 
-
-////////////////////////////////////////////////////
-/////////////////                  /////////////////
-/////////////////   estrutura��o   /////////////////
-/////////////////                  /////////////////
-////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+/////////////////                   /////////////////
+/////////////////   structuration   /////////////////
+/////////////////                   /////////////////
+/////////////////////////////////////////////////////
 
 
 void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
@@ -261,7 +312,7 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
             gtk_toggle_button_set_active((GtkToggleButton*)checkPrintFull,TRUE);
 	GtkWidget* checkPrintObstacles = gtk_check_button_new_with_label("Print obstacles");
-	GtkWidget* ok = gtk_toggle_button_new_with_label("Set Final Position");
+	GtkWidget* ok = gtk_toggle_button_new_with_label("Set Destination");
 	//GtkWidget* xpos = gtk_label_new("x: ");
 	//GtkWidget* finalposx = gtk_spin_button_new_with_range(0, ARENA_WIDTH_MM, 10);
 	//GtkWidget* ypos = gtk_label_new("y: ");
@@ -470,51 +521,102 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* aba = gtk_label_new_with_mnemonic("Communication");
 
 	//widgets
-        GtkWidget* button = gtk_toggle_button_new_with_label("Open Communication");
-        GtkWidget* portEntry = gtk_spin_button_new_with_range(0, 65536, 1);
-            gtk_spin_button_set_value((GtkSpinButton*)portEntry,PORT_AI_TO_GUI);
-        GtkWidget* hostEntry = gtk_entry_new_with_max_length(15);
-            gtk_entry_set_text((GtkEntry*)hostEntry,INITIAL_HOST);
-        GtkWidget* button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
+        GtkWidget* client_button = gtk_toggle_button_new_with_label("Open Communication");
+        GtkWidget* client_portEntry = gtk_spin_button_new_with_range(0, 65536, 1);
+            gtk_spin_button_set_value((GtkSpinButton*)client_portEntry,CLIENT_INITIAL_PORT);
+        GtkWidget* client_hostEntry = gtk_entry_new_with_max_length(15);
+            gtk_entry_set_text((GtkEntry*)client_hostEntry,CLIENT_INITIAL_HOST);
+        GtkWidget* client_button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
+
+        GtkWidget* server_button = gtk_toggle_button_new_with_label("Open Communication");
+        GtkWidget* server_portEntry = gtk_spin_button_new_with_range(0, 65536, 1);
+            gtk_spin_button_set_value((GtkSpinButton*)server_portEntry,SERVER_INITIAL_PORT);
+        GtkWidget* server_hostEntry = gtk_entry_new_with_max_length(15);
+            gtk_entry_set_text((GtkEntry*)server_hostEntry,SERVER_INITIAL_HOST);
+        GtkWidget* server_button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
+
+        GtkWidget* clientFrame = gtk_frame_new("CLIENT");
+        GtkWidget* serverFrame = gtk_frame_new("SERVER");
 
 
 
-	//hboxes
-	GtkWidget* box1 = gtk_hbox_new (FALSE, 0);
-            gtk_box_pack_start(GTK_BOX(box1), gtk_label_new("Port: "), false, false, 0);
-            gtk_box_pack_start(GTK_BOX(box1), portEntry, false, false, 0);
+	//CLIENT BOX
+	GtkWidget* portbox1 = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(portbox1), gtk_label_new("Port: "), false, false, 0);
+            gtk_box_pack_start(GTK_BOX(portbox1), client_portEntry, false, false, 0);
 
 
-        GtkWidget* box2 = gtk_hbox_new (FALSE, 0);
-            gtk_box_pack_start(GTK_BOX(box2), gtk_label_new("Host: "), false, false, 0);
-            gtk_box_pack_start(GTK_BOX(box2), hostEntry, false, false, 0);
-            gtk_box_pack_start(GTK_BOX(box2), button_getlocalip, false, false, 0);
+        GtkWidget* hostbox1 = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(hostbox1), gtk_label_new("Host: "), false, false, 0);
+            gtk_box_pack_start(GTK_BOX(hostbox1), client_hostEntry, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(hostbox1), client_button_getlocalip, false, false, 0);
 
-	//vboxes
-	GtkWidget* menuBox = gtk_vbox_new (FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(menuBox), box1, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(menuBox), box2, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(menuBox), button, false, false, 0);
-                //gtk_widget_set_size_request(menuBox, 200, 50);
+
+        GtkWidget* clientBox = gtk_vbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(clientBox), portbox1, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(clientBox), hostbox1, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(clientBox), client_button, false, false, 0);
+            gtk_container_add(GTK_CONTAINER(clientFrame),clientBox);//insere no frame
+        
+
+
+        //SERVER BOX
+	GtkWidget* portbox2 = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(portbox2), gtk_label_new("Port: "), false, false, 0);
+            gtk_box_pack_start(GTK_BOX(portbox2), server_portEntry, false, false, 0);
+
+
+        GtkWidget* hostbox2 = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(hostbox2), gtk_label_new("Host: "), false, false, 0);
+            gtk_box_pack_start(GTK_BOX(hostbox2), server_hostEntry, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(hostbox2), server_button_getlocalip, false, false, 0);
+            
+        GtkWidget* serverBox = gtk_vbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(serverBox), portbox2, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(serverBox), hostbox2, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(serverBox), server_button, false, false, 0);
+            gtk_container_add(GTK_CONTAINER(serverFrame),serverBox);//insere no frame
+
+
+
+        GtkWidget* menuBox = gtk_hbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(menuBox), clientFrame, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(menuBox), serverFrame, false, false, 0);
+
+            
+        /*GtkWidget* panedBox = gtk_hpaned_new();
+                gtk_paned_pack1((GtkPaned*)panedBox, clientBox, TRUE, FALSE);
+                gtk_paned_pack2((GtkPaned*)panedBox, serverBox, FALSE,FALSE);*/
 
 
 
 	////////////////
 	//// SINAIS ////
-	//  clique no botão
+	//  BUTTON: Client Open Connection
 	static typeParameters parametros;
 	parametros.mw = mw;
-	parametros.widgets.push_back(portEntry);
-	parametros.widgets.push_back(hostEntry);
+	parametros.widgets.push_back(client_portEntry);
+	parametros.widgets.push_back(client_hostEntry);
 
-	g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(openConnectionButton), &parametros);
-
+	g_signal_connect(G_OBJECT(client_button), "clicked", G_CALLBACK(clientCommunicationButton), &parametros);
 
         static typeParameters parametros2;
 	parametros2.mw = mw;
-	parametros2.widgets.push_back(hostEntry);
+	parametros2.widgets.push_back(server_portEntry);
+	parametros2.widgets.push_back(server_hostEntry);
 
-	g_signal_connect(G_OBJECT(button_getlocalip), "clicked", G_CALLBACK(getLocalIPButton), &parametros2);
+	g_signal_connect(G_OBJECT(server_button), "clicked", G_CALLBACK(serverCommunicationButton), &parametros2);
+
+
+        static typeParameters parametros3;
+	parametros3.mw = mw;
+	parametros3.widgets.push_back(client_hostEntry);
+        parametros3.widgets.push_back(server_hostEntry);
+        parametros3.widgets.push_back(client_button_getlocalip);
+        parametros3.widgets.push_back(server_button_getlocalip);
+
+	g_signal_connect(G_OBJECT(client_button_getlocalip), "clicked", G_CALLBACK(getLocalIPButton), &parametros3);
+        g_signal_connect(G_OBJECT(server_button_getlocalip), "clicked", G_CALLBACK(getLocalIPButton), &parametros3);
 
 
 
@@ -542,12 +644,15 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 {
     GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
 
+    
+    mw->textView = gtk_text_view_new();
 
 
     GtkWidget* jogadores = gtk_combo_box_new_text();
                 mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
     gtk_box_pack_start(GTK_BOX(lateralMenu), gtk_label_new("Players:     "), false, false, 0);
     gtk_box_pack_start(GTK_BOX(lateralMenu), jogadores, false, false, 0);
+    gtk_box_pack_start(GTK_BOX(lateralMenu), mw->textView, false, false, 0);
 
 
 
@@ -630,6 +735,7 @@ void MainWindow::createInterface()
 
 	GtkWidget* lateralMenu = createLateralMenu(this);
 
+        statusBar = gtk_statusbar_new();
 
         GtkWidget* notebook = createNotebook(this);
 	//GtkWidget* gameControl = createGameControl(this);
@@ -644,7 +750,8 @@ void MainWindow::createInterface()
 	gtk_box_pack_start(GTK_BOX(vbox), menuBar, false, false, 0);
         gtk_box_pack_start(GTK_BOX(vbox), hbox, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), notebook, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), gtk_hseparator_new(), false, false, 0);
+	//gtk_box_pack_start(GTK_BOX(vbox), gtk_hseparator_new(), false, false, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), statusBar, false, false, 0);
 	//gtk_box_pack_start(GTK_BOX(vbox), gameControl, false, false, 0);
 
 	gtk_container_add (GTK_CONTAINER (window), vbox); //insere a vbox na janela
