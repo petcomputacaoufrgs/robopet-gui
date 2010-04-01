@@ -114,9 +114,13 @@ void GUIPlayer::drawAngle(float centerX, float centerY, float angle)
 
 void GUIPlayer::drawIndex(float centerX, float centerY, int robotNumber)
 {
-	glColor3f(1, 1, 1);
+        glColor3f(1, 1, 1);
 	glRasterPos2f(centerX + ROBOT_RADIUS, centerY - ROBOT_RADIUS);
-	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, robotNumber + 48);
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, robotNumber + 48);
+        
+        //char buffer[200];
+        //sprintf(buffer, "%i\n pos: %i,%i", robotNumber, this->getCurrentPosition().getX(), this->getCurrentPosition().getY());        
+        //glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_10, buffer);
 }
 
 void GUIPlayer::drawVector(float startX, float startY, float endX, float endY)

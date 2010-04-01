@@ -4,38 +4,62 @@
 
 
 
-void MainWindow::openCommunication(int port, char* host)
+void MainWindow::openClient(int port, char* host)
 {
-    communicationClient = new GUIClient(port,host);
-    if(IS_VERBOSE) cout<<"Ready to receive AI Packets..."<<endl;
-    communicationClient->open(false);
+    aitoguiClient = new RoboCupSSLClient(port,host);
+
+    if(IS_VERBOSE) cout<<"Ready to receive from AI..."<<endl;
+    pushStatusMessage("Ready to receive from AI...");
+    aitoguiClient->open(false);
 }
 
-void MainWindow::closeCommunication()
+
+void MainWindow::openServer(int port, char* host)
 {
-    delete communicationClient;
-    if(IS_VERBOSE)  printf("Communication closed.\n");
+    guitoaiServer = new RoboCupSSLServer(port,host);
+
+    if(IS_VERBOSE) cout<<"Ready to send to AI..."<<endl;
+    pushStatusMessage("Ready to send to AI...");
+    guitoaiServer->open();
+}
+
+
+void MainWindow::closeClient()
+{
+    delete aitoguiClient;
+    if(IS_VERBOSE)  printf("AI->GUI Communication closed.\n");
+    pushStatusMessage("AI->GUI Communication closed.");
+}
+
+void MainWindow::closeServer()
+{
+    delete guitoaiServer;
+    if(IS_VERBOSE)  printf("GUI->AI Communication closed.\n");
+    pushStatusMessage("GUI->AI Communication closed.");
 }
 
 
 void MainWindow::listenToAI()
 {
-    if(communicationClient)
+    static char debugText[1024];
+
+
+    if(aitoguiClient)
     {
         SSL_WrapperPacket packet;
-        if(communicationClient->receive(packet))
+        if(aitoguiClient->receive(packet))
         {
             if(IS_VERBOSE) cout<<"opa, recebi um pacote!"<<endl;
 
             if(packet.has_aitogui())
             {
                 if(IS_VERBOSE) cout<<"ah, esse pacote eh meu."<<endl;
+                //pushStatusMessage("Packet received!");
 
 
 
-                    if(IS_VERBOSE) cout << endl << "*------------------------------------------------*" << endl;
-                    if(IS_VERBOSE) cout << "* " << packet.aitogui().blue_robots_size() << " jogadores azuis e " << packet.aitogui().yellow_robots_size() << " jogadores amarelos."<< "\t *" << endl;
-
+                    sprintf(debugText,"%i blue player, %i yellow players.\n",packet.aitogui().blue_robots_size(),packet.aitogui().yellow_robots_size());
+                    
 
                 game.updateNplayersTeam1(packet.aitogui().blue_robots_size());
                 game.updateNplayersTeam2(packet.aitogui().yellow_robots_size());
@@ -60,8 +84,10 @@ void MainWindow::listenToAI()
 
                     (*it).hasUpdatedInfo = true;
 
-                        //cout << packet.aitogui().blue_robots(i).current_x() << " , " << packet.aitogui().blue_robots(i).current_y() << endl;
-                        if(IS_VERBOSE) cout << "* jogador azul " << i << ": " << game.playersTeam1[i].getCurrentPosition().getX() << "," << game.playersTeam1[i].getCurrentPosition().getY() << "\t\t\t *" << endl;
+                    //cout << packet.aitogui().blue_robots(i).current_x() << " , " << packet.aitogui().blue_robots(i).current_y() << endl;
+                    char buffer[1024];
+                    sprintf(buffer,"Blue player %i: %.0f,%.0f\n",i, game.playersTeam1[i].getCurrentPosition().getX(),game.playersTeam1[i].getCurrentPosition().getY());
+                    strcat(debugText,buffer);
 
                 }
 
@@ -84,7 +110,9 @@ void MainWindow::listenToAI()
 
                     (*it).hasUpdatedInfo = true;
 
-                        if(IS_VERBOSE) cout << "* jogador amarelo " << i << ": " << game.playersTeam2[i].getCurrentPosition().getX() << "," << game.playersTeam2[i].getCurrentPosition().getY() << "\t\t\t *" << endl;
+                    char buffer[1024];
+                    sprintf(buffer,"Yellow player %i: %.0f,%.0f\n",i, game.playersTeam2[i].getCurrentPosition().getX(),game.playersTeam2[i].getCurrentPosition().getY());
+                    strcat(debugText,buffer);
                 }
 
 
@@ -96,9 +124,13 @@ void MainWindow::listenToAI()
 
                 game.ball.hasUpdatedInfo = true;
 
-                    if(IS_VERBOSE) cout << "* bola: " << game.ball.getCurrentPosition().getX() << "," << game.ball.getCurrentPosition().getY() << "\t\t\t *" << endl;
+                    char buffer[1024];
+                    sprintf(buffer,"Ball: %0.f,%0.f\n",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
+                    strcat(debugText,buffer);
 
-                    if(IS_VERBOSE) cout << "*------------------------------------------------*" << endl << endl;
+
+                    if(IS_VERBOSE) cout << debugText;
+                    fillTextView(debugText);
             }
 
         }
