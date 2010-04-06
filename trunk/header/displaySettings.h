@@ -13,23 +13,21 @@ using namespace std;
 class DisplaySettings
 {
 	public:
-		DisplaySettings() {};
-		~DisplaySettings() {};
 
 		GtkWidget* checkPlayerAngle;
 		GtkWidget* checkPlayerIndex;
 		GtkWidget* checkPlayerBody;
-		GtkWidget* checkBallShow;
+		GtkWidget* checkBall;
 		GtkWidget* checkPlayerVector;
                 GtkWidget* checkPlayerFuture;
 
 
-		int isCheckPlayerAngle();
-		int isCheckPlayerIndex();
-		int isCheckPlayerBody();
-		int isCheckBallShow();
-		int isCheckPlayerVector();
-                int isCheckPlayerFuture();
+		int isHidePlayerAngle();
+		int isHidePlayerIndex();
+		int isHidePlayerBody();
+		int isHideBall();
+		int isHidePlayerVector();
+                int isHidePlayerFuture();
 	
 
 		void showAll();

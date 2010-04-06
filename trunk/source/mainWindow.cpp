@@ -20,13 +20,10 @@ MainWindow::MainWindow(string name)
         pushStatusMessage("GUI initialized.");
 
 
-        game.updateNplayersTeam1(3);
-        game.updateNplayersTeam2(3);
-
+        isVerbose = false;
 
         aitoguiClient = NULL;
         guitoaiServer = NULL;
-        listenToAI();
 
 	game.ball = GuiBall();
 }
@@ -111,11 +108,48 @@ gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *ev
 }
 
 
+
+void MainWindow::generateOutput()
+{
+    static char debugText[1024];
+    
+    sprintf(debugText,"");
+
+    for( int i=0; i<game.getNplayersTeam1(); i++ )
+    {
+        char buffer[1024];
+        sprintf(buffer,"Blue player %i: %.0f,%.0f\n",i, game.playersTeam1[i].getCurrentPosition().getX(),game.playersTeam1[i].getCurrentPosition().getY());
+        strcat(debugText,buffer);
+    }
+
+    for( int i=0; i<game.getNplayersTeam1(); i++ )
+    {
+        char buffer[1024];
+        sprintf(buffer,"Yellow player %i: %.0f,%.0f\n",i, game.playersTeam2[i].getCurrentPosition().getX(),game.playersTeam2[i].getCurrentPosition().getY());
+        strcat(debugText,buffer);
+    }
+
+    if( game.getNplayersTeam1()+game.getNplayersTeam2() )
+    {
+        char buffer[1024];
+        sprintf(buffer,"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
+        strcat(debugText,buffer);
+    }
+
+    if(isVerbose) cout << debugText;
+    fillTextView(debugText);
+
+}
+
+
+
 void MainWindow::iterate()
 {
-        listenToAI();
+        comunicate();
 
 	drawWorld();
+
+        generateOutput();
 }
 
 

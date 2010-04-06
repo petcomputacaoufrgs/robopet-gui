@@ -22,6 +22,9 @@ class Game
         void updateNplayersTeam1(int n);
         void updateNplayersTeam2(int n);
 
+        void addPlayerTeam1();
+        void addPlayerTeam2();
+
         int getNplayersTeam1();
         int getNplayersTeam2();
 

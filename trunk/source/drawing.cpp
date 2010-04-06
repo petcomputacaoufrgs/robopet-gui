@@ -86,13 +86,13 @@ void GUIPlayer::draw(int index, DisplaySettings settings)
 	double posy = MM_TO_PIX( this->getCurrentPosition().getY() );
 
 
-	if( settings.isCheckPlayerBody() )
+	if( !settings.isHidePlayerBody() )
 		drawBody( posx, posy);
-	if( settings.isCheckPlayerAngle() )
+	if( !settings.isHidePlayerAngle() )
 		drawAngle(posx, posy, this->getCurrentAngle());
-	if( settings.isCheckPlayerIndex() )
+	if( !settings.isHidePlayerIndex() )
 		drawIndex(posx, posy, index);
-	if( settings.isCheckPlayerFuture() )
+	if( !settings.isHidePlayerFuture() )
 		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) , MM_TO_PIX( this->getFuturePosition().getY() ));
 
     //}
@@ -139,7 +139,7 @@ void GUIPlayer::drawVector(float startX, float startY, float endX, float endY)
 
 void GuiBall::draw(DisplaySettings settings)
 {
-	if( settings.isCheckBallShow() )
+	if( settings.isHideBall() )
 	{
 		glColor3f(1, 0.5, 0);
 		drawCircle(MM_TO_PIX( this->getCurrentPosition().getX() ), MM_TO_PIX( this->getCurrentPosition().getY() ), BALL_RADIUS);
