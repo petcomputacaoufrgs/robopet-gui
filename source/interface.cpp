@@ -144,6 +144,18 @@ int MainWindow::getSelectedPlayer(int &playerTeam)
 
 }
 
+void isVerboseButton(GtkWidget *widget, gpointer data)
+{
+    	//decodifica��o dos parametros
+	typeParameters* parametros = (typeParameters*) data;
+	MainWindow* mw = parametros->mw;
+
+        if ( gtk_toggle_button_get_active((GtkToggleButton*)widget) )
+            mw->isVerbose = true;
+        else
+            mw->isVerbose = false;
+
+}
 
 void playerManualControl(GtkWidget *widget, gpointer data)
 //controle manual de um jogador (joystick ou teclado)
@@ -274,6 +286,27 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
             gtk_entry_set_text((GtkEntry*)serverHostEntry,ip);
 }
 
+void addYellowPlayerButton(GtkWidget *widget, gpointer data)
+{
+        //decodifica��o dos parametros
+	typeParameters* parametros = (typeParameters*) data;
+	MainWindow* mw = parametros->mw;
+
+        mw->game.addPlayerTeam1();
+}
+
+
+void addBluePlayerButton(GtkWidget *widget, gpointer data)
+{
+        //decodifica��o dos parametros
+	typeParameters* parametros = (typeParameters*) data;
+	MainWindow* mw = parametros->mw;
+
+        mw->game.addPlayerTeam2();
+}
+
+
+
 void MainWindow::pushStatusMessage(string msg)
 {
     if( statusBar )
@@ -282,11 +315,17 @@ void MainWindow::pushStatusMessage(string msg)
 
 
 
+
+
+
+
+
 /////////////////////////////////////////////////////
 /////////////////                   /////////////////
 /////////////////   structuration   /////////////////
 /////////////////                   /////////////////
 /////////////////////////////////////////////////////
+
 
 
 void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
@@ -366,7 +405,7 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 
 }
 
-void createControlarTab(MainWindow* mw, GtkWidget* notebook)
+void createControlTab(MainWindow* mw, GtkWidget* notebook)
 {
 	////////////
 	////ABA 3///
@@ -462,32 +501,36 @@ void createControlarTab(MainWindow* mw, GtkWidget* notebook)
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menu3Box, aba3);
 }
 
-void createDisplayTab(MainWindow* mw, GtkWidget* notebook)
+void createSettingsTab(MainWindow* mw, GtkWidget* notebook)
 {
 	////////////
 	////ABA 4///
 	////////////
-	GtkWidget* aba = gtk_label_new_with_mnemonic("Display");
+	GtkWidget* aba = gtk_label_new_with_mnemonic("Settings");
 
 	//widgets
-	GtkWidget* playerBody = gtk_check_button_new_with_label("show Body");
-		gtk_toggle_button_set_active((GtkToggleButton*)playerBody,TRUE);
-			mw->displaySettings.checkPlayerBody = playerBody;
-	GtkWidget* playerAngle = gtk_check_button_new_with_label("show Angle");
-		gtk_toggle_button_set_active((GtkToggleButton*)playerAngle,TRUE);
-			mw->displaySettings.checkPlayerAngle = playerAngle;
-	GtkWidget* playerIndex = gtk_check_button_new_with_label("show Index");
-		gtk_toggle_button_set_active((GtkToggleButton*)playerIndex,TRUE);
-			mw->displaySettings.checkPlayerIndex = playerIndex;
-	GtkWidget* playerFuture = gtk_check_button_new_with_label("show Future");
-                gtk_toggle_button_set_active((GtkToggleButton*)playerFuture,TRUE);
-			mw->displaySettings.checkPlayerFuture = playerFuture;
-	GtkWidget* ballShow = gtk_check_button_new_with_label("show Ball");
-		gtk_toggle_button_set_active((GtkToggleButton*)ballShow,TRUE);
-			mw->displaySettings.checkBallShow = ballShow;
-	GtkWidget* playersFrame = gtk_frame_new("Players");
-	GtkWidget* ballFrame = gtk_frame_new("Ball");
-
+        //Players
+        GtkWidget* playersFrame = gtk_frame_new("Players");
+	GtkWidget* playerBody = gtk_check_button_new_with_label("hide Body");
+		//gtk_toggle_button_set_active((GtkToggleButton*)playerBody,TRUE);
+		mw->displaySettings.checkPlayerBody = playerBody;
+	GtkWidget* playerAngle = gtk_check_button_new_with_label("hide Angle");
+		//gtk_toggle_button_set_active((GtkToggleButton*)playerAngle,TRUE);
+		mw->displaySettings.checkPlayerAngle = playerAngle;
+	GtkWidget* playerIndex = gtk_check_button_new_with_label("hide Index");
+		//gtk_toggle_button_set_active((GtkToggleButton*)playerIndex,TRUE);
+		mw->displaySettings.checkPlayerIndex = playerIndex;
+	GtkWidget* playerFuture = gtk_check_button_new_with_label("hide Future");
+                //gtk_toggle_button_set_active((GtkToggleButton*)playerFuture,TRUE);
+		mw->displaySettings.checkPlayerFuture = playerFuture;
+        //Ball
+        GtkWidget* ballFrame = gtk_frame_new("Ball");
+        GtkWidget* ballHide = gtk_check_button_new_with_label("hide Ball");
+		//gtk_toggle_button_set_active((GtkToggleButton*)ballHide,TRUE);
+		mw->displaySettings.checkBall = ballHide;
+        //Program
+        GtkWidget* programFrame = gtk_frame_new("Program");
+        GtkWidget* isVerbose = gtk_check_button_new_with_label("be Verbose");
 
 
 	//vboxes
@@ -499,17 +542,36 @@ void createDisplayTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_container_add(GTK_CONTAINER(playersFrame),playersBox);//insere no frame
 
 	GtkWidget* ballBox = gtk_vbox_new(FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(ballBox), ballShow, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballBox), ballHide, false, false, 0);
 		gtk_container_add(GTK_CONTAINER(ballFrame),ballBox);//insere no frame
+
+        GtkWidget* programBox = gtk_vbox_new(FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(programBox), isVerbose, false, false, 0);
+                gtk_container_add(GTK_CONTAINER(programFrame),programBox);//insere no frame
 
 
 	//hboxes
 	GtkWidget* menuBox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(menuBox), playersFrame, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(menuBox), programFrame, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(menuBox), playersFrame, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(menuBox), ballFrame, false, false, 0);
 
 
-	//insere aba no notebook pai
+
+
+
+        ////////////////
+	//// SINAIS ////
+	//  CHECK BOX: "be Verbose"
+	static typeParameters parametros;
+	parametros.mw = mw;
+	g_signal_connect(G_OBJECT(isVerbose), "clicked", G_CALLBACK(isVerboseButton), &parametros);
+
+
+
+
+
+        //insere aba no notebook pai
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menuBox, aba);
 }
 
@@ -632,8 +694,8 @@ GtkWidget* createNotebook(MainWindow* mw)
 
 	//createTab1(mw,notebook); //n�o tem nada aqui ainda
 	createCommunicationTab(mw,notebook);
-        createDisplayTab(mw,notebook);
-        createControlarTab(mw,notebook);
+        createSettingsTab(mw,notebook);
+        createControlTab(mw,notebook);
 	createPathplanningTab(mw,notebook);
 
 
@@ -642,18 +704,43 @@ GtkWidget* createNotebook(MainWindow* mw)
 
 GtkWidget* createLateralMenu(MainWindow* mw)
 {
-    GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
-
     
     mw->textView = gtk_text_view_new();
 
-
+    
     GtkWidget* jogadores = gtk_combo_box_new_text();
                 mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
-    gtk_box_pack_start(GTK_BOX(lateralMenu), gtk_label_new("Players:     "), false, false, 0);
-    gtk_box_pack_start(GTK_BOX(lateralMenu), jogadores, false, false, 0);
-    gtk_box_pack_start(GTK_BOX(lateralMenu), mw->textView, false, false, 0);
 
+    GtkWidget* addBluePlayer = gtk_button_new_with_mnemonic("Blue++");
+    GtkWidget* addYellowPlayer = gtk_button_new_with_mnemonic("Yellow++");
+
+    GtkWidget* addPlayersBox = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(addPlayersBox), addBluePlayer, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(addPlayersBox), addYellowPlayer, false, false, 0);
+
+    
+    GtkWidget* playerFrameVBOX = gtk_vbox_new (FALSE, 0);
+        gtk_container_add(GTK_CONTAINER(playerFrameVBOX),jogadores);
+        gtk_container_add(GTK_CONTAINER(playerFrameVBOX),addPlayersBox);
+
+    GtkWidget* playersFrame = gtk_frame_new("Players");
+        gtk_container_add(GTK_CONTAINER(playersFrame),playerFrameVBOX);
+
+
+    GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(lateralMenu), playersFrame, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(lateralMenu), mw->textView, false, false, 0);
+
+   
+
+	////////////////
+	//// SINAIS ////
+	//  BUTTON: addBluePlayer
+        //  BUTTON: yellowBluePlayer
+	static typeParameters parametros;
+	parametros.mw = mw;
+	g_signal_connect(G_OBJECT(addBluePlayer), "clicked", G_CALLBACK(addBluePlayerButton), &parametros);
+	g_signal_connect(G_OBJECT(addYellowPlayer), "clicked", G_CALLBACK(addYellowPlayerButton), &parametros);
 
 
 
@@ -684,10 +771,11 @@ void about()
 	  gtk_widget_destroy (dialog);
 }
 
-/*void newWindow()
+void newGame()
 {
     MainWindow *newWindow = new MainWindow("NewWindow");
-}*/
+    
+}
 
 GtkWidget* createMenuBar(GtkWidget *window)
 {
@@ -697,7 +785,7 @@ GtkWidget* createMenuBar(GtkWidget *window)
   static GtkItemFactoryEntry menu_items[] = {
   { "/_File",         NULL,         NULL, 0, "<Branch>" },
   //{ "/File/_New Window",     "<control>N", newWindow, 0, NULL },
-  { "/File/_New Game",     "<control>N", 0, 0, NULL },
+  { "/File/_New Game",     "<control>N", newGame, 0, NULL },
   { "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
   { "/File/Quit",     "<control>Q", gtk_main_quit, 0, NULL },
   /*{ "/_Options",      NULL,         NULL, 0, "<Branch>" },*/

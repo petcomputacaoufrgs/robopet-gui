@@ -1,27 +1,27 @@
 #include "displaySettings.h"
 
 
-int DisplaySettings::isCheckPlayerAngle()
+int DisplaySettings::isHidePlayerAngle()
 {
 	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerAngle);
 }
 
-int DisplaySettings::isCheckPlayerIndex()
+int DisplaySettings::isHidePlayerIndex()
 {
 	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerIndex);
 }
 
-int DisplaySettings::isCheckPlayerBody()
+int DisplaySettings::isHidePlayerBody()
 {
 	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerBody);
 }
 
-int DisplaySettings::isCheckBallShow()
+int DisplaySettings::isHideBall()
 {
-	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkBallShow);
+	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkBall);
 }
 
-int DisplaySettings::isCheckPlayerFuture()
+int DisplaySettings::isHidePlayerFuture()
 {
 	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerFuture);
 }

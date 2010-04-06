@@ -43,6 +43,30 @@ void Game::updateNplayersTeam2(int n)
     }
 }
 
+void Game::addPlayerTeam1()
+{
+    resetPlayersComboBox();
+
+    nplayersTeam1++;
+
+    playersTeam1.resize(nplayersTeam1);
+
+    updatePlayersComboBox();
+}
+
+
+void Game::addPlayerTeam2()
+{
+    resetPlayersComboBox();
+
+    nplayersTeam2++;
+
+    playersTeam2.resize(nplayersTeam2);
+
+    updatePlayersComboBox();
+}
+
+
 
 void Game::resetPlayersComboBox()
 //Remove all entries (to use it before updating numbers of players in the teams)

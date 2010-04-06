@@ -67,6 +67,7 @@ class MainWindow
 		void drawWorld();
 		void drawPlayers();
                 void iterate();
+                void generateOutput();
 
 		void createInterface();
 
@@ -83,25 +84,30 @@ class MainWindow
                 void fillTextView(char text[]);
 
 
+                //Communication (communication.cpp)
+                RoboCupSSLClient *aitoguiClient;
+                void listenToAI();
+                RoboCupSSLServer *guitoaiServer;
+                void sendToAI();
+
 	public:
 		MainWindow();
 		~MainWindow() {};
 		MainWindow(string title);
 
-                //Funções de Comunicação (communication.cpp)
-                RoboCupSSLClient * aitoguiClient;
-                RoboCupSSLServer * guitoaiServer;
+                
+                //Communication (communication.cpp)
+                void comunicate();
                 void openClient(int port, char* host);
-                void openServer(int port, char* host);
                 void closeClient();
+                void openServer(int port, char* host);
                 void closeServer();
-                void listenToAI();
-                void sendToAI();
                 
 
                 Game game; //game things
 		Pathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
+                bool isVerbose;
 
 };
 
