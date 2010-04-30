@@ -293,6 +293,8 @@ void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 	MainWindow* mw = parametros->mw;
 
         mw->game.addPlayerTeam1();
+
+        //mw->pushStatusMessage("Added 1 Yellow Player.");
 }
 
 
@@ -303,6 +305,8 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	MainWindow* mw = parametros->mw;
 
         mw->game.addPlayerTeam2();
+
+        //mw->pushStatusMessage("Added 1 Blue Player.");
 }
 
 
@@ -785,7 +789,7 @@ GtkWidget* createMenuBar(GtkWidget *window)
   static GtkItemFactoryEntry menu_items[] = {
   { "/_File",         NULL,         NULL, 0, "<Branch>" },
   //{ "/File/_New Window",     "<control>N", newWindow, 0, NULL },
-  { "/File/_New Game",     "<control>N", newGame, 0, NULL },
+  //{ "/File/_New Game",     "<control>N", newGame, 0, NULL },
   { "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
   { "/File/Quit",     "<control>Q", gtk_main_quit, 0, NULL },
   /*{ "/_Options",      NULL,         NULL, 0, "<Branch>" },*/

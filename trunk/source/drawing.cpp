@@ -139,7 +139,7 @@ void GUIPlayer::drawVector(float startX, float startY, float endX, float endY)
 
 void GuiBall::draw(DisplaySettings settings)
 {
-	if( settings.isHideBall() )
+	if( !settings.isHideBall() )
 	{
 		glColor3f(1, 0.5, 0);
 		drawCircle(MM_TO_PIX( this->getCurrentPosition().getX() ), MM_TO_PIX( this->getCurrentPosition().getY() ), BALL_RADIUS);

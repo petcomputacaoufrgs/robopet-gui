@@ -4,14 +4,14 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Arquivos de cabeçalho"
                    projectFiles="true">
-      <itemPath>/grupos/RoboPET/ROBOPET ANTIGO - EVITE USAR - USE O NOVO/GUI/GUI/header/GUIPlayer.h</itemPath>
-      <itemPath>/grupos/RoboPET/ROBOPET ANTIGO - EVITE USAR - USE O NOVO/GUI/GUI/header/GuiBall.h</itemPath>
+      <itemPath>../header/GUIPlayer.h</itemPath>
+      <itemPath>../header/GuiBall.h</itemPath>
       <itemPath>../header/communication.h</itemPath>
       <itemPath>../header/constantes.h</itemPath>
       <itemPath>../header/displaySettings.h</itemPath>
       <itemPath>../header/drawing.h</itemPath>
       <itemPath>../header/game.h</itemPath>
-      <itemPath>/grupos/RoboPET/ROBOPET ANTIGO - EVITE USAR - USE O NOVO/GUI/GUI/header/interface.h</itemPath>
+      <itemPath>../header/interface.h</itemPath>
       <itemPath>../header/mainWindow.h</itemPath>
       <itemPath>../header/pathplan.h</itemPath>
     </logicalFolder>
@@ -40,8 +40,8 @@
   <sourceRootList>
     <Elem>../header</Elem>
     <Elem>../source</Elem>
-    <Elem>../../robopet-ai/lib</Elem>
     <Elem>../../robopet-communication</Elem>
+    <Elem>../../lib</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -56,11 +56,11 @@
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>../header</pElem>
-            <pElem>../../robopet-ai/lib</pElem>
             <pElem>../../robopet-communication/packets</pElem>
             <pElem>../../robopet-communication/proto</pElem>
             <pElem>../../robopet-communication/socket</pElem>
             <pElem>../../robopet-communication</pElem>
+            <pElem>../../lib</pElem>
           </incDir>
           <commandLine>`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`</commandLine>
         </ccTool>
@@ -69,12 +69,14 @@
             <pElem>../../robopet-communication/packets</pElem>
             <pElem>../../robopet-communication/proto</pElem>
             <pElem>../../robopet-communication/socket</pElem>
-            <pElem>../../robopet-ai/lib</pElem>
             <pElem>../../robopet-communication</pElem>
+            <pElem>../../lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
+            <linkerLibFileItem>../../robopet-communication/communication.a</linkerLibFileItem>
+            <linkerLibFileItem>../../lib/robopet.a</linkerLibFileItem>
           </linkerLibItems>
-          <commandLine>../../robopet-ai/lib/point.o ../../robopet-ai/lib/movingObject.o ../../robopet-ai/lib/rrt.o ../../robopet-ai/lib/player.o ../../robopet-ai/lib/vector.o ../../robopet-communication/ssl_client.o ../../robopet-communication/ssl_server.o ../../robopet-communication/message_gui_to_ai.pb.o ../../robopet-communication/message_ai_to_gui.pb.o ../../robopet-communication/messages_robocup_ssl_wrapper.pb.o ../../robopet-communication/message_ai_to_radio.pb.o ../../robopet-communication/message_ai_to_sim.pb.o ../../robopet-communication/message_ai_to_tracker.pb.o ../../robopet-communication/message_radio_to_tracker.pb.o ../../robopet-communication/message_sim_to_tracker.pb.o ../../robopet-communication/messages_robocup_ssl_detection.pb.o ../../robopet-communication/messages_robocup_ssl_geometry.pb.o ../../robopet-communication/messages_robocup_ssl_refbox_log.pb.o ../../robopet-communication/message_tracker_to_ai.pb.o ../../robopet-communication/udp_netraw.o `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut</commandLine>
+          <commandLine>`pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut</commandLine>
         </linkerTool>
       </compileType>
     </conf>
