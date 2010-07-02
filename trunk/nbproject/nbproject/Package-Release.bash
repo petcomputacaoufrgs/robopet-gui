@@ -11,8 +11,8 @@ CND_CONF=Release
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nbproject
-OUTPUT_BASENAME=nbproject
+OUTPUT_PATH=../GUI
+OUTPUT_BASENAME=GUI
 PACKAGE_TOP_DIR=nbproject/
 
 # Functions

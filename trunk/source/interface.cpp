@@ -3,7 +3,6 @@
 
 
 #include "interface.h"
-#include "ssl_server.h"
 
 
 
@@ -273,12 +272,13 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
         GtkWidget* server_getIpButton = (GtkWidget*)parametros->widgets[3];
 
         //use linux command to get the local IP
-        system( "ifconfig -a | grep 'inet end.:' | cut -f13-13 -d' ' > ip.txt");
+        //system( "ifconfig -a | grep 'inet end.:' | cut -f13-13 -d' ' > ip.txt");
+        system( "wget -q http://icanhazip.com/ -O ip.txt");
             ifstream file;
             file.open ("ip.txt", fstream::out);
             char ip[20]; file.getline(ip,20);
             file.close();
-        system( "rm ip.txt");
+        //system( "rm ip.txt");
 
         if( widget == client_getIpButton )
             gtk_entry_set_text((GtkEntry*)clientHostEntry,ip);
@@ -592,14 +592,14 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
             gtk_spin_button_set_value((GtkSpinButton*)client_portEntry,CLIENT_INITIAL_PORT);
         GtkWidget* client_hostEntry = gtk_entry_new_with_max_length(15);
             gtk_entry_set_text((GtkEntry*)client_hostEntry,CLIENT_INITIAL_HOST);
-        GtkWidget* client_button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
+        GtkWidget* client_button_getlocalip = gtk_button_new_with_mnemonic("ICanHazIP");
 
         GtkWidget* server_button = gtk_toggle_button_new_with_label("Open Communication");
         GtkWidget* server_portEntry = gtk_spin_button_new_with_range(0, 65536, 1);
             gtk_spin_button_set_value((GtkSpinButton*)server_portEntry,SERVER_INITIAL_PORT);
         GtkWidget* server_hostEntry = gtk_entry_new_with_max_length(15);
             gtk_entry_set_text((GtkEntry*)server_hostEntry,SERVER_INITIAL_HOST);
-        GtkWidget* server_button_getlocalip = gtk_button_new_with_mnemonic("Get My IP");
+        GtkWidget* server_button_getlocalip = gtk_button_new_with_mnemonic("ICanHazIP");
 
         GtkWidget* clientFrame = gtk_frame_new("CLIENT");
         GtkWidget* serverFrame = gtk_frame_new("SERVER");
@@ -787,15 +787,11 @@ GtkWidget* createMenuBar(GtkWidget *window)
 	GtkWidget* menubar;
 
   static GtkItemFactoryEntry menu_items[] = {
-  { "/_File",         NULL,         NULL, 0, "<Branch>" },
-  //{ "/File/_New Window",     "<control>N", newWindow, 0, NULL },
-  //{ "/File/_New Game",     "<control>N", newGame, 0, NULL },
-  { "/File/sep1",     NULL,         NULL, 0, "<Separator>" },
-  { "/File/Quit",     "<control>Q", gtk_main_quit, 0, NULL },
-  /*{ "/_Options",      NULL,         NULL, 0, "<Branch>" },*/
-  /*{ "/Options/Test",  NULL,         NULL, 0, NULL },*/
-  { "/_Help",         NULL,         NULL, 0, "<LastBranch>" },
-  { "/_Help/About",   NULL,         about, 0, NULL },
+  { (gchar*)"/_File",         NULL,         NULL, 0, (gchar*)"<Branch>" },
+  { (gchar*)"/File/sep1",     NULL,         NULL, 0, (gchar*)"<Separator>" },
+  { (gchar*)"/File/Quit",     (gchar*)"<control>Q", gtk_main_quit, 0, NULL },
+  { (gchar*)"/_Help",         NULL,         NULL, 0, (gchar*)"<LastBranch>" },
+  { (gchar*)"/_Help/About",   NULL,         about, 0, NULL },
 };
 
 

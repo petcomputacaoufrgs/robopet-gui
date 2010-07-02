@@ -109,7 +109,7 @@ gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *ev
 
 
 
-void MainWindow::generateOutput()
+void MainWindow::generateTextOutput()
 {
     static char debugText[1024];
     
@@ -149,7 +149,7 @@ void MainWindow::iterate()
 
 	drawWorld();
 
-        generateOutput();
+        generateTextOutput();
 }
 
 

@@ -6,7 +6,7 @@
 
 void MainWindow::openClient(int port, char* host)
 {
-    aitoguiClient = new RoboCupSSLClient(port,host);
+    aitoguiClient = new RoboPETClient(port,host);
 
     if(isVerbose) cout<<"Ready to receive from AI..."<<endl;
     pushStatusMessage("Ready to receive from AI...");
@@ -16,7 +16,7 @@ void MainWindow::openClient(int port, char* host)
 
 void MainWindow::openServer(int port, char* host)
 {
-    guitoaiServer = new RoboCupSSLServer(port,host);
+    guitoaiServer = new RoboPETServer(port,host);
 
     if(isVerbose) cout<<"Ready to send to AI..."<<endl;
     pushStatusMessage("Ready to send to AI...");
@@ -51,7 +51,7 @@ void MainWindow::comunicate()
 void MainWindow::listenToAI()
 {
 
-    SSL_WrapperPacket packet;
+    RoboPET_WrapperPacket packet;
     if(aitoguiClient->receive(packet))
     {
         if(isVerbose) cout<<"opa, recebi um pacote!"<<endl;

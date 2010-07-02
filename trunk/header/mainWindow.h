@@ -7,7 +7,7 @@
 #include "constantes.h"
 
 
-#include <glut.h>
+#include <GL/glut.h>
 #include "drawing.h"
 #include "GUIPlayer.h"
 #include "GuiBall.h"
@@ -18,8 +18,8 @@
 #include "communication.h"
 #include "game.h"
 
-#include "ssl_client.h"
-#include "ssl_server.h"
+#include "rp_client.h"
+#include "rp_server.h"
 
 #include <string>
 #include <vector>
@@ -67,7 +67,7 @@ class MainWindow
 		void drawWorld();
 		void drawPlayers();
                 void iterate();
-                void generateOutput();
+                void generateTextOutput();
 
 		void createInterface();
 
@@ -85,9 +85,9 @@ class MainWindow
 
 
                 //Communication (communication.cpp)
-                RoboCupSSLClient *aitoguiClient;
+                RoboPETClient *aitoguiClient;
                 void listenToAI();
-                RoboCupSSLServer *guitoaiServer;
+                RoboPETServer *guitoaiServer;
                 void sendToAI();
 
 	public:
