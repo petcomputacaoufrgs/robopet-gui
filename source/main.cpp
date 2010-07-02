@@ -16,7 +16,6 @@ int main (int argc, char *argv[])
 {
         gtk_init (&argc, &argv);
         glutInit(&argc, argv);
-
 	static MainWindow window = MainWindow("GUI");
 
         printf("GUI Rodando!\n");

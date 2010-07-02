@@ -44,8 +44,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` 
+CXXFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` 
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -54,63 +54,67 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-L../../robopet-communication/packets -L../../robopet-communication/proto -L../../robopet-communication/socket -L../../robopet-communication -L../../lib ../../robopet-communication/communication.a ../../lib/robopet.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	${MAKE}  -f nbproject/Makefile-Release.mk dist/Release/GNU-Linux-x86/nbproject
+	${MAKE}  -f nbproject/Makefile-Release.mk ../GUI
 
-dist/Release/GNU-Linux-x86/nbproject: ${OBJECTFILES}
-	${MKDIR} -p dist/Release/GNU-Linux-x86
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nbproject ${OBJECTFILES} ${LDLIBSOPTIONS} 
+../GUI: ../../robopet-communication/communication.a
+
+../GUI: ../../lib/robopet.a
+
+../GUI: ${OBJECTFILES}
+	${MKDIR} -p ..
+	${LINK.cc} `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut -o ../GUI  ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/displaySettings.o: nbproject/Makefile-${CND_CONF}.mk ../source/displaySettings.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/displaySettings.o ../source/displaySettings.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/displaySettings.o ../source/displaySettings.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/pathplan.o: nbproject/Makefile-${CND_CONF}.mk ../source/pathplan.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/pathplan.o ../source/pathplan.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/pathplan.o ../source/pathplan.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/main.o: nbproject/Makefile-${CND_CONF}.mk ../source/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/main.o ../source/main.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/main.o ../source/main.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/mainWindow.o: nbproject/Makefile-${CND_CONF}.mk ../source/mainWindow.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/mainWindow.o ../source/mainWindow.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/mainWindow.o ../source/mainWindow.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/drawing.o: nbproject/Makefile-${CND_CONF}.mk ../source/drawing.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/drawing.o ../source/drawing.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/drawing.o ../source/drawing.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/communication.o: nbproject/Makefile-${CND_CONF}.mk ../source/communication.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/communication.o ../source/communication.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/communication.o ../source/communication.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/game.o: nbproject/Makefile-${CND_CONF}.mk ../source/game.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/game.o ../source/game.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/game.o ../source/game.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/interface.o: nbproject/Makefile-${CND_CONF}.mk ../source/interface.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/interface.o ../source/interface.cpp
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/interface.o ../source/interface.cpp
 
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
-.clean-conf:
+.clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Release
-	${RM} dist/Release/GNU-Linux-x86/nbproject
+	${RM} ../GUI
 
 # Subprojects
 .clean-subprojects:

@@ -87,18 +87,32 @@
         <platform>2</platform>
       </toolsSet>
       <compileType>
-        <cTool>
-          <developmentMode>5</developmentMode>
-        </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>../header</pElem>
+            <pElem>../../robopet-communication/packets</pElem>
+            <pElem>../../robopet-communication/proto</pElem>
+            <pElem>../../robopet-communication/socket</pElem>
+            <pElem>../../robopet-communication</pElem>
+            <pElem>../../lib</pElem>
+          </incDir>
+          <commandLine>`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`</commandLine>
         </ccTool>
-        <fortranCompilerTool>
-          <developmentMode>5</developmentMode>
-        </fortranCompilerTool>
         <linkerTool>
+          <output>../GUI</output>
+          <linkerAddLib>
+            <pElem>../../robopet-communication/packets</pElem>
+            <pElem>../../robopet-communication/proto</pElem>
+            <pElem>../../robopet-communication/socket</pElem>
+            <pElem>../../robopet-communication</pElem>
+            <pElem>../../lib</pElem>
+          </linkerAddLib>
           <linkerLibItems>
+            <linkerLibFileItem>../../robopet-communication/communication.a</linkerLibFileItem>
+            <linkerLibFileItem>../../lib/robopet.a</linkerLibFileItem>
           </linkerLibItems>
+          <commandLine>`pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut</commandLine>
         </linkerTool>
       </compileType>
     </conf>
