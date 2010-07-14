@@ -40,13 +40,6 @@ enum{
 	CURSOR_EVENT_PATHPLAN
 };
 
-//tipos de pathplanning
-enum{
-	PATHPLAN_RRT    = 0,
-	PATHPLAN_ASTAR  = 1
-};
-
-
 
 
 #endif
