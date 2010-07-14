@@ -32,10 +32,10 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/_DOTDOT/source/displaySettings.o \
-	${OBJECTDIR}/_ext/_DOTDOT/source/pathplan.o \
 	${OBJECTDIR}/_ext/_DOTDOT/source/main.o \
 	${OBJECTDIR}/_ext/_DOTDOT/source/mainWindow.o \
 	${OBJECTDIR}/_ext/_DOTDOT/source/drawing.o \
+	${OBJECTDIR}/_ext/_DOTDOT/source/guiPathplan.o \
 	${OBJECTDIR}/_ext/_DOTDOT/source/communication.o \
 	${OBJECTDIR}/_ext/_DOTDOT/source/game.o \
 	${OBJECTDIR}/_ext/_DOTDOT/source/interface.o
@@ -73,11 +73,6 @@ ${OBJECTDIR}/_ext/_DOTDOT/source/displaySettings.o: nbproject/Makefile-${CND_CON
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/displaySettings.o ../source/displaySettings.cpp
 
-${OBJECTDIR}/_ext/_DOTDOT/source/pathplan.o: nbproject/Makefile-${CND_CONF}.mk ../source/pathplan.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
-	${RM} $@.d
-	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/pathplan.o ../source/pathplan.cpp
-
 ${OBJECTDIR}/_ext/_DOTDOT/source/main.o: nbproject/Makefile-${CND_CONF}.mk ../source/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
@@ -92,6 +87,11 @@ ${OBJECTDIR}/_ext/_DOTDOT/source/drawing.o: nbproject/Makefile-${CND_CONF}.mk ..
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/drawing.o ../source/drawing.cpp
+
+${OBJECTDIR}/_ext/_DOTDOT/source/guiPathplan.o: nbproject/Makefile-${CND_CONF}.mk ../source/guiPathplan.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../header -I../../robopet-communication/packets -I../../robopet-communication/proto -I../../robopet-communication/socket -I../../robopet-communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/source/guiPathplan.o ../source/guiPathplan.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/source/communication.o: nbproject/Makefile-${CND_CONF}.mk ../source/communication.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/source

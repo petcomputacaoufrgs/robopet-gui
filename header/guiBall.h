@@ -17,7 +17,6 @@ class GuiBall: public Ball
 
         void draw(DisplaySettings settings);
         
-  
 };
 
 

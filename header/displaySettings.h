@@ -33,9 +33,7 @@ class DisplaySettings
 		void showAll();
 		void hideAll();
 
-
 };
-
 
 
 #endif

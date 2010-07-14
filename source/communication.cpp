@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include <mainWindow.h>
+//#include <mainWindow.h>
+#include "communication.h"
 #include "interface.h"
 
 
@@ -39,7 +40,7 @@ void MainWindow::closeServer()
 }
 
 
-void MainWindow::comunicate()
+void MainWindow::communicate()
 {
     if( aitoguiClient )
         listenToAI();
@@ -66,7 +67,7 @@ void MainWindow::listenToAI()
             game.updateNplayersTeam1(packet.aitogui().blue_robots_size());
             game.updateNplayersTeam2(packet.aitogui().yellow_robots_size());
 
-            vector<GUIPlayer>::iterator it;
+            vector<guiPlayer>::iterator it;
             it = game.playersTeam1.begin();
             for(int i=0; it<game.playersTeam1.end(); it++, i++) {
             //for(int i = 0; i < MAX_JOGADORES && i < packet.aitogui().blue_robots_size(); ++i) {
