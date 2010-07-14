@@ -7,28 +7,23 @@
 using RP::Player;
 
 
-class GUIPlayer: public Player
+class guiPlayer: public Player
 {
     public:
 
-        GUIPlayer() { hasUpdatedInfo = false; }
-
+        guiPlayer() { hasUpdatedInfo = false; }
         
         bool hasUpdatedInfo;
-
         
         void draw(int index, DisplaySettings settings);
 
 
     private:
 
-
         void drawBody(float centerX, float centerY);
         void drawAngle(float centerX, float centerY, float angle);
         void drawIndex(float centerX, float centerY, int robotNumber);
         void drawVector(float centerX, float centerY, float vecX, float vecY);
-
-
 
 };
 

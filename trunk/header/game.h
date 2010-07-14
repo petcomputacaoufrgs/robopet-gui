@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "GuiBall.h"
-#include "GUIPlayer.h"
+#include "guiBall.h"
+#include "guiPlayer.h"
 
 
 
@@ -30,8 +30,8 @@ class Game
 
 
         GuiBall ball;
-        vector<GUIPlayer> playersTeam1;
-        vector<GUIPlayer> playersTeam2;
+        vector<guiPlayer> playersTeam1;
+        vector<guiPlayer> playersTeam2;
 
 
 

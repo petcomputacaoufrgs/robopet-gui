@@ -4,17 +4,14 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include "constantes.h"
-
-
 #include <GL/glut.h>
+
+#include "guiConstants.h"
 #include "drawing.h"
-#include "GUIPlayer.h"
-#include "GuiBall.h"
-//#include "interface.h"
-#include "pathplan.h"
+#include "guiPlayer.h"
+#include "guiBall.h"
+#include "guiPathplan.h"
 #include "displaySettings.h"
-#include "point.h"
 #include "communication.h"
 #include "game.h"
 
@@ -74,7 +71,7 @@ class MainWindow
 
 
 		//Interface variables
-		int cursorEvent; //indica um "estado" da interface pendente de um clique do mouse
+		int cursorEvent;
                 GtkWidget* textView;
                 GtkWidget* statusBar;
 
@@ -97,7 +94,7 @@ class MainWindow
 
                 
                 //Communication (communication.cpp)
-                void comunicate();
+                void communicate();
                 void openClient(int port, char* host);
                 void closeClient();
                 void openServer(int port, char* host);
@@ -105,21 +102,18 @@ class MainWindow
                 
 
                 Game game; //game things
-		Pathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		guiPathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
                 bool isVerbose;
 
 };
 
 
-//estrutura para passagem de par�metros nas callbacks da interface
+//structure for passing parameters in GTK interface callbacks
 struct typeParameters {
 	vector<GtkWidget*> widgets;
 	MainWindow *mw;
 };
-
-
-
 
 
 #endif

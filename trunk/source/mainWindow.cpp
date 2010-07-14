@@ -1,11 +1,8 @@
-
 #include <mainWindow.h>
 #include "interface.h"
 
 using namespace std;
 
-
-//MainWindow::MainWindow() {}
 
 MainWindow::MainWindow(string name)
 {
@@ -51,6 +48,7 @@ void MainWindow::configuraGL()
 
 }
 
+
 void MainWindow::createMWindow(string title)
 {
 	gtk_window_set_title(GTK_WINDOW(window), title.c_str());
@@ -83,6 +81,7 @@ void realize(GtkWidget *widget, MainWindow* mw, gpointer   data)
   gdk_gl_drawable_gl_end (gldrawable);
 }
 
+
 gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *event, gpointer data)
 {
   GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);
@@ -108,44 +107,32 @@ gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *ev
 }
 
 
-
 void MainWindow::generateTextOutput()
 {
-    static char debugText[1024];
+    static char text[1024];
+    sprintf(text,""); //resets text buffer
+
+    sprintf(text+strlen(text),"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
+
+    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayersTeam1());
+    for( int i=0; i<game.getNplayersTeam1(); i++ ) {
+        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f",i, game.playersTeam1[i].getCurrentPosition().getX(),game.playersTeam1[i].getCurrentPosition().getY());
+    }
+
+    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayersTeam2());
+    for( int i=0; i<game.getNplayersTeam2(); i++ ) {
+        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f",i, game.playersTeam2[i].getCurrentPosition().getX(),game.playersTeam2[i].getCurrentPosition().getY());
+    }
+
     
-    sprintf(debugText,"");
-
-    for( int i=0; i<game.getNplayersTeam1(); i++ )
-    {
-        char buffer[1024];
-        sprintf(buffer,"Blue player %i: %.0f,%.0f\n",i, game.playersTeam1[i].getCurrentPosition().getX(),game.playersTeam1[i].getCurrentPosition().getY());
-        strcat(debugText,buffer);
-    }
-
-    for( int i=0; i<game.getNplayersTeam1(); i++ )
-    {
-        char buffer[1024];
-        sprintf(buffer,"Yellow player %i: %.0f,%.0f\n",i, game.playersTeam2[i].getCurrentPosition().getX(),game.playersTeam2[i].getCurrentPosition().getY());
-        strcat(debugText,buffer);
-    }
-
-    if( game.getNplayersTeam1()+game.getNplayersTeam2() )
-    {
-        char buffer[1024];
-        sprintf(buffer,"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
-        strcat(debugText,buffer);
-    }
-
-    if(isVerbose) cout << debugText;
-    fillTextView(debugText);
+    fillTextView(text);
 
 }
 
 
-
 void MainWindow::iterate()
 {
-        comunicate();
+        communicate();
 
 	drawWorld();
 
@@ -163,7 +150,6 @@ void MainWindow::drawWorld()
 
 	game.ball.draw(displaySettings);
 }
-
 
 
 gboolean exposeEvent(GtkWidget * widget, GdkEvent *event, gpointer data)
@@ -196,47 +182,6 @@ gboolean exposeEvent(GtkWidget * widget, GdkEvent *event, gpointer data)
 	return TRUE;
 }
 
-//Fun��o para updatear a screen
-gboolean renderScene(GtkWidget * widget, GdkEvent *event, gpointer data)
-{
-	//* Invalidate the whole window. * /
-	gdk_window_invalidate_rect(widget->window, &widget->allocation, FALSE);
-
-	//* Update synchronously (fast). * /
-	gdk_window_process_updates(widget->window, FALSE);
-
-	return TRUE;
-}
-
-void timeoutAdd(GtkWidget *widget, MainWindow* mw)
-{
-    //FIXME troquei renderScene pela glutDisplayFunc
-	if (mw->timeout_handler_id == 0)
-		mw->timeout_handler_id = gtk_timeout_add(TIMEOUT_INTERVAL, (GtkFunction) renderScene, widget);
-}
-
-
-void timeoutRemove(GtkWidget *widget, MainWindow* mw)
-{
-	if (mw->timeout_handler_id != 0)
-	{
-		gtk_timeout_remove(mw->timeout_handler_id);
-		mw->timeout_handler_id = 0;
-	}
-}
-
-/*
-gboolean MainWindow::visibilityNotifyEvent(GtkWidget *widget, GdkEventVisibility *event, gpointer data)
-{
-    if (event->state == GDK_VISIBILITY_FULLY_OBSCURED)
-		timeoutRemove(widget);
-    else
-		timeoutAdd(widget);
-
-	return TRUE;
-}
-*/
-
 
 void MainWindow::createDrawingArea()
 {
@@ -244,17 +189,12 @@ void MainWindow::createDrawingArea()
 	gtk_widget_set_gl_capability (soccer_field, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE);
 	gtk_widget_show(soccer_field);
 
-
 	gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this); //cliques do mouse
 		gtk_widget_set_events (soccer_field, GDK_BUTTON_PRESS_MASK);
 		cursorEvent = CURSOR_EVENT_NOTHING;
 	g_signal_connect_after(G_OBJECT(soccer_field), "realize", G_CALLBACK(realize), this); //instancia��o da Widget
-	g_signal_connect(G_OBJECT(soccer_field), "unrealize", G_CALLBACK(timeoutRemove), this);
 	g_signal_connect(G_OBJECT(soccer_field), "configure_event", G_CALLBACK(configureEvent), this);
 	g_signal_connect(G_OBJECT(soccer_field), "expose_event", G_CALLBACK(exposeEvent), this); //?
-	g_signal_connect(G_OBJECT(soccer_field), "map_event",  G_CALLBACK(timeoutAdd), this);
-	g_signal_connect(G_OBJECT(soccer_field), "unmap_event", G_CALLBACK(timeoutRemove), this);
-	//g_signal_connect(G_OBJECT(soccer_field), "visibility_notify_event", G_CALLBACK(visibilityNotifyEventWrapper), this);
 
 
 }

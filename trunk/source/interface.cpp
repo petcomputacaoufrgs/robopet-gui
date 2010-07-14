@@ -53,6 +53,7 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 }
 
+
 void MainWindow::fillTextView(char text[])
 {
     if( this->textView ) {
@@ -65,8 +66,7 @@ void MainWindow::fillTextView(char text[])
 
 void setBolaPos(GtkWidget *widget, gpointer data)
 {
-
-	//decodifica��o dos par�metros
+        // parameters
 	typeParameters* parametros = (typeParameters*) data;
 
 	MainWindow* mw = parametros->mw;
@@ -75,9 +75,7 @@ void setBolaPos(GtkWidget *widget, gpointer data)
 
 
 	mw->game.ball.setCurrentPosition(Point(bolax, bolay));
-
 }
-
 
 
 void pathplanButton(GtkWidget *widget, gpointer data)
@@ -110,7 +108,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 			initialpos.setXY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX(),
                                           mw->game.playersTeam2[playerIndex].getCurrentPosition().getY());
 
-		mw->pathplan = Pathplan(initialpos,pathplanIndex,checkPrintFull); //carrega configura��es na classe Pathplan
+		mw->pathplan = guiPathplan(initialpos,pathplanIndex,checkPrintFull); //carrega configura��es na classe Pathplan
 
 		mw->pathplan.fillEnv(mw->game.playersTeam1, mw->game.playersTeam2); //configura matriz de posi��es
 
@@ -126,6 +124,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 	}
 }
 
+
 int MainWindow::getSelectedPlayer(int &playerTeam)
 {
         int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
@@ -138,14 +137,14 @@ int MainWindow::getSelectedPlayer(int &playerTeam)
 
         playerTeam == 1?  playerIndex = comboBoxIndex : playerIndex = comboBoxIndex - nPlayersTeam1;
 
-
         return playerIndex;
 
 }
 
+
 void isVerboseButton(GtkWidget *widget, gpointer data)
 {
-    	//decodifica��o dos parametros
+    	// parameters
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
@@ -156,68 +155,68 @@ void isVerboseButton(GtkWidget *widget, gpointer data)
 
 }
 
+
 void playerManualControl(GtkWidget *widget, gpointer data)
 //controle manual de um jogador (joystick ou teclado)
 {
-	//decodifica��o dos parametros
+	// parameters
 	typeParameters* parametros = (typeParameters*) data;
-        //int jogadorIndex = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
-	//int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[1]);
-	//int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
-	//int stepsize = gtk_progress_get_value((GtkProgress*)parametros->widgets[3]); //PROGRESS BAR
 	int stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
 	MainWindow* mw = parametros->mw;
 
         int playerTeam, playerIndex;
         playerIndex = mw->getSelectedPlayer(playerTeam);
 
-	string direction = gtk_button_get_label((GtkButton*)widget);
-	if( playerTeam == 1 )
-		switch(  direction[1]  ) {
+        if( playerIndex!=-1 ) {
+            string direction = gtk_button_get_label((GtkButton*)widget);
+            if( playerTeam == 1 )
+                    switch(  direction[1]  ) {
 
-				case 's':
-                                        mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() + stepsize );
-					break;
+                                    case 's':
+                                            mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() + stepsize );
+                                            break;
 
-				case 'w':
-					mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() - stepsize );
-					break;
+                                    case 'w':
+                                            mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() - stepsize );
+                                            break;
 
-				case 'a':
-					mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() - stepsize );
-					break;
+                                    case 'a':
+                                            mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() - stepsize );
+                                            break;
 
-				case 'd':
-					mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() + stepsize );
-					break;
+                                    case 'd':
+                                            mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() + stepsize );
+                                            break;
 
-		}
-	else if( playerTeam == 2)
-		switch(  direction[1]  ) {
+                    }
+            else if( playerTeam == 2)
+                    switch(  direction[1]  ) {
 
-				case 's':
-                                        mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() + stepsize );
-					break;
+                                    case 's':
+                                            mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() + stepsize );
+                                            break;
 
-				case 'w':
-					mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() - stepsize );
-					break;
+                                    case 'w':
+                                            mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() - stepsize );
+                                            break;
 
-				case 'a':
-					mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() - stepsize );
-					break;
+                                    case 'a':
+                                            mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() - stepsize );
+                                            break;
 
-				case 'd':
-					mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() + stepsize );
-					break;
+                                    case 'd':
+                                            mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() + stepsize );
+                                            break;
 
-		}
+                    }
+        }
 
 }
 
+
 void clientCommunicationButton(GtkWidget *widget, gpointer data)
 {
-    //decodifica��o dos parametros
+        // parameters
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
@@ -238,9 +237,10 @@ void clientCommunicationButton(GtkWidget *widget, gpointer data)
 	}
 }
 
+
 void serverCommunicationButton(GtkWidget *widget, gpointer data)
 {
-    //decodifica��o dos parametros
+        // parameters
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
@@ -261,9 +261,10 @@ void serverCommunicationButton(GtkWidget *widget, gpointer data)
 	}
 }
 
+
 void getLocalIPButton(GtkWidget *widget, gpointer data)
 {
-        //decodifica��o dos parametros
+        // parameters
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
         GtkWidget* clientHostEntry = (GtkWidget*)parametros->widgets[0];
@@ -286,13 +287,14 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
             gtk_entry_set_text((GtkEntry*)serverHostEntry,ip);
 }
 
+
 void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 {
-        //decodifica��o dos parametros
+        // parameters
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
-        mw->game.addPlayerTeam1();
+        mw->game.addPlayerTeam2();
 
         //mw->pushStatusMessage("Added 1 Yellow Player.");
 }
@@ -300,15 +302,14 @@ void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 
 void addBluePlayerButton(GtkWidget *widget, gpointer data)
 {
-        //decodifica��o dos parametros
+        // parameters
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
-        mw->game.addPlayerTeam2();
+        mw->game.addPlayerTeam1();
 
         //mw->pushStatusMessage("Added 1 Blue Player.");
 }
-
 
 
 void MainWindow::pushStatusMessage(string msg)
@@ -414,7 +415,7 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	////////////
 	////ABA 3///
 	////////////
-	GtkWidget* aba3 = gtk_label_new_with_mnemonic("Controlar");
+	GtkWidget* aba3 = gtk_label_new_with_mnemonic("Manual control");
 
 	//widgets
 
@@ -454,7 +455,7 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_left, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_down, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_right, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(controleslateraisBox), gtk_label_new("(to control via keyboard press Alt + w/a/s/d)"), false, false, 0);
+                gtk_box_pack_start(GTK_BOX(controleslateraisBox), gtk_label_new("(hold Alt + wasd)"), false, false, 0);
 			//gtk_widget_set_size_request(controleslateraisBox,100,20);
 	GtkWidget* controle_bola = gtk_hbox_new (FALSE, 0);
 		gtk_box_pack_start(GTK_BOX(controle_bola), label_bolax, false, false, 0);
@@ -775,21 +776,15 @@ void about()
 	  gtk_widget_destroy (dialog);
 }
 
-void newGame()
-{
-    MainWindow *newWindow = new MainWindow("NewWindow");
-    
-}
-
 GtkWidget* createMenuBar(GtkWidget *window)
 {
 
-	GtkWidget* menubar;
+  GtkWidget* menubar;
 
   static GtkItemFactoryEntry menu_items[] = {
   { (gchar*)"/_File",         NULL,         NULL, 0, (gchar*)"<Branch>" },
   { (gchar*)"/File/sep1",     NULL,         NULL, 0, (gchar*)"<Separator>" },
-  { (gchar*)"/File/Quit",     (gchar*)"<control>Q", gtk_main_quit, 0, NULL },
+  { (gchar*)"/File/Quit",     (gchar*)"<alt>Q", gtk_main_quit, 0, NULL },
   { (gchar*)"/_Help",         NULL,         NULL, 0, (gchar*)"<LastBranch>" },
   { (gchar*)"/_Help/About",   NULL,         about, 0, NULL },
 };

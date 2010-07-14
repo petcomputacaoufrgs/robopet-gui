@@ -4,16 +4,16 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Arquivos de cabeçalho"
                    projectFiles="true">
-      <itemPath>../header/GUIPlayer.h</itemPath>
-      <itemPath>../header/GuiBall.h</itemPath>
       <itemPath>../header/communication.h</itemPath>
-      <itemPath>../header/constantes.h</itemPath>
       <itemPath>../header/displaySettings.h</itemPath>
       <itemPath>../header/drawing.h</itemPath>
       <itemPath>../header/game.h</itemPath>
+      <itemPath>../header/guiBall.h</itemPath>
+      <itemPath>../header/guiConstants.h</itemPath>
+      <itemPath>../header/guiPathplan.h</itemPath>
+      <itemPath>../header/guiPlayer.h</itemPath>
       <itemPath>../header/interface.h</itemPath>
       <itemPath>../header/mainWindow.h</itemPath>
-      <itemPath>../header/pathplan.h</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Arquivos de código-fonte"
@@ -22,10 +22,10 @@
       <itemPath>../source/displaySettings.cpp</itemPath>
       <itemPath>../source/drawing.cpp</itemPath>
       <itemPath>../source/game.cpp</itemPath>
+      <itemPath>../source/guiPathplan.cpp</itemPath>
       <itemPath>../source/interface.cpp</itemPath>
       <itemPath>../source/main.cpp</itemPath>
       <itemPath>../source/mainWindow.cpp</itemPath>
-      <itemPath>../source/pathplan.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Arquivos de recurso"

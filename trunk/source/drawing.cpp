@@ -12,7 +12,7 @@
 void drawQuarterCircle(float centerX, float centerY, float radius, int quadrante)
 {
 	const int q = 1000;
-    float ang = 2 * PI / q;
+    float ang = 2 * M_PI / q;
    
 	glBegin(GL_LINE_STRIP);
     for(int i = (quadrante - 1) * q / 4; i <= quadrante * q/4; i++)
@@ -64,7 +64,7 @@ void drawField()
 }
 void MainWindow::drawPlayers()
 {
-	vector<GUIPlayer>::iterator it;
+	vector<guiPlayer>::iterator it;
         it = game.playersTeam1.begin();
         for(int i=0; it<game.playersTeam1.end(); it++, i++) {
 		glColor3f(YELLOW);
@@ -78,7 +78,7 @@ void MainWindow::drawPlayers()
 	}
 }
 
-void GUIPlayer::draw(int index, DisplaySettings settings)
+void guiPlayer::draw(int index, DisplaySettings settings)
 {
     //if(this->hasUpdatedInfo) {
 
@@ -98,21 +98,21 @@ void GUIPlayer::draw(int index, DisplaySettings settings)
     //}
 }
 
-void GUIPlayer::drawBody(float centerX, float centerY)
+void guiPlayer::drawBody(float centerX, float centerY)
 {
 	drawCircle(centerX, centerY, ROBOT_RADIUS);
 }
 
 
-void GUIPlayer::drawAngle(float centerX, float centerY, float angle)
+void guiPlayer::drawAngle(float centerX, float centerY, float angle)
 {
-	float ang = angle * 2 * PI / 360;
+	float ang = angle * 2 * M_PI / 360;
 
 	drawLine(centerX , centerY,
 			 centerX + cos(ang) * ROBOT_RADIUS * 1.2 , centerY + sin(ang) * ROBOT_RADIUS * 1.2);
 }
 
-void GUIPlayer::drawIndex(float centerX, float centerY, int robotNumber)
+void guiPlayer::drawIndex(float centerX, float centerY, int robotNumber)
 {
         glColor3f(1, 1, 1);
 	glRasterPos2f(centerX + ROBOT_RADIUS, centerY - ROBOT_RADIUS);
@@ -123,7 +123,7 @@ void GUIPlayer::drawIndex(float centerX, float centerY, int robotNumber)
         //glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_10, buffer);
 }
 
-void GUIPlayer::drawVector(float startX, float startY, float endX, float endY)
+void guiPlayer::drawVector(float startX, float startY, float endX, float endY)
 {
 	glColor3f(CIANO);
 	glLineStipple(2, 0xAAAA);
@@ -161,7 +161,7 @@ void drawPath(list<Point> path)
 }
 
 
-void Pathplan::drawObstacles()
+void guiPathplan::drawObstacles()
 {
 	for(int i=0;i<MAX_X;i++)
 			for(int k=0;k<MAX_Y;k++)
@@ -169,7 +169,7 @@ void Pathplan::drawObstacles()
 					drawCircle(MM_TO_PIX (CELLS_TO_MM( i )), MM_TO_PIX(CELLS_TO_MM( k )), BALL_RADIUS*2);
 }
 
-void Pathplan::draw()
+void guiPathplan::draw()
 {
 	if( this->isDrawn ){ //flag que diz se � pra estar imprimindo o ultimo pathplanning configurado
 
