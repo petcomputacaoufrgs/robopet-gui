@@ -82,9 +82,6 @@ void MainWindow::listenToAI()
                 (*it).setFutureAngle( packet.aitogui().blue_robots(i).future_theta() );
                 //------
 
-                (*it).setPastPosition( packet.aitogui().blue_robots(i).past_x() ,
-                                                 packet.aitogui().blue_robots(i).past_y() );
-
                 (*it).hasUpdatedInfo = true;
 
                 //cout << packet.aitogui().blue_robots(i).current_x() << " , " << packet.aitogui().blue_robots(i).current_y() << endl;
@@ -105,9 +102,6 @@ void MainWindow::listenToAI()
                 (*it).setFutureAngle( packet.aitogui().yellow_robots(i).future_theta() );
                 //------
 
-                (*it).setPastPosition( packet.aitogui().yellow_robots(i).past_x() ,
-                                                 packet.aitogui().yellow_robots(i).past_y() );
-
                 (*it).hasUpdatedInfo = true;
 
             }
@@ -115,9 +109,6 @@ void MainWindow::listenToAI()
 
             game.ball.setCurrentPosition( packet.aitogui().ball().x(),
                                      packet.aitogui().ball().y()  );
-
-            game.ball.setFuturePosition(  packet.aitogui().ball().past_x(),
-                                     packet.aitogui().ball().past_y()  );
 
             game.ball.hasUpdatedInfo = true;
 
