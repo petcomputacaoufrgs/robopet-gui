@@ -188,6 +188,14 @@ void playerManualControl(GtkWidget *widget, gpointer data)
                                             mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() + stepsize );
                                             break;
 
+                                    case 'q':
+                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() + 10 );
+                                            break;
+
+                                    case 'e':
+                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() - 10 );
+                                            break;
+
                     }
             else if( playerTeam == 2)
                     switch(  direction[1]  ) {
@@ -206,6 +214,14 @@ void playerManualControl(GtkWidget *widget, gpointer data)
 
                                     case 'd':
                                             mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() + stepsize );
+                                            break;
+
+                                    case 'q':
+                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() + 10 );
+                                            break;
+
+                                    case 'e':
+                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() - 10 );
                                             break;
 
                     }
@@ -294,7 +310,7 @@ void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
-        mw->game.addPlayerTeam2();
+        mw->game.addPlayerTeam1();
 
         //mw->pushStatusMessage("Added 1 Yellow Player.");
 }
@@ -306,7 +322,7 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
-        mw->game.addPlayerTeam1();
+        mw->game.addPlayerTeam2();
 
         //mw->pushStatusMessage("Added 1 Blue Player.");
 }
@@ -437,66 +453,65 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* label_bolay = gtk_label_new("y: ");
 	GtkWidget* bolay = gtk_spin_button_new_with_range(0, ARENA_HEIGHT_MM, 10);
 	GtkWidget* button_bolapos = gtk_button_new_with_mnemonic("set Bola pos");
+        //GtkWidget* rotate_cw = gtk_button_new_with_mnemonic("Rotate CW (_q)");
+        //GtkWidget* rotate_ccw = gtk_button_new_with_mnemonic("Rotate CCW (_e)");
+        GtkWidget* rotate_cw = gtk_button_new_with_mnemonic("_q");
+        GtkWidget* rotate_ccw = gtk_button_new_with_mnemonic("_e");
 
 
+	GtkWidget* movementControlBox = gtk_hbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox), gtk_label_new("stepsize: "), false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox), stepsize, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox), control_up, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox), control_left, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox), control_down, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox), control_right, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(movementControlBox), gtk_label_new("(hold Alt + wasd/qe)"), false, false, 0);
 
-	//hboxes
-	//GtkWidget* timesBox2 = gtk_hbox_new (FALSE, 0);
-	//	gtk_box_pack_start(GTK_BOX(timesBox2), time1_aba3, false, false, 0);
-	//	gtk_box_pack_start(GTK_BOX(timesBox2), time2_aba3, false, false, 0);
-	//GtkWidget* jogadorBox2 = gtk_hbox_new (FALSE, 0);
-	//	gtk_box_pack_start(GTK_BOX(jogadorBox2), jogadorLabel2, false, false, 0);
-	//	gtk_box_pack_start(GTK_BOX(jogadorBox2), jogador2, false, false, 0);
-	//	gtk_box_pack_start(GTK_BOX(jogadorBox2), timesBox2, false, false, 0);
-	GtkWidget* controleslateraisBox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(controleslateraisBox), gtk_label_new("stepsize: "), false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controleslateraisBox), stepsize, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_up, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_left, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_down, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controleslateraisBox), control_right, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(controleslateraisBox), gtk_label_new("(hold Alt + wasd)"), false, false, 0);
-			//gtk_widget_set_size_request(controleslateraisBox,100,20);
-	GtkWidget* controle_bola = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(controle_bola), label_bolax, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controle_bola), bolax, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controle_bola), label_bolay, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controle_bola), bolay, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(controle_bola), button_bolapos, false, false, 0);
+        GtkWidget* rotationControlBox = gtk_hbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(rotationControlBox), gtk_label_new("(rotate CW/CCW)"), false, false, 0);
+                gtk_box_pack_start(GTK_BOX(rotationControlBox), rotate_cw, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(rotationControlBox), rotate_ccw, false, false, 0);
+
+        GtkWidget* ballControlBox = gtk_hbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox), label_bolax, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox), bolax, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox), label_bolay, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox), bolay, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox), button_bolapos, false, false, 0);
 
 
 	//vboxes
 	GtkWidget* menu3Box = gtk_vbox_new (FALSE, 0);
 		//gtk_box_pack_start(GTK_BOX(menu3Box), jogadorBox2, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu3Box), controleslateraisBox, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu3Box), controle_bola, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu3Box), movementControlBox, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu3Box), rotationControlBox, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(menu3Box), ballControlBox, false, false, 0);
 
 
 
 	////////////////
 	//// SINAIS ////
 
-	//  clique dos botoes de controle manual
+	//  manual control buttons
 	static typeParameters parametros3;
 	parametros3.mw = mw;
-	//parametros3.widgets.push_back(jogador2);
-	//parametros3.widgets.push_back(time1_aba3);
-	//parametros3.widgets.push_back(time2_aba3);
         parametros3.widgets.push_back(stepsize);
 
 	g_signal_connect(G_OBJECT(control_left), "clicked", G_CALLBACK(playerManualControl), &parametros3);
 	g_signal_connect(G_OBJECT(control_right), "clicked", G_CALLBACK(playerManualControl), &parametros3);
 	g_signal_connect(G_OBJECT(control_up), "clicked", G_CALLBACK(playerManualControl), &parametros3);
 	g_signal_connect(G_OBJECT(control_down), "clicked", G_CALLBACK(playerManualControl), &parametros3);
+	g_signal_connect(G_OBJECT(rotate_cw), "clicked", G_CALLBACK(playerManualControl), &parametros3);
+	g_signal_connect(G_OBJECT(rotate_ccw), "clicked", G_CALLBACK(playerManualControl), &parametros3);
 
+	//  set Bola pos
+	static typeParameters parametros5;
+	parametros5.mw = mw;
+	parametros5.widgets.push_back(bolax);
+	parametros5.widgets.push_back(bolay);
 
-	//  clique botao "set Bola pos"
-	static typeParameters parametros4;
-	parametros4.mw = mw;
-	parametros4.widgets.push_back(bolax);
-	parametros4.widgets.push_back(bolay);
-
-	g_signal_connect(G_OBJECT(button_bolapos), "clicked", G_CALLBACK(setBolaPos), &parametros4);
+	g_signal_connect(G_OBJECT(button_bolapos), "clicked", G_CALLBACK(setBolaPos), &parametros5);
 
 
 

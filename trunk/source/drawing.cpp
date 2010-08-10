@@ -106,7 +106,7 @@ void guiPlayer::drawBody(float centerX, float centerY)
 
 void guiPlayer::drawAngle(float centerX, float centerY, float angle)
 {
-	float ang = angle * 2 * M_PI / 360;
+	float ang = -angle * 2 * M_PI / 360;
 
 	drawLine(centerX , centerY,
 			 centerX + cos(ang) * ROBOT_RADIUS * 1.2 , centerY + sin(ang) * ROBOT_RADIUS * 1.2);
@@ -167,6 +167,7 @@ void guiPathplan::drawObstacles()
 			for(int k=0;k<MAX_Y;k++)
 				if( env[i][k] == OBSTACULO)
 					drawCircle(MM_TO_PIX (CELLS_TO_MM( i )), MM_TO_PIX(CELLS_TO_MM( k )), BALL_RADIUS*2);
+
 }
 
 void guiPathplan::draw()
