@@ -40,13 +40,13 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 		case CURSOR_EVENT_PATHPLAN:
 
-			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
+			/*if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
                         {
 				mw->pathplan.finalpos.setXY( PIX_TO_MM(event->x), PIX_TO_MM(event->y));
 				mw->pathplan.runPathplan();
 
 				mw->cursorEvent = CURSOR_EVENT_NOTHING;
-			}
+			}*/
 			break;
 	  }
   }
@@ -64,23 +64,23 @@ void MainWindow::fillTextView(char text[])
 }
 
 
-void setBolaPos(GtkWidget *widget, gpointer data)
+void setBallPos(GtkWidget *widget, gpointer data)
 {
         // parameters
 	typeParameters* parametros = (typeParameters*) data;
 
 	MainWindow* mw = parametros->mw;
-	int bolax = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
-	int bolay = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
+	int ballx = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
+	int bally = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
 
 
-	mw->game.ball.setCurrentPosition(Point(bolax, bolay));
+	mw->game.ball.setCurrentPosition(Point(ballx, bally));
 }
 
 
 void pathplanButton(GtkWidget *widget, gpointer data)
 //fun��o de callback do bot�o OK. ela deixar� "um clique pendente", para executar o pathplan apenas depois de o usu�rio clicar na posi��o final desejada
-{
+{/*
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
@@ -122,6 +122,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
                 //mw->pushStatusMessage("Waiting for destination definition.");
 		mw->pathplan.isDrawn = false;
 	}
+*/
 }
 
 
@@ -189,11 +190,11 @@ void playerManualControl(GtkWidget *widget, gpointer data)
                                             break;
 
                                     case 'q':
-                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() + 10 );
+                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() - 10 );
                                             break;
 
                                     case 'e':
-                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() - 10 );
+                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() + 10 );
                                             break;
 
                     }
@@ -217,11 +218,11 @@ void playerManualControl(GtkWidget *widget, gpointer data)
                                             break;
 
                                     case 'q':
-                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() + 10 );
+                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() - 10 );
                                             break;
 
                                     case 'e':
-                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() - 10 );
+                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() + 10 );
                                             break;
 
                     }
@@ -362,36 +363,19 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 1, "RRT");
 		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 2, "A* (disabled)");
 		gtk_combo_box_set_active( GTK_COMBO_BOX(pathplanners), 0);
-	//GtkWidget* jogador = gtk_spin_button_new_with_range(0, MAX_JOGADORES-1, 1); //spinner � limitado pela constante MAX_JOGADORES (isso n�o deve ficar assim)
-	/*GtkWidget* jogadores = gtk_combo_box_new_text();
-                GtkWidget* jogadorLabel = gtk_label_new("Jogador: ");
-                mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
-                */
-	//GtkWidget* time1 = gtk_radio_button_new_with_label(NULL,"Amarelo");
-	//GtkWidget* time2 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1)),"Azul");
+	
 	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
             gtk_toggle_button_set_active((GtkToggleButton*)checkPrintFull,TRUE);
 	GtkWidget* checkPrintObstacles = gtk_check_button_new_with_label("Print obstacles");
 	GtkWidget* ok = gtk_toggle_button_new_with_label("Set Destination");
-	//GtkWidget* xpos = gtk_label_new("x: ");
-	//GtkWidget* finalposx = gtk_spin_button_new_with_range(0, ARENA_WIDTH_MM, 10);
-	//GtkWidget* ypos = gtk_label_new("y: ");
-	//GtkWidget* finalposy = gtk_spin_button_new_with_range(0, ARENA_HEIGHT_MM, 10);
+
 
 	//hboxes
 	GtkWidget* pathplannersBox = gtk_hbox_new (FALSE, 0);
 		gtk_box_pack_start(GTK_BOX(pathplannersBox), label_pathplanners, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(pathplannersBox), pathplanners, false, false, 0);
 	GtkWidget* jogadorBox = gtk_hbox_new (FALSE, 0);
-		//gtk_box_pack_start(GTK_BOX(jogadorBox), jogadorLabel, false, false, 0);
-		//gtk_box_pack_start(GTK_BOX(jogadorBox), jogadores, false, false, 0);
-//		gtk_box_pack_start(GTK_BOX(jogadorBox), time1, false, false, 0);
-		//gtk_box_pack_start(GTK_BOX(jogadorBox), time2, false, false, 0);
-	//GtkWidget* finalPosBox = gtk_hbox_new (FALSE, 0);
-	//	gtk_box_pack_start(GTK_BOX(finalPosBox), xpos, false, false, 0);
-	//	gtk_box_pack_start(GTK_BOX(finalPosBox), finalposx, false, false, 0);
-	//	gtk_box_pack_start(GTK_BOX(finalPosBox), ypos, false, false, 0);
-	//	gtk_box_pack_start(GTK_BOX(finalPosBox), finalposy, false, false, 0);
+
 
 	//vboxes
 	GtkWidget* menu2Box = gtk_vbox_new (FALSE, 0);
@@ -404,17 +388,13 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 
 
 
-	////////////////
-	//// SINAIS ////
+	/////////////////
+	//// SIGNALS ////
 
-	//  clique bot�o OK
-	//armazenamos as widgets que fornecer�o as informa��es para pathplanning
+	//  OK button
 	static typeParameters parametros1;
 	parametros1.mw = mw;
 	parametros1.widgets.push_back(pathplanners);
-	//parametros1.widgets.push_back(jogadores);
-	//parametros1.widgets.push_back(time1);
-	//parametros1.widgets.push_back(time2);
 	parametros1.widgets.push_back(checkPrintFull);
 
 	g_signal_connect(G_OBJECT(ok), "clicked", G_CALLBACK(pathplanButton), &parametros1);
@@ -452,46 +432,58 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* bolax = gtk_spin_button_new_with_range(0, ARENA_WIDTH_MM, 10);
 	GtkWidget* label_bolay = gtk_label_new("y: ");
 	GtkWidget* bolay = gtk_spin_button_new_with_range(0, ARENA_HEIGHT_MM, 10);
-	GtkWidget* button_bolapos = gtk_button_new_with_mnemonic("set Bola pos");
-        //GtkWidget* rotate_cw = gtk_button_new_with_mnemonic("Rotate CW (_q)");
-        //GtkWidget* rotate_ccw = gtk_button_new_with_mnemonic("Rotate CCW (_e)");
+	GtkWidget* button_ballpos = gtk_button_new_with_mnemonic("set ball pos");
         GtkWidget* rotate_cw = gtk_button_new_with_mnemonic("_q");
         GtkWidget* rotate_ccw = gtk_button_new_with_mnemonic("_e");
 
 
-	GtkWidget* movementControlBox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox), gtk_label_new("stepsize: "), false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox), stepsize, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox), control_up, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox), control_left, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox), control_down, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox), control_right, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(movementControlBox), gtk_label_new("(hold Alt + wasd/qe)"), false, false, 0);
+        GtkWidget* movementControlBox1 = gtk_hbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(movementControlBox1), gtk_label_new("stepsize: "), false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox1), stepsize, false, false, 0);
 
-        GtkWidget* rotationControlBox = gtk_hbox_new (FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(rotationControlBox), gtk_label_new("(rotate CW/CCW)"), false, false, 0);
-                gtk_box_pack_start(GTK_BOX(rotationControlBox), rotate_cw, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(rotationControlBox), rotate_ccw, false, false, 0);
+        GtkWidget* movementControlBox2 = gtk_hbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_up, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_left, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_down, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_right, false, false, 0);
+                
+        GtkWidget* movementControlBox3 = gtk_hbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(movementControlBox3), gtk_label_new("(rotate CW/CCW)"), false, false, 0);
+                gtk_box_pack_start(GTK_BOX(movementControlBox3), rotate_cw, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox3), rotate_ccw, false, false, 0);
 
-        GtkWidget* ballControlBox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(ballControlBox), label_bolax, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(ballControlBox), bolax, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(ballControlBox), label_bolay, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(ballControlBox), bolay, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(ballControlBox), button_bolapos, false, false, 0);
+
+        GtkWidget* ballControlBox2 = gtk_hbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(ballControlBox2), label_bolax, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox2), bolax, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox2), label_bolay, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(ballControlBox2), bolay, false, false, 0);
+
+        GtkWidget* ballControlBox = gtk_vbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(ballControlBox), ballControlBox2, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(ballControlBox), button_ballpos, false, false, 0);
+
+        GtkWidget* playersControl = gtk_vbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox1, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox2, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox3, false, false, 0);
+
+        GtkWidget* playersFrame = gtk_frame_new("Players");
+                gtk_container_add(GTK_CONTAINER(playersFrame),playersControl);
+
+        GtkWidget* ballFrame = gtk_frame_new("Ball");
+                gtk_container_add(GTK_CONTAINER(ballFrame),ballControlBox);
 
 
 	//vboxes
-	GtkWidget* menu3Box = gtk_vbox_new (FALSE, 0);
-		//gtk_box_pack_start(GTK_BOX(menu3Box), jogadorBox2, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu3Box), movementControlBox, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu3Box), rotationControlBox, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(menu3Box), ballControlBox, false, false, 0);
+	GtkWidget* menu3Box = gtk_hbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(menu3Box), playersFrame, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(menu3Box), ballFrame, false, false, 0);
 
 
 
-	////////////////
-	//// SINAIS ////
+        /////////////////
+	//// SIGNALS ////
 
 	//  manual control buttons
 	static typeParameters parametros3;
@@ -511,7 +503,7 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	parametros5.widgets.push_back(bolax);
 	parametros5.widgets.push_back(bolay);
 
-	g_signal_connect(G_OBJECT(button_bolapos), "clicked", G_CALLBACK(setBolaPos), &parametros5);
+	g_signal_connect(G_OBJECT(button_ballpos), "clicked", G_CALLBACK(setBallPos), &parametros5);
 
 
 
@@ -580,8 +572,8 @@ void createSettingsTab(MainWindow* mw, GtkWidget* notebook)
 
 
 
-        ////////////////
-	//// SINAIS ////
+        /////////////////
+	//// SIGNALS ////
 	//  CHECK BOX: "be Verbose"
 	static typeParameters parametros;
 	parametros.mw = mw;

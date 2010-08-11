@@ -161,7 +161,7 @@ void drawPath(list<Point> path)
 }
 
 
-void guiPathplan::drawObstacles()
+/*void guiPathplan::drawObstacles()
 {
 	for(int i=0;i<MAX_X;i++)
 			for(int k=0;k<MAX_Y;k++)
@@ -192,4 +192,4 @@ void guiPathplan::draw()
 		drawCircle(MM_TO_PIX( this->finalpos.getX() ), MM_TO_PIX( this->finalpos.getY() ), BALL_RADIUS*2);
 		drawCircle(MM_TO_PIX( this->finalpos.getX() ), MM_TO_PIX( this->finalpos.getY() ), BALL_RADIUS*4);
 	}
-}
+}*/
