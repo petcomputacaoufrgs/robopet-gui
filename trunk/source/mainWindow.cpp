@@ -146,7 +146,7 @@ void MainWindow::drawWorld()
 
 	drawPlayers();
 
-	pathplan.draw();
+	//pathplan.draw();
 
 	game.ball.draw(displaySettings);
 }

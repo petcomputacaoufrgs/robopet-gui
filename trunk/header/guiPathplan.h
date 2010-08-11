@@ -12,7 +12,7 @@
 #include "pathplan.h"
 
 
-
+/*
 class guiPathplan : public Pathplan
 {
 	private:
@@ -30,7 +30,7 @@ class guiPathplan : public Pathplan
                 void runPathplan();
                 void fillEnv(vector<guiPlayer> players1, vector<guiPlayer> players2);
 		void draw();
-};
+};*/
 
 
 #endif
