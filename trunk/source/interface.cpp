@@ -39,14 +39,14 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 
 		case CURSOR_EVENT_PATHPLAN:
-
-			/*if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
+			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
                         {
+                            cout<<"executing pathplan"<<endl;
 				mw->pathplan.finalpos.setXY( PIX_TO_MM(event->x), PIX_TO_MM(event->y));
-				mw->pathplan.runPathplan();
+				mw->pathplan.runPathplan(PATHPLAN_ASTAR);
 
 				mw->cursorEvent = CURSOR_EVENT_NOTHING;
-			}*/
+			}
 			break;
 	  }
   }
@@ -80,7 +80,7 @@ void setBallPos(GtkWidget *widget, gpointer data)
 
 void pathplanButton(GtkWidget *widget, gpointer data)
 //fun��o de callback do bot�o OK. ela deixar� "um clique pendente", para executar o pathplan apenas depois de o usu�rio clicar na posi��o final desejada
-{/*
+{
 	typeParameters* parametros = (typeParameters*) data;
 	MainWindow* mw = parametros->mw;
 
@@ -122,7 +122,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
                 //mw->pushStatusMessage("Waiting for destination definition.");
 		mw->pathplan.isDrawn = false;
 	}
-*/
+
 }
 
 

@@ -5,13 +5,13 @@
 #include "mainWindow.h"
 #include "point.h"
 
-#include "rrt.h"
+//#include "rrt.h"
 
 using namespace std;
 
 
 
-/*guiPathplan::guiPathplan()
+guiPathplan::guiPathplan()
 {
 	isDrawn = false;
 	
@@ -37,8 +37,3 @@ void guiPathplan::fillEnv(vector<guiPlayer> players1, vector<guiPlayer> players2
     
     
 }
-
-void guiPathplan::runPathplan()
-{
-    //runPathplan(pathplanIndex);
-}*/
