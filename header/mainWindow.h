@@ -102,7 +102,7 @@ class MainWindow
                 
 
                 Game game; //game things
-		//guiPathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		guiPathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
                 bool isVerbose;
 
