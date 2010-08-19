@@ -114,12 +114,12 @@ void MainWindow::generateTextOutput()
 
     sprintf(text+strlen(text),"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
 
-    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayersTeam1());
+    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayersTeam1());
     for( int i=0; i<game.getNplayersTeam1(); i++ ) {
         sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.playersTeam1[i].getCurrentPosition().getX(),game.playersTeam1[i].getCurrentPosition().getY(),game.playersTeam1[i].getCurrentAngle());
     }
 
-    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayersTeam2());
+    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayersTeam2());
     for( int i=0; i<game.getNplayersTeam2(); i++ ) {
         sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.playersTeam2[i].getCurrentPosition().getX(),game.playersTeam2[i].getCurrentPosition().getY(),game.playersTeam2[i].getCurrentAngle());
     }

@@ -109,7 +109,12 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 
 		mw->pathplan = guiPathplan(initialpos,pathplanIndex,checkPrintFull); //carrega configura��es na classe Pathplan
 
-		mw->pathplan.fillEnv(mw->game.playersTeam1, mw->game.playersTeam2); //configura matriz de posi��es
+                vector<RP::Point> positions;
+                for(int i=0; i<(int)mw->game.getNplayersTeam1(); i++)
+                    positions.push_back(mw->game.playersTeam1[i].getCurrentPosition());
+                for(int i=0; i<(int)mw->game.getNplayersTeam2(); i++)
+                    positions.push_back(mw->game.playersTeam2[i].getCurrentPosition());
+                mw->pathplan.fillEnv(positions); //configura matriz de posi��es
 
 
 		gtk_button_set_label((GtkButton*)widget, "Running...");
