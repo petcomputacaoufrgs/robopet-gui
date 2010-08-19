@@ -41,9 +41,8 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 		case CURSOR_EVENT_PATHPLAN:
 			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
                         {
-                            cout<<"executing pathplan"<<endl;
 				mw->pathplan.finalpos.setXY( PIX_TO_MM(event->x), PIX_TO_MM(event->y));
-				mw->pathplan.runPathplan(PATHPLAN_ASTAR);
+				mw->pathplan.runPathplan( mw->pathplan.pathplanIndex );
 
 				mw->cursorEvent = CURSOR_EVENT_NOTHING;
 			}
@@ -116,6 +115,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		gtk_button_set_label((GtkButton*)widget, "Running...");
                 //mw->pushStatusMessage("Pathplanning is running.");
 		mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
+                mw->pathplan.isDrawn = true;
 	}
 	else{
 		gtk_button_set_label((GtkButton*)widget, "Set Destination");
@@ -360,8 +360,8 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	//widgets
 	GtkWidget* label_pathplanners = gtk_label_new("Pathplanner: ");
 	GtkWidget* pathplanners = gtk_combo_box_new_text();
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 1, "RRT");
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), 2, "A* (disabled)");
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), PATHPLAN_RRT, "RRT");
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), PATHPLAN_ASTAR, "A*");
 		gtk_combo_box_set_active( GTK_COMBO_BOX(pathplanners), 0);
 	
 	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
