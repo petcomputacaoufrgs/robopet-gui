@@ -28,7 +28,6 @@ class guiPathplan : public Pathplan
 		~guiPathplan();
 
                 //void runPathplan();
-                void fillEnv(vector<guiPlayer> players1, vector<guiPlayer> players2);
 		void draw();
 };
 

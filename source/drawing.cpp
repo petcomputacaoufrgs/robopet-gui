@@ -161,16 +161,16 @@ void drawPath(list<Point> path)
 }
 
 
-/*
+
 void guiPathplan::drawObstacles()
 {
 	for(int i=0;i<MAX_X;i++)
 			for(int k=0;k<MAX_Y;k++)
-				if( env[i][k] == OBSTACULO)
+				if( costAStar/*envRRT*/[i][k] == OBSTACULO)
 					drawCircle(MM_TO_PIX (CELLS_TO_MM( i )), MM_TO_PIX(CELLS_TO_MM( k )), BALL_RADIUS*2);
                         
 
-}*/
+}
 
 void guiPathplan::draw()
 {
@@ -185,7 +185,7 @@ void guiPathplan::draw()
 		glColor3f(CIANO);
 		drawPath(pathFinal);
 
-		//drawObstacles();
+		drawObstacles();
 
 
 		//imprime posi��es final e inicial
