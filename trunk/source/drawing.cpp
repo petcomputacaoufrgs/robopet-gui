@@ -28,6 +28,16 @@ void drawCircle(float centerX, float centerY, float radius)
 		drawQuarterCircle(centerX, centerY, radius, i);
 }
 
+void drawBox(float centerX, float centerY, float side)
+{
+	glBegin(GL_LINE_LOOP);
+            glVertex2f(centerX - side/2, centerY - side/2);
+            glVertex2f(centerX + side/2 -1, centerY - side/2);
+            glVertex2f(centerX + side/2 -1, centerY + side/2 -1);
+            glVertex2f(centerX - side/2, centerY + side/2 -1);
+        glEnd();
+}
+
 
 void drawField()
 {
@@ -149,11 +159,11 @@ void GuiBall::draw(DisplaySettings settings)
 
 void drawPath(list<Point> path)
 {
-	//glBegin(GL_LINE_STRIP);
+    //glBegin(GL_LINE_STRIP);
 
 	for(std::list<state>::iterator i = path.begin(); i != path.end(); i++){
 		
-		drawCircle(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )), 1);
+		drawBox(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )), (ARENA_WIDTH_MM/MAX_X)/10 );
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
 	}
 	
@@ -164,10 +174,12 @@ void drawPath(list<Point> path)
 
 void guiPathplan::drawObstacles()
 {
-	for(int i=0;i<MAX_X;i++)
-			for(int k=0;k<MAX_Y;k++)
-				if( costAStar/*envRRT*/[i][k] == OBSTACULO)
-					drawCircle(MM_TO_PIX (CELLS_TO_MM( i )), MM_TO_PIX(CELLS_TO_MM( k )), BALL_RADIUS*2);
+    for(int i=0;i<MAX_X;i++)
+        for(int k=0;k<MAX_Y;k++)
+            if( costAStar[i][k] == OBSTACULO || envRRT[i][k] == OBSTACULO)
+                drawBox( MM_TO_PIX (CELLS_TO_MM( i )),
+                         MM_TO_PIX(CELLS_TO_MM( k )),
+                         (ARENA_WIDTH_MM/MAX_X)/10 );
                         
 
 }
