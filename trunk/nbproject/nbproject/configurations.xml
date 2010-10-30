@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="62">
+<configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="HeaderFiles"
                    displayName="Arquivos de cabeçalho"
@@ -38,10 +38,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>../header</Elem>
     <Elem>../source</Elem>
-    <Elem>../../robopet-communication</Elem>
-    <Elem>../../lib</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -91,25 +88,18 @@
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>../header</pElem>
-            <pElem>../../robopet-communication/packets</pElem>
-            <pElem>../../robopet-communication/proto</pElem>
-            <pElem>../../robopet-communication/socket</pElem>
-            <pElem>../../robopet-communication</pElem>
+            <pElem>../../communication/packets</pElem>
+            <pElem>../../communication/proto</pElem>
+            <pElem>../../communication/socket</pElem>
+            <pElem>../../communication</pElem>
             <pElem>../../lib</pElem>
           </incDir>
           <commandLine>`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`</commandLine>
         </ccTool>
         <linkerTool>
           <output>../GUI</output>
-          <linkerAddLib>
-            <pElem>../../robopet-communication/packets</pElem>
-            <pElem>../../robopet-communication/proto</pElem>
-            <pElem>../../robopet-communication/socket</pElem>
-            <pElem>../../robopet-communication</pElem>
-            <pElem>../../lib</pElem>
-          </linkerAddLib>
           <linkerLibItems>
-            <linkerLibFileItem>../../robopet-communication/communication.a</linkerLibFileItem>
+            <linkerLibFileItem>../../communication/communication.a</linkerLibFileItem>
             <linkerLibFileItem>../../lib/robopet.a</linkerLibFileItem>
           </linkerLibItems>
           <commandLine>`pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut</commandLine>
