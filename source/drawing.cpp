@@ -11,15 +11,15 @@
 
 void drawQuarterCircle(float centerX, float centerY, float radius, int quadrante)
 {
-	const int q = 1000;
+    const int q = 1000;
     float ang = 2 * M_PI / q;
    
-	glBegin(GL_LINE_STRIP);
-    for(int i = (quadrante - 1) * q / 4; i <= quadrante * q/4; i++)
-    {
-        glVertex2f(centerX + cos(i * ang) * radius, centerY + sin(i * ang) * radius);
-    }
-	glEnd();
+    glBegin(GL_LINE_STRIP);
+        for(int i = (quadrante - 1) * q / 4; i <= quadrante * q/4; i++)
+        {
+            glVertex2f(centerX + cos(i * ang) * radius, centerY + sin(i * ang) * radius);
+        }
+    glEnd();
 }
 
 void drawCircle(float centerX, float centerY, float radius)
@@ -75,14 +75,14 @@ void drawField()
 void MainWindow::drawPlayers()
 {
 	vector<guiPlayer>::iterator it;
-        it = game.playersTeam1.begin();
-        for(int i=0; it<game.playersTeam1.end(); it++, i++) {
+        it = game.players[0].begin();
+        for(int i=0; it<game.players[0].end(); it++, i++) {
 		glColor3f(YELLOW);
 		(*it).draw(i,displaySettings);
 	}
 
-        it = game.playersTeam2.begin();
-        for(int i=0; it<game.playersTeam2.end(); it++, i++) {
+        it = game.players[1].begin();
+        for(int i=0; it<game.players[1].end(); it++, i++) {
 		glColor3f(BLUE);
 		(*it).draw(i,displaySettings);
 	}
@@ -160,14 +160,10 @@ void GuiBall::draw(DisplaySettings settings)
 void drawPath(list<Point> path)
 {
     //glBegin(GL_LINE_STRIP);
-
-	for(std::list<state>::iterator i = path.begin(); i != path.end(); i++){
-		
+	for(std::list<state>::iterator i = path.begin(); i != path.end(); i++)
 		drawBox(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )), (ARENA_WIDTH_MM/MAX_X)/10 );
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
-	}
-	
-	//glEnd();
+    //glEnd();
 }
 
 
@@ -197,9 +193,9 @@ void guiPathplan::draw()
 		glColor3f(CIANO);
 		drawPath(pathFinal);
 
-		drawObstacles();
-
-
+		if(this->checkPrintObstacles)
+                        drawObstacles();
+                
 		//imprime posi��es final e inicial
 		drawCircle(MM_TO_PIX( this->initialpos.getX() ), MM_TO_PIX( this->initialpos.getY() ), BALL_RADIUS*2);
 		drawCircle(MM_TO_PIX( this->initialpos.getX() ), MM_TO_PIX( this->initialpos.getY() ), BALL_RADIUS*4);

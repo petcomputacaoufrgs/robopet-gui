@@ -19,12 +19,13 @@ class guiPathplan : public Pathplan
 		void drawObstacles();
 
 	public:
-		int pathplanIndex; //indice referente ao algoritmo que foi pedido
+		int pathplanIndex; //index of pathplan algorithms avaiable
 		int checkPrintFull;
+                int checkPrintObstacles;
 		bool isDrawn;
 
 		guiPathplan();
-		guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull);
+		guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles);
 		~guiPathplan();
 
                 //void runPathplan();

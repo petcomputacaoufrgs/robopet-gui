@@ -61,15 +61,15 @@ LDLIBSOPTIONS=../../communication/communication.a ../../lib/robopet.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Release.mk ../GUI
+	"${MAKE}"  -f nbproject/Makefile-Release.mk ../gui
 
-../GUI: ../../communication/communication.a
+../gui: ../../communication/communication.a
 
-../GUI: ../../lib/robopet.a
+../gui: ../../lib/robopet.a
 
-../GUI: ${OBJECTFILES}
+../gui: ${OBJECTFILES}
 	${MKDIR} -p ..
-	${LINK.cc} `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut -o ../GUI  ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut -o ../gui  ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/_ext/812168374/mainWindow.o: ../source/mainWindow.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
@@ -117,7 +117,7 @@ ${OBJECTDIR}/_ext/812168374/drawing.o: ../source/drawing.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Release
-	${RM} ../GUI
+	${RM} ../gui
 
 # Subprojects
 .clean-subprojects:

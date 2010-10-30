@@ -1,5 +1,4 @@
 #include <stdlib.h>
-//#include <mainWindow.h>
 #include "communication.h"
 #include "interface.h"
 
@@ -68,9 +67,8 @@ void MainWindow::listenToAI()
             game.updateNplayersTeam2(packet.aitogui().yellow_robots_size());
 
             vector<guiPlayer>::iterator it;
-            it = game.playersTeam1.begin();
-            for(int i=0; it<game.playersTeam1.end(); it++, i++) {
-            //for(int i = 0; i < MAX_JOGADORES && i < packet.aitogui().blue_robots_size(); ++i) {
+            it = game.players[0].begin();
+            for(int i=0; it<game.players[0].end(); it++, i++) {
 
                 (*it).setCurrentPosition( packet.aitogui().blue_robots(i).current_x() ,
                                                     packet.aitogui().blue_robots(i).current_y() );
@@ -88,9 +86,8 @@ void MainWindow::listenToAI()
 
             }
 
-            it = game.playersTeam2.begin();
-            for(int i=0; it<game.playersTeam2.end(); it++, i++) {
-            //for(int i = 0; i < MAX_JOGADORES && i < packet.aitogui().yellow_robots_size(); ++i) {
+            it = game.players[1].begin();
+            for(int i=0; it<game.players[1].end(); it++, i++) {
 
                 (*it).setCurrentPosition( packet.aitogui().yellow_robots(i).current_x() ,
                                                     packet.aitogui().yellow_robots(i).current_y() );

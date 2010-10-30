@@ -17,11 +17,12 @@ guiPathplan::guiPathplan()
 	
 }
 
-guiPathplan::guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull)
+guiPathplan::guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles)
 {
 	this->initialpos = initialpos;
 	this->pathplanIndex = pathplanIndex;
 	this->checkPrintFull = checkPrintFull;
+        this->checkPrintObstacles = checkPrintObstacles;
 }
 
 guiPathplan::~guiPathplan() {};

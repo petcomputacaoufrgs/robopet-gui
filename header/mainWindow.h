@@ -43,9 +43,9 @@ class MainWindow
 
 	//Interface Callbacks
 	friend void pathplanButton(GtkWidget *widget, gpointer data);
-	friend void playerManualControl(GtkWidget *widget, gpointer data);
 	friend void setBolaPos(GtkWidget *widget, gpointer data);
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
+        friend void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
         friend GtkWidget* createLateralMenu(MainWindow* mw);
 
@@ -72,13 +72,13 @@ class MainWindow
 
 		//Interface variables
 		int cursorEvent;
-                GtkWidget* textView;
+                GtkWidget* TextOutput;
                 GtkWidget* statusBar;
 
                 //Interface functions
-                int getSelectedPlayer(int &playerTeam);
+                pair<int,int> getSelectedPlayer();
                 void pushStatusMessage(string msg);
-                void fillTextView(char text[]);
+                void fillTextOutput(char text[]);
 
 
                 //Communication (communication.cpp)
@@ -110,7 +110,7 @@ class MainWindow
 
 
 //structure for passing parameters in GTK interface callbacks
-struct typeParameters {
+struct parametersType {
 	vector<GtkWidget*> widgets;
 	MainWindow *mw;
 };

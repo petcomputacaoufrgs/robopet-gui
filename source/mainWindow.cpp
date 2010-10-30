@@ -25,7 +25,6 @@ MainWindow::MainWindow(string name)
 	game.ball = GuiBall();
 }
 
-
 void MainWindow::configuraGL()
 {
 	//Configure OpenGL-capable visual.
@@ -44,8 +43,6 @@ void MainWindow::configuraGL()
 		    exit (1);
 		}
 	}
-
-
 }
 
 
@@ -61,8 +58,11 @@ void MainWindow::createMWindow(string title)
 
 	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(gtk_main_quit), NULL);
         g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        gtk_signal_connect (GTK_OBJECT (window), "key_press_event", (GtkSignalFunc) key_press_event, this);
+            gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK);
 
-	gtk_widget_show_all(window);
+
+        gtk_widget_show_all(window);
 }
 
 
@@ -116,16 +116,16 @@ void MainWindow::generateTextOutput()
 
     sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayersTeam1());
     for( int i=0; i<game.getNplayersTeam1(); i++ ) {
-        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.playersTeam1[i].getCurrentPosition().getX(),game.playersTeam1[i].getCurrentPosition().getY(),game.playersTeam1[i].getCurrentAngle());
+        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.players[0][i].getCurrentPosition().getX(),game.players[0][i].getCurrentPosition().getY(),game.players[0][i].getCurrentAngle());
     }
 
     sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayersTeam2());
     for( int i=0; i<game.getNplayersTeam2(); i++ ) {
-        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.playersTeam2[i].getCurrentPosition().getX(),game.playersTeam2[i].getCurrentPosition().getY(),game.playersTeam2[i].getCurrentAngle());
+        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.players[1][i].getCurrentPosition().getX(),game.players[1][i].getCurrentPosition().getY(),game.players[1][i].getCurrentAngle());
     }
 
     
-    fillTextView(text);
+    fillTextOutput(text);
 
 }
 
@@ -219,16 +219,14 @@ void MainWindow::createDrawingArea()
 	gtk_widget_set_gl_capability (soccer_field, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE);
 	gtk_widget_show(soccer_field);
 
-	gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this); //cliques do mouse
-		gtk_widget_set_events (soccer_field, GDK_BUTTON_PRESS_MASK);
+	gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
+            gtk_widget_set_events (soccer_field, GDK_BUTTON_PRESS_MASK);
 		cursorEvent = CURSOR_EVENT_NOTHING;
-	g_signal_connect_after(G_OBJECT(soccer_field), "realize", G_CALLBACK(realize), this); //instancia��o da Widget
+	g_signal_connect_after(G_OBJECT(soccer_field), "realize", G_CALLBACK(realize), this);
         g_signal_connect(G_OBJECT(soccer_field), "unrealize", G_CALLBACK(timeoutRemove), this);
         g_signal_connect(G_OBJECT(soccer_field), "configure_event", G_CALLBACK(configureEvent), this);
-        g_signal_connect(G_OBJECT(soccer_field), "expose_event", G_CALLBACK(exposeEvent), this); //?
+        g_signal_connect(G_OBJECT(soccer_field), "expose_event", G_CALLBACK(exposeEvent), this);
         g_signal_connect(G_OBJECT(soccer_field), "map_event",  G_CALLBACK(timeoutAdd), this);
         g_signal_connect(G_OBJECT(soccer_field), "unmap_event", G_CALLBACK(timeoutRemove), this);
-
-
 
 }

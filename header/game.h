@@ -14,7 +14,7 @@ class Game
 
     public:
         Game();
-        Game(int _nplayersTeam1, int _nplayersTeam2, GtkWidget* _playersComboBox);
+        Game(int _nplayers1, int _nplayers2, GtkWidget* _playersComboBox);
         ~Game();
 
         GtkWidget* playersComboBox;
@@ -30,14 +30,13 @@ class Game
 
 
         GuiBall ball;
-        vector<guiPlayer> playersTeam1;
-        vector<guiPlayer> playersTeam2;
+        vector<guiPlayer> players[2];
 
 
 
     private:
 
-        int nplayersTeam1, nplayersTeam2;
+        int nplayers[2];
 
         void updatePlayersComboBox();
         void resetPlayersComboBox();
