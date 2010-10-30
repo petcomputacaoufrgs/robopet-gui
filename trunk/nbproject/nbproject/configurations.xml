@@ -97,7 +97,7 @@
           <commandLine>`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`</commandLine>
         </ccTool>
         <linkerTool>
-          <output>../GUI</output>
+          <output>../gui</output>
           <linkerLibItems>
             <linkerLibFileItem>../../communication/communication.a</linkerLibFileItem>
             <linkerLibFileItem>../../lib/robopet.a</linkerLibFileItem>

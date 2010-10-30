@@ -1,17 +1,15 @@
 #include<iostream>
 #include <fstream>
 
+#include "gdk/gdkkeysyms.h"
 
 #include "interface.h"
-
-
 
 #define CLIENT_INITIAL_PORT PORT_AI_TO_GUI
 #define CLIENT_INITIAL_HOST IP_AI_TO_GUI
 
 #define SERVER_INITIAL_PORT PORT_GUI_TO_AI
 #define SERVER_INITIAL_HOST IP_GUI_TO_AI
-
 
 
 
@@ -24,7 +22,7 @@
 
 
 void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data)
-//CALLBACK que capture todos cliques de mouse
+//CALLBACK which captures mouse clicks
 {
   MainWindow* mw = (MainWindow*) data;
 
@@ -33,10 +31,8 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 	  switch(mw->cursorEvent) {
 
-
 		case CURSOR_EVENT_NOTHING:
 			break;
-
 
 		case CURSOR_EVENT_PATHPLAN:
 			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
@@ -52,12 +48,44 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 
 }
 
-
-void MainWindow::fillTextView(char text[])
+void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
+//CALLBACK which captures keyboard keys
 {
-    if( this->textView ) {
+    MainWindow* mw = (MainWindow*) data;
 
-        GtkTextBuffer *text_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(this->textView));
+    // parameters
+    int stepsize = 300; //gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
+
+    pair<int,int> ret = mw->getSelectedPlayer();
+    int playerIndex, playerTeam;
+    playerIndex = ret.first;
+    playerTeam = ret.second;
+
+    if( playerIndex!=-1 ) {
+        switch(  event->keyval  ) {
+            case GDK_s: mw->game.players[playerTeam][playerIndex].setCurrentPositionY( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY() + stepsize ); break;
+
+            case GDK_w: mw->game.players[playerTeam][playerIndex].setCurrentPositionY( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY() - stepsize ); break;
+
+            case GDK_a: mw->game.players[playerTeam][playerIndex].setCurrentPositionX( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX() - stepsize ); break;
+
+            case GDK_d: mw->game.players[playerTeam][playerIndex].setCurrentPositionX( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX() + stepsize ); break;
+
+            case GDK_q: mw->game.players[playerTeam][playerIndex].setCurrentAngle( mw->game.players[playerTeam][playerIndex].getCurrentAngle() - 10 ); break;
+
+            case GDK_e: mw->game.players[playerTeam][playerIndex].setCurrentAngle( mw->game.players[playerTeam][playerIndex].getCurrentAngle() + 10 ); break;
+
+        }
+    }
+
+    
+}
+
+void MainWindow::fillTextOutput(char text[])
+{
+    if( this->TextOutput ) {
+
+        GtkTextBuffer *text_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(this->TextOutput));
         gtk_text_buffer_set_text (text_buffer, text, -1);
     }
 }
@@ -66,7 +94,7 @@ void MainWindow::fillTextView(char text[])
 void setBallPos(GtkWidget *widget, gpointer data)
 {
         // parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 
 	MainWindow* mw = parametros->mw;
 	int ballx = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
@@ -80,48 +108,41 @@ void setBallPos(GtkWidget *widget, gpointer data)
 void pathplanButton(GtkWidget *widget, gpointer data)
 //fun��o de callback do bot�o OK. ela deixar� "um clique pendente", para executar o pathplan apenas depois de o usu�rio clicar na posi��o final desejada
 {
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
-
 
 
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget)  ){
 
-
-		//decodifica��o dos par�metros
+		// parameters decoding
 		int pathplanIndex = gtk_combo_box_get_active((GtkComboBox*)parametros->widgets[0]);
-		//int jogador = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[1]);
-		//int isTime1 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
-		//int isTime2 = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[3]);
 		int checkPrintFull = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[1]);
+                int checkPrintObstacules = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
 
-                int playerTeam, playerIndex;
-                playerIndex = mw->getSelectedPlayer(playerTeam);
+                pair<int,int> ret = mw->getSelectedPlayer();
+                int playerIndex, playerTeam;
+                playerIndex = ret.first;
+                playerTeam = ret.second;
 
+		Point initialpos = Point( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX(),
+                                          mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY());
 
-		Point initialpos;
-		if(playerTeam==1)
-			initialpos.setXY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX(),
-                                          mw->game.playersTeam1[playerIndex].getCurrentPosition().getY());
-		else
-			initialpos.setXY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX(),
-                                          mw->game.playersTeam2[playerIndex].getCurrentPosition().getY());
+		mw->pathplan = guiPathplan(initialpos,pathplanIndex,checkPrintFull,checkPrintObstacules);
 
-		mw->pathplan = guiPathplan(initialpos,pathplanIndex,checkPrintFull); //carrega configura��es na classe Pathplan
-
+                // environment setting
                 vector<RP::Point> positions;
                 for(int i=0; i<(int)mw->game.getNplayersTeam1(); i++) {
                     if( !(playerTeam==1 && i==playerIndex) )
-                            positions.push_back(mw->game.playersTeam1[i].getCurrentPosition());
+                            positions.push_back(mw->game.players[0][i].getCurrentPosition());
                 }
                 for(int i=0; i<(int)mw->game.getNplayersTeam2(); i++) {
                     if( !(playerTeam==2 && i==playerIndex) )
-                            positions.push_back(mw->game.playersTeam2[i].getCurrentPosition());
+                            positions.push_back(mw->game.players[1][i].getCurrentPosition());
                 }
-                mw->pathplan.fillEnv(positions); //configura matriz de posi��es
+                mw->pathplan.fillEnv(positions);
 
-
-		gtk_button_set_label((GtkButton*)widget, "Running...");
+		// gui settings
+                gtk_button_set_label((GtkButton*)widget, "Running...");
                 //mw->pushStatusMessage("Pathplanning is running.");
 		mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
                 mw->pathplan.isDrawn = true;
@@ -135,27 +156,25 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 }
 
 
-int MainWindow::getSelectedPlayer(int &playerTeam)
+pair<int,int> MainWindow::getSelectedPlayer()
 {
+        int index, team;
+
         int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
         int nPlayersTeam1 = this->game.getNplayersTeam1();
         int nPlayersTeam2 = this->game.getNplayersTeam2();
-
-        int playerIndex;
         
-        comboBoxIndex < nPlayersTeam1?  playerTeam = 1 : playerTeam = 2;
+        team = comboBoxIndex < nPlayersTeam1?  0 : 1;
+        index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
 
-        playerTeam == 1?  playerIndex = comboBoxIndex : playerIndex = comboBoxIndex - nPlayersTeam1;
-
-        return playerIndex;
-
+        return pair<int,int>(index,team);
 }
 
 
 void isVerboseButton(GtkWidget *widget, gpointer data)
 {
     	// parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
         if ( gtk_toggle_button_get_active((GtkToggleButton*)widget) )
@@ -166,84 +185,10 @@ void isVerboseButton(GtkWidget *widget, gpointer data)
 }
 
 
-void playerManualControl(GtkWidget *widget, gpointer data)
-//controle manual de um jogador (joystick ou teclado)
-{
-	// parameters
-	typeParameters* parametros = (typeParameters*) data;
-	int stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
-	MainWindow* mw = parametros->mw;
-
-        int playerTeam, playerIndex;
-        playerIndex = mw->getSelectedPlayer(playerTeam);
-
-        if( playerIndex!=-1 ) {
-            string direction = gtk_button_get_label((GtkButton*)widget);
-            if( playerTeam == 1 )
-                    switch(  direction[1]  ) {
-
-                                    case 's':
-                                            mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() + stepsize );
-                                            break;
-
-                                    case 'w':
-                                            mw->game.playersTeam1[playerIndex].setCurrentPositionY( mw->game.playersTeam1[playerIndex].getCurrentPosition().getY() - stepsize );
-                                            break;
-
-                                    case 'a':
-                                            mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() - stepsize );
-                                            break;
-
-                                    case 'd':
-                                            mw->game.playersTeam1[playerIndex].setCurrentPositionX( mw->game.playersTeam1[playerIndex].getCurrentPosition().getX() + stepsize );
-                                            break;
-
-                                    case 'q':
-                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() - 10 );
-                                            break;
-
-                                    case 'e':
-                                            mw->game.playersTeam1[playerIndex].setCurrentAngle( mw->game.playersTeam1[playerIndex].getCurrentAngle() + 10 );
-                                            break;
-
-                    }
-            else if( playerTeam == 2)
-                    switch(  direction[1]  ) {
-
-                                    case 's':
-                                            mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() + stepsize );
-                                            break;
-
-                                    case 'w':
-                                            mw->game.playersTeam2[playerIndex].setCurrentPositionY( mw->game.playersTeam2[playerIndex].getCurrentPosition().getY() - stepsize );
-                                            break;
-
-                                    case 'a':
-                                            mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() - stepsize );
-                                            break;
-
-                                    case 'd':
-                                            mw->game.playersTeam2[playerIndex].setCurrentPositionX( mw->game.playersTeam2[playerIndex].getCurrentPosition().getX() + stepsize );
-                                            break;
-
-                                    case 'q':
-                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() - 10 );
-                                            break;
-
-                                    case 'e':
-                                            mw->game.playersTeam2[playerIndex].setCurrentAngle( mw->game.playersTeam2[playerIndex].getCurrentAngle() + 10 );
-                                            break;
-
-                    }
-        }
-
-}
-
-
 void clientCommunicationButton(GtkWidget *widget, gpointer data)
 {
         // parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
 	char *host = (char*) gtk_entry_get_text((GtkEntry*)parametros->widgets[1]);
@@ -267,7 +212,7 @@ void clientCommunicationButton(GtkWidget *widget, gpointer data)
 void serverCommunicationButton(GtkWidget *widget, gpointer data)
 {
         // parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
 	char *host = (char*) gtk_entry_get_text((GtkEntry*)parametros->widgets[1]);
@@ -291,7 +236,7 @@ void serverCommunicationButton(GtkWidget *widget, gpointer data)
 void getLocalIPButton(GtkWidget *widget, gpointer data)
 {
         // parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
         GtkWidget* clientHostEntry = (GtkWidget*)parametros->widgets[0];
         GtkWidget* serverHostEntry = (GtkWidget*)parametros->widgets[1];
@@ -317,7 +262,7 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
 void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 {
         // parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
         mw->game.addPlayerTeam1();
@@ -329,7 +274,7 @@ void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 void addBluePlayerButton(GtkWidget *widget, gpointer data)
 {
         // parameters
-	typeParameters* parametros = (typeParameters*) data;
+	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
         mw->game.addPlayerTeam2();
@@ -337,6 +282,26 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
         //mw->pushStatusMessage("Added 1 Blue Player.");
 }
 
+void launchAiButton(GtkWidget *widget, gpointer data)
+{
+    cout << "Launching AI..." << endl;
+    system("gnome-terminal -e ../ai/ai&");
+}
+void launchRadioButton(GtkWidget *widget, gpointer data)
+{
+    cout << "Launching Radio..." << endl;
+    system("gnome-terminal -e ../radio/radio&");
+}
+void launchTrackerButton(GtkWidget *widget, gpointer data)
+{
+    cout << "Launching Tracker..." << endl;
+    system("gnome-terminal -e ../tracker/tracker&");
+}
+void launchSimButton(GtkWidget *widget, gpointer data)
+{
+    cout << "Launching Simulator..." << endl;
+    system("gnome-terminal -e ../simulation/simulator&");
+}
 
 void MainWindow::pushStatusMessage(string msg)
 {
@@ -358,109 +323,32 @@ void MainWindow::pushStatusMessage(string msg)
 /////////////////////////////////////////////////////
 
 
-
-void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
-{
-	////////////
-	////ABA 2///
-	////////////
-	GtkWidget* aba2 = gtk_label_new_with_mnemonic("Pathplanning");
-
-	//widgets
-	GtkWidget* label_pathplanners = gtk_label_new("Pathplanner: ");
-	GtkWidget* pathplanners = gtk_combo_box_new_text();
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), PATHPLAN_RRT, "RRT");
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), PATHPLAN_ASTAR, "A*");
-		gtk_combo_box_set_active( GTK_COMBO_BOX(pathplanners), 0);
-	
-	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
-            gtk_toggle_button_set_active((GtkToggleButton*)checkPrintFull,TRUE);
-	GtkWidget* checkPrintObstacles = gtk_check_button_new_with_label("Print obstacles");
-	GtkWidget* ok = gtk_toggle_button_new_with_label("Set Destination");
-
-
-	//hboxes
-	GtkWidget* pathplannersBox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(pathplannersBox), label_pathplanners, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(pathplannersBox), pathplanners, false, false, 0);
-	GtkWidget* jogadorBox = gtk_hbox_new (FALSE, 0);
-
-
-	//vboxes
-	GtkWidget* menu2Box = gtk_vbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(menu2Box), pathplannersBox, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu2Box), jogadorBox, false, false, 0);
-		//gtk_box_pack_start(GTK_BOX(menu2Box), finalPosBox, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu2Box), checkPrintFull, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu2Box), ok, false, false, 0);
-
-
-
-
-	/////////////////
-	//// SIGNALS ////
-
-	//  OK button
-	static typeParameters parametros1;
-	parametros1.mw = mw;
-	parametros1.widgets.push_back(pathplanners);
-	parametros1.widgets.push_back(checkPrintFull);
-
-	g_signal_connect(G_OBJECT(ok), "clicked", G_CALLBACK(pathplanButton), &parametros1);
-
-
-
-	//insere aba no notebook pai
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menu2Box, aba2);
-
-}
-
 void createControlTab(MainWindow* mw, GtkWidget* notebook)
 {
 	////////////
 	////ABA 3///
 	////////////
-	GtkWidget* aba3 = gtk_label_new_with_mnemonic("Manual control");
+	GtkWidget* tab = gtk_label_new_with_mnemonic("Manual control");
 
 	//widgets
-
-	//GtkWidget* jogador2 = gtk_spin_button_new_with_range(0, MAX_JOGADORES-1, 1);
-	//GtkWidget* jogadorLabel2 = gtk_label_new("Jogador: ");
-	//GtkWidget* time1_aba3 = gtk_radio_button_new_with_label(NULL,"Amarelo");
-	//GtkWidget* time2_aba3 = gtk_radio_button_new_with_label(gtk_radio_button_group (GTK_RADIO_BUTTON (time1_aba3)),"Azul");
-	//GtkWidget* stepsize = gtk_hscale_new_with_range(0, 500, 1);
-	//	gtk_widget_set_size_request(stepsize, 100, 15);
 	GtkWidget* stepsize = gtk_spin_button_new_with_range(0, 500, 1);
-            gtk_spin_button_set_value((GtkSpinButton*)stepsize,100);
+            gtk_spin_button_set_value((GtkSpinButton*)stepsize,300);
 
-	GtkWidget* control_up = gtk_button_new_with_mnemonic("_w");
-	GtkWidget* control_down = gtk_button_new_with_mnemonic("_s");
-	GtkWidget* control_left = gtk_button_new_with_mnemonic("_a");
-	GtkWidget* control_right = gtk_button_new_with_mnemonic("_d");
 	GtkWidget* label_bolax = gtk_label_new("x: ");
 	GtkWidget* bolax = gtk_spin_button_new_with_range(0, ARENA_WIDTH_MM, 10);
 	GtkWidget* label_bolay = gtk_label_new("y: ");
 	GtkWidget* bolay = gtk_spin_button_new_with_range(0, ARENA_HEIGHT_MM, 10);
 	GtkWidget* button_ballpos = gtk_button_new_with_mnemonic("set ball pos");
-        GtkWidget* rotate_cw = gtk_button_new_with_mnemonic("_q");
-        GtkWidget* rotate_ccw = gtk_button_new_with_mnemonic("_e");
 
 
         GtkWidget* movementControlBox1 = gtk_hbox_new (FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(movementControlBox1), gtk_label_new("stepsize: "), false, false, 0);
 		gtk_box_pack_start(GTK_BOX(movementControlBox1), stepsize, false, false, 0);
 
-        GtkWidget* movementControlBox2 = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_up, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_left, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_down, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox2), control_right, false, false, 0);
-                
-        GtkWidget* movementControlBox3 = gtk_hbox_new (FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(movementControlBox3), gtk_label_new("(rotate CW/CCW)"), false, false, 0);
-                gtk_box_pack_start(GTK_BOX(movementControlBox3), rotate_cw, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox3), rotate_ccw, false, false, 0);
-
+        GtkWidget* playersControl = gtk_vbox_new (FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox1, false, false, 0);
+                gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("use WASD to move"), false, false, 0);
+		gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("and QE to rotate"), false, false, 0);
 
         GtkWidget* ballControlBox2 = gtk_hbox_new (FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(ballControlBox2), label_bolax, false, false, 0);
@@ -471,11 +359,6 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
         GtkWidget* ballControlBox = gtk_vbox_new (FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(ballControlBox), ballControlBox2, false, false, 0);
                 gtk_box_pack_start(GTK_BOX(ballControlBox), button_ballpos, false, false, 0);
-
-        GtkWidget* playersControl = gtk_vbox_new (FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox1, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox2, false, false, 0);
-                gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox3, false, false, 0);
 
         GtkWidget* playersFrame = gtk_frame_new("Players");
                 gtk_container_add(GTK_CONTAINER(playersFrame),playersControl);
@@ -494,20 +377,8 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
         /////////////////
 	//// SIGNALS ////
 
-	//  manual control buttons
-	static typeParameters parametros3;
-	parametros3.mw = mw;
-        parametros3.widgets.push_back(stepsize);
-
-	g_signal_connect(G_OBJECT(control_left), "clicked", G_CALLBACK(playerManualControl), &parametros3);
-	g_signal_connect(G_OBJECT(control_right), "clicked", G_CALLBACK(playerManualControl), &parametros3);
-	g_signal_connect(G_OBJECT(control_up), "clicked", G_CALLBACK(playerManualControl), &parametros3);
-	g_signal_connect(G_OBJECT(control_down), "clicked", G_CALLBACK(playerManualControl), &parametros3);
-	g_signal_connect(G_OBJECT(rotate_cw), "clicked", G_CALLBACK(playerManualControl), &parametros3);
-	g_signal_connect(G_OBJECT(rotate_ccw), "clicked", G_CALLBACK(playerManualControl), &parametros3);
-
 	//  set Bola pos
-	static typeParameters parametros5;
+	static parametersType parametros5;
 	parametros5.mw = mw;
 	parametros5.widgets.push_back(bolax);
 	parametros5.widgets.push_back(bolay);
@@ -515,11 +386,8 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	g_signal_connect(G_OBJECT(button_ballpos), "clicked", G_CALLBACK(setBallPos), &parametros5);
 
 
-
-
-
-	//insere aba no notebook pai
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menu3Box, aba3);
+	//insert this tab in the notebook
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menu3Box, tab);
 }
 
 void createSettingsTab(MainWindow* mw, GtkWidget* notebook)
@@ -527,7 +395,7 @@ void createSettingsTab(MainWindow* mw, GtkWidget* notebook)
 	////////////
 	////ABA 4///
 	////////////
-	GtkWidget* aba = gtk_label_new_with_mnemonic("Settings");
+	GtkWidget* tab = gtk_label_new_with_mnemonic("Settings");
 
 	//widgets
         //Players
@@ -584,16 +452,13 @@ void createSettingsTab(MainWindow* mw, GtkWidget* notebook)
         /////////////////
 	//// SIGNALS ////
 	//  CHECK BOX: "be Verbose"
-	static typeParameters parametros;
+	static parametersType parametros;
 	parametros.mw = mw;
 	g_signal_connect(G_OBJECT(isVerbose), "clicked", G_CALLBACK(isVerboseButton), &parametros);
 
 
-
-
-
-        //insere aba no notebook pai
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menuBox, aba);
+        //insert this tab in the notebook
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menuBox, tab);
 }
 
 void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
@@ -601,7 +466,7 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
 	////////////
 	////ABA 5///
 	////////////
-	GtkWidget* aba = gtk_label_new_with_mnemonic("Communication");
+	GtkWidget* tab = gtk_label_new_with_mnemonic("Communication");
 
 	//widgets
         GtkWidget* client_button = gtk_toggle_button_new_with_label("Open Communication");
@@ -676,14 +541,14 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
 	////////////////
 	//// SINAIS ////
 	//  BUTTON: Client Open Connection
-	static typeParameters parametros;
+	static parametersType parametros;
 	parametros.mw = mw;
 	parametros.widgets.push_back(client_portEntry);
 	parametros.widgets.push_back(client_hostEntry);
 
 	g_signal_connect(G_OBJECT(client_button), "clicked", G_CALLBACK(clientCommunicationButton), &parametros);
 
-        static typeParameters parametros2;
+        static parametersType parametros2;
 	parametros2.mw = mw;
 	parametros2.widgets.push_back(server_portEntry);
 	parametros2.widgets.push_back(server_hostEntry);
@@ -691,7 +556,7 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
 	g_signal_connect(G_OBJECT(server_button), "clicked", G_CALLBACK(serverCommunicationButton), &parametros2);
 
 
-        static typeParameters parametros3;
+        static parametersType parametros3;
 	parametros3.mw = mw;
 	parametros3.widgets.push_back(client_hostEntry);
         parametros3.widgets.push_back(server_hostEntry);
@@ -702,12 +567,105 @@ void createCommunicationTab(MainWindow* mw, GtkWidget* notebook)
         g_signal_connect(G_OBJECT(server_button_getlocalip), "clicked", G_CALLBACK(getLocalIPButton), &parametros3);
 
 
-
-
-	//insere aba no notebook pai
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menuBox, aba);
+	//insert this tab in the notebook
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menuBox, tab);
 }
 
+
+void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
+{
+	////////////
+	////ABA 2///
+	////////////
+	GtkWidget* tab = gtk_label_new_with_mnemonic("Pathplanning");
+
+	//widgets
+	GtkWidget* label_pathplanners = gtk_label_new("Pathplanner: ");
+	GtkWidget* pathplanners = gtk_combo_box_new_text();
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), PATHPLAN_RRT, "RRT");
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(pathplanners), PATHPLAN_ASTAR, "A*");
+		gtk_combo_box_set_active( GTK_COMBO_BOX(pathplanners), 0);
+	
+	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
+            gtk_toggle_button_set_active((GtkToggleButton*)checkPrintFull,TRUE);
+        GtkWidget* checkPrintObstacles = gtk_check_button_new_with_label("Print obstacules");
+            gtk_toggle_button_set_active((GtkToggleButton*)checkPrintObstacles,TRUE);
+	GtkWidget* ok = gtk_toggle_button_new_with_label("Set Destination");
+
+
+	//hboxes
+	GtkWidget* pathplannersBox = gtk_hbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(pathplannersBox), label_pathplanners, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(pathplannersBox), pathplanners, false, false, 0);
+	GtkWidget* jogadorBox = gtk_hbox_new (FALSE, 0);
+
+
+	//vboxes
+	GtkWidget* menu2Box = gtk_vbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(menu2Box), pathplannersBox, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu2Box), jogadorBox, false, false, 0);
+		//gtk_box_pack_start(GTK_BOX(menu2Box), finalPosBox, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu2Box), checkPrintFull, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu2Box), ok, false, false, 0);
+
+
+
+
+	/////////////////
+	//// SIGNALS ////
+
+	//  OK button
+	static parametersType args;
+	args.mw = mw;
+	args.widgets.push_back(pathplanners);
+	args.widgets.push_back(checkPrintFull);
+        args.widgets.push_back(checkPrintObstacles);
+
+	g_signal_connect(G_OBJECT(ok), "clicked", G_CALLBACK(pathplanButton), &args);
+
+
+
+	//insert this tab in the notebook
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), menu2Box, tab);
+
+}
+
+
+void createLauncherTab(MainWindow* mw, GtkWidget* notebook)
+{
+	GtkWidget* aba = gtk_label_new_with_mnemonic("Launcher");
+
+	//widgets
+	GtkWidget* buttonBox = gtk_hbutton_box_new();
+		gtk_button_box_set_layout(GTK_BUTTON_BOX(buttonBox), GTK_BUTTONBOX_CENTER);
+	GtkWidget* aiButton = gtk_button_new_with_label("AI");	
+	GtkWidget* radioButton = gtk_button_new_with_label("Radio");	
+	GtkWidget* trackerButton = gtk_button_new_with_label("Tracker");	
+	GtkWidget* simButton = gtk_button_new_with_label("Simulation");	
+
+	gtk_container_add(GTK_CONTAINER(buttonBox),aiButton);
+	gtk_container_add(GTK_CONTAINER(buttonBox),radioButton);
+	gtk_container_add(GTK_CONTAINER(buttonBox),trackerButton);
+	gtk_container_add(GTK_CONTAINER(buttonBox),simButton);
+
+
+        /////////////////
+	//// SIGNALS ////
+
+	//  Launchers buttons
+	static parametersType parametros;
+	parametros.mw = mw;
+
+	g_signal_connect(G_OBJECT(aiButton), "clicked", G_CALLBACK(launchAiButton), &parametros);
+	g_signal_connect(G_OBJECT(radioButton), "clicked", G_CALLBACK(launchRadioButton), &parametros);
+	g_signal_connect(G_OBJECT(trackerButton), "clicked", G_CALLBACK(launchTrackerButton), &parametros);
+	g_signal_connect(G_OBJECT(simButton), "clicked", G_CALLBACK(launchSimButton), &parametros);
+
+
+	//insert this tab in the notebook
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),buttonBox, aba);
+
+}
 
 GtkWidget* createNotebook(MainWindow* mw)
 {
@@ -718,15 +676,16 @@ GtkWidget* createNotebook(MainWindow* mw)
         createSettingsTab(mw,notebook);
         createControlTab(mw,notebook);
 	createPathplanningTab(mw,notebook);
-
+	createLauncherTab(mw,notebook);
 
 	return notebook;
 }
 
+
 GtkWidget* createLateralMenu(MainWindow* mw)
 {
     
-    mw->textView = gtk_text_view_new();
+    mw->TextOutput = gtk_text_view_new();
 
     
     GtkWidget* jogadores = gtk_combo_box_new_text();
@@ -750,7 +709,7 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 
     GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(lateralMenu), playersFrame, false, false, 0);
-            gtk_box_pack_start(GTK_BOX(lateralMenu), mw->textView, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(lateralMenu), mw->TextOutput, false, false, 0);
 
    
 
@@ -758,7 +717,7 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 	//// SINAIS ////
 	//  BUTTON: addBluePlayer
         //  BUTTON: yellowBluePlayer
-	static typeParameters parametros;
+	static parametersType parametros;
 	parametros.mw = mw;
 	g_signal_connect(G_OBJECT(addBluePlayer), "clicked", G_CALLBACK(addBluePlayerButton), &parametros);
 	g_signal_connect(G_OBJECT(addYellowPlayer), "clicked", G_CALLBACK(addYellowPlayerButton), &parametros);
