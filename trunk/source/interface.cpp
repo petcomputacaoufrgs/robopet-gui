@@ -282,25 +282,41 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
         //mw->pushStatusMessage("Added 1 Blue Player.");
 }
 
+string getParam( gpointer data )
+{
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+	return string( (char*)gtk_entry_get_text((GtkEntry*)parametros->widgets[0]) );
+}
+
+void launch(string command )
+{
+	command = "gnome-terminal -e " + command + "&";
+    system(command.c_str());
+}
+
 void launchAiButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching AI..." << endl;
-    system("gnome-terminal -e ../ai/ai&");
+	launch("../ai/ai"+getParam(data));
 }
+
 void launchRadioButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Radio..." << endl;
-    system("gnome-terminal -e ../radio/radio&");
+	launch("../radio/radio"+getParam(data));
 }
+
 void launchTrackerButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Tracker..." << endl;
-    system("gnome-terminal -e ../tracker/tracker&");
+	launch("../tracker/tracker"+getParam(data));
 }
+
 void launchSimButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Simulator..." << endl;
-    system("gnome-terminal -e ../simulation/simulator&");
+	launch("../simulator/simulator"+getParam(data));
 }
 
 void MainWindow::pushStatusMessage(string msg)
@@ -633,7 +649,7 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 
 void createLauncherTab(MainWindow* mw, GtkWidget* notebook)
 {
-	GtkWidget* aba = gtk_label_new_with_mnemonic("Launcher");
+	GtkWidget* tab = gtk_label_new_with_mnemonic("Launcher");
 
 	//widgets
 	GtkWidget* buttonBox = gtk_hbutton_box_new();
@@ -642,28 +658,37 @@ void createLauncherTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* radioButton = gtk_button_new_with_label("Radio");	
 	GtkWidget* trackerButton = gtk_button_new_with_label("Tracker");	
 	GtkWidget* simButton = gtk_button_new_with_label("Simulation");	
+	GtkWidget* param = gtk_entry_new_with_max_length(15);
 
 	gtk_container_add(GTK_CONTAINER(buttonBox),aiButton);
 	gtk_container_add(GTK_CONTAINER(buttonBox),radioButton);
 	gtk_container_add(GTK_CONTAINER(buttonBox),trackerButton);
 	gtk_container_add(GTK_CONTAINER(buttonBox),simButton);
 
+	//boxes
+	GtkWidget* hbox = gtk_hbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(hbox), gtk_label_new("Additional command line arguments: (not working)"), false, false, 0);
+		gtk_box_pack_start(GTK_BOX(hbox), param, false, false, 0);
+	GtkWidget* vbox = gtk_vbox_new (FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), hbox, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), buttonBox, false, false, 0);
 
-        /////////////////
+    /////////////////
 	//// SIGNALS ////
 
 	//  Launchers buttons
-	static parametersType parametros;
-	parametros.mw = mw;
+	static parametersType args ;
+	args.mw = mw;
+	args.widgets.push_back(param);
 
-	g_signal_connect(G_OBJECT(aiButton), "clicked", G_CALLBACK(launchAiButton), &parametros);
-	g_signal_connect(G_OBJECT(radioButton), "clicked", G_CALLBACK(launchRadioButton), &parametros);
-	g_signal_connect(G_OBJECT(trackerButton), "clicked", G_CALLBACK(launchTrackerButton), &parametros);
-	g_signal_connect(G_OBJECT(simButton), "clicked", G_CALLBACK(launchSimButton), &parametros);
+	g_signal_connect(G_OBJECT(aiButton), "clicked", G_CALLBACK(launchAiButton), &args);
+	g_signal_connect(G_OBJECT(radioButton), "clicked", G_CALLBACK(launchRadioButton), &args);
+	g_signal_connect(G_OBJECT(trackerButton), "clicked", G_CALLBACK(launchTrackerButton), &args);
+	g_signal_connect(G_OBJECT(simButton), "clicked", G_CALLBACK(launchSimButton), &args);
 
 
 	//insert this tab in the notebook
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),buttonBox, aba);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),vbox, tab);
 
 }
 
