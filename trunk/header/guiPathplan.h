@@ -12,7 +12,6 @@
 #include "pathplan.h"
 
 
-
 class guiPathplan : public Pathplan
 {
 	private:
@@ -21,14 +20,14 @@ class guiPathplan : public Pathplan
 	public:
 		int pathplanIndex; //index of pathplan algorithms avaiable
 		int checkPrintFull;
-                int checkPrintObstacles;
+		int checkPrintObstacles;
 		bool isDrawn;
 
 		guiPathplan();
 		guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles);
 		~guiPathplan();
 
-                //void runPathplan();
+		//void runPathplan();
 		void draw();
 };
 

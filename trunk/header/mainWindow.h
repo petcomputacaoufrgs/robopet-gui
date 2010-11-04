@@ -50,6 +50,7 @@ class MainWindow
 	//Interface creation functions
 	friend GtkWidget* createLateralMenu(MainWindow* mw);
 	friend void createControlTab(MainWindow* mw, GtkWidget* notebook);
+	friend void createPathplanningTab(MainWindow* mw, GtkWidget* notebook);
 
         private:
             
@@ -58,7 +59,6 @@ class MainWindow
 		GdkGLConfig *glconfig;
 		guint timeout_handler_id;
 		//GtkWidget *statusBar;
-
 
 		void configuraGL();
 		void createDrawingArea();
@@ -71,42 +71,42 @@ class MainWindow
 		void createInterface();
 
 		//Interface variables
-		int cursorEvent;
-		GtkWidget* TextOutput;
-		GtkWidget* statusBar;
-		GtkWidget* stepsize;
-
-
-		//Interface functions
-		pair<int,int> getSelectedPlayer();
-		void pushStatusMessage(string msg);
-		void fillTextOutput(char text[]);
-		int getStepsize();
+		int 			cursorEvent;
+		GtkWidget* 		TextOutput;
+		GtkWidget* 		statusBar;
+		GtkWidget* 		stepsize;
+		GtkWidget* 		pathplanBox;
 
 		//Communication (communication.cpp)
-		RoboPETClient *aitoguiClient;
-		void listenToAI();
-		RoboPETServer *guitoaiServer;
-		void sendToAI();
+		RoboPETClient 	*aitoguiClient;
+		void 			listenToAI();
+		RoboPETServer 	*guitoaiServer;
+		void 			sendToAI();
 
 	public:
 		MainWindow();
 		~MainWindow() {};
 		MainWindow(string title);
 
-
+		//Interface functions
+		pair<int,int> 	getSelectedPlayer();
+		void 			pushStatusMessage(string msg);
+		void 			fillTextOutput(char text[]);
+		int 			getStepsize();
+		pathplanType 	getPathplanIndex();
+		
 		//Communication (communication.cpp)
-		void communicate();
-		void openClient(int port, char* host);
-		void closeClient();
-		void openServer(int port, char* host);
-		void closeServer();
+		void 			communicate();
+		void 			openClient(int port, char* host);
+		void 			closeClient();
+		void 			openServer(int port, char* host);
+		void 			closeServer();
 
-
-		Game game; //game things
-		guiPathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		Game 			game; 		//game things
+		//guiPathplan		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		Pathplan* 		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
-		bool isVerbose;
+		bool 			isVerbose;
 
 };
 
