@@ -54,7 +54,7 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
     MainWindow* mw = (MainWindow*) data;
 
     // parameters
-    int stepsize = 300; //gtk_spin_button_get_value_as_int((GtkSpinButton*)parametros->widgets[0]);
+    int stepsize = mw->getStepsize();  
 
     pair<int,int> ret = mw->getSelectedPlayer();
     int playerIndex, playerTeam;
@@ -79,6 +79,11 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
     }
 
     
+}
+
+int MainWindow::getStepsize()
+{
+	return gtk_spin_button_get_value_as_int((GtkSpinButton*)stepsize);
 }
 
 void MainWindow::fillTextOutput(char text[])
@@ -106,7 +111,7 @@ void setBallPos(GtkWidget *widget, gpointer data)
 
 
 void pathplanButton(GtkWidget *widget, gpointer data)
-//fun��o de callback do bot�o OK. ela deixar� "um clique pendente", para executar o pathplan apenas depois de o usu�rio clicar na posi��o final desejada
+//creates a "hanging click" to wait until the user clicks in the drawing area
 {
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
@@ -158,16 +163,16 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 
 pair<int,int> MainWindow::getSelectedPlayer()
 {
-        int index, team;
+		int index, team;
 
-        int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
-        int nPlayersTeam1 = this->game.getNplayersTeam1();
-        int nPlayersTeam2 = this->game.getNplayersTeam2();
-        
-        team = comboBoxIndex < nPlayersTeam1?  0 : 1;
-        index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
+		int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
+		int nPlayersTeam1 = this->game.getNplayersTeam1();
+		int nPlayersTeam2 = this->game.getNplayersTeam2();
 
-        return pair<int,int>(index,team);
+		team = comboBoxIndex < nPlayersTeam1?  0 : 1;
+		index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
+
+		return pair<int,int>(index,team);
 }
 
 
@@ -177,10 +182,10 @@ void isVerboseButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
-        if ( gtk_toggle_button_get_active((GtkToggleButton*)widget) )
-            mw->isVerbose = true;
-        else
-            mw->isVerbose = false;
+	if ( gtk_toggle_button_get_active((GtkToggleButton*)widget) )
+		mw->isVerbose = true;
+	else
+		mw->isVerbose = false;
 
 }
 
@@ -286,37 +291,43 @@ string getParam( gpointer data )
 {
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
-	return string( (char*)gtk_entry_get_text((GtkEntry*)parametros->widgets[0]) );
+	return " " + string( (char*)gtk_entry_get_text((GtkEntry*)parametros->widgets[0]) );
 }
 
 void launch(string command )
 {
-	command = "gnome-terminal -e " + command + "&";
+	command = "gnome-terminal -e \"" + command + "\"&";
     system(command.c_str());
 }
 
 void launchAiButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching AI..." << endl;
-	launch("../ai/ai"+getParam(data));
+	launch("../ai/ai" + getParam(data));
 }
 
 void launchRadioButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Radio..." << endl;
-	launch("../radio/radio"+getParam(data));
+	launch("../radio/radio" + getParam(data));
 }
 
 void launchTrackerButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Tracker..." << endl;
-	launch("../tracker/tracker"+getParam(data));
+	launch("../tracker/tracker" + getParam(data));
 }
 
 void launchSimButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Simulator..." << endl;
-	launch("../simulator/simulator"+getParam(data));
+	launch("../simulator/simulator" + getParam(data));
+}
+
+void launchComButton(GtkWidget *widget, gpointer data)
+{
+    cout << "Launching Communication Test..." << endl;
+	launch("../communication/communication_test" + getParam(data));
 }
 
 void MainWindow::pushStatusMessage(string msg)
@@ -347,8 +358,8 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* tab = gtk_label_new_with_mnemonic("Manual control");
 
 	//widgets
-	GtkWidget* stepsize = gtk_spin_button_new_with_range(0, 500, 1);
-            gtk_spin_button_set_value((GtkSpinButton*)stepsize,300);
+	mw->stepsize = gtk_spin_button_new_with_range(0, 500, 1);
+    	gtk_spin_button_set_value((GtkSpinButton*)mw->stepsize,300);
 
 	GtkWidget* label_bolax = gtk_label_new("x: ");
 	GtkWidget* bolax = gtk_spin_button_new_with_range(0, ARENA_WIDTH_MM, 10);
@@ -359,7 +370,7 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 
         GtkWidget* movementControlBox1 = gtk_hbox_new (FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(movementControlBox1), gtk_label_new("stepsize: "), false, false, 0);
-		gtk_box_pack_start(GTK_BOX(movementControlBox1), stepsize, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(movementControlBox1), mw->stepsize, false, false, 0);
 
         GtkWidget* playersControl = gtk_vbox_new (FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox1, false, false, 0);
@@ -658,16 +669,18 @@ void createLauncherTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* radioButton = gtk_button_new_with_label("Radio");	
 	GtkWidget* trackerButton = gtk_button_new_with_label("Tracker");	
 	GtkWidget* simButton = gtk_button_new_with_label("Simulation");	
+	GtkWidget* comButton = gtk_button_new_with_label("Communication test");
 	GtkWidget* param = gtk_entry_new_with_max_length(15);
 
 	gtk_container_add(GTK_CONTAINER(buttonBox),aiButton);
 	gtk_container_add(GTK_CONTAINER(buttonBox),radioButton);
 	gtk_container_add(GTK_CONTAINER(buttonBox),trackerButton);
 	gtk_container_add(GTK_CONTAINER(buttonBox),simButton);
+	gtk_container_add(GTK_CONTAINER(buttonBox),comButton);
 
 	//boxes
 	GtkWidget* hbox = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(hbox), gtk_label_new("Additional command line arguments: (not working)"), false, false, 0);
+		gtk_box_pack_start(GTK_BOX(hbox), gtk_label_new("Additional command line arguments:"), false, false, 0);
 		gtk_box_pack_start(GTK_BOX(hbox), param, false, false, 0);
 	GtkWidget* vbox = gtk_vbox_new (FALSE, 0);
 		gtk_box_pack_start(GTK_BOX(vbox), hbox, false, false, 0);
@@ -685,6 +698,7 @@ void createLauncherTab(MainWindow* mw, GtkWidget* notebook)
 	g_signal_connect(G_OBJECT(radioButton), "clicked", G_CALLBACK(launchRadioButton), &args);
 	g_signal_connect(G_OBJECT(trackerButton), "clicked", G_CALLBACK(launchTrackerButton), &args);
 	g_signal_connect(G_OBJECT(simButton), "clicked", G_CALLBACK(launchSimButton), &args);
+	g_signal_connect(G_OBJECT(comButton), "clicked", G_CALLBACK(launchComButton), &args);
 
 
 	//insert this tab in the notebook
@@ -714,7 +728,7 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 
     
     GtkWidget* jogadores = gtk_combo_box_new_text();
-                mw->game.playersComboBox = jogadores; //seta um ponteiro que lembrará desta widget, para poder modificá-la sempre que o número de jogadores for modificado
+                mw->game.playersComboBox = jogadores;
 
     GtkWidget* addBluePlayer = gtk_button_new_with_mnemonic("Blue++");
     GtkWidget* addYellowPlayer = gtk_button_new_with_mnemonic("Yellow++");
@@ -809,27 +823,22 @@ GtkWidget* createMenuBar(GtkWidget *window)
 
 void MainWindow::createInterface()
 {
-
 	//widgets gallery: http://library.gnome.org/devel/gtk/unstable/ch02.html
-
 
 	GtkWidget* menuBar = createMenuBar(this->window);
 
-
 	GtkWidget* lateralMenu = createLateralMenu(this);
 
-        statusBar = gtk_statusbar_new();
+	statusBar = gtk_statusbar_new();
 
-        GtkWidget* notebook = createNotebook(this);
+	GtkWidget* notebook = createNotebook(this);
 	//GtkWidget* gameControl = createGameControl(this);
 
-
-
-        GtkWidget* hbox = gtk_hbox_new (FALSE, 0); //horiztal box that is the whole program window
+	GtkWidget* hbox = gtk_hbox_new (FALSE, 0); //horiztal box that is the whole program window
             gtk_box_pack_start(GTK_BOX(hbox), soccer_field, false, false, 0);
             gtk_box_pack_start(GTK_BOX(hbox), lateralMenu, false, false, 0);
 
-        GtkWidget* vbox = gtk_vbox_new (FALSE, 0);
+	GtkWidget* vbox = gtk_vbox_new (FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), menuBar, false, false, 0);
         gtk_box_pack_start(GTK_BOX(vbox), hbox, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), notebook, false, false, 0);
@@ -837,6 +846,5 @@ void MainWindow::createInterface()
         gtk_box_pack_start(GTK_BOX(vbox), statusBar, false, false, 0);
 	//gtk_box_pack_start(GTK_BOX(vbox), gameControl, false, false, 0);
 
-	gtk_container_add (GTK_CONTAINER (window), vbox); //insere a vbox na janela
-
+	gtk_container_add (GTK_CONTAINER (window), vbox); //insert vbox in the window
 }
