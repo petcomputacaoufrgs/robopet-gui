@@ -142,11 +142,11 @@ void MainWindow::iterate()
 
 void MainWindow::drawWorld()
 {
-        drawField();
+	drawField();
 
 	drawPlayers();
 
-	pathplan.draw();
+	//pathplan.draw();
 
 	game.ball.draw(displaySettings);
 }

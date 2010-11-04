@@ -22,7 +22,7 @@ guiPathplan::guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, 
 	this->initialpos = initialpos;
 	this->pathplanIndex = pathplanIndex;
 	this->checkPrintFull = checkPrintFull;
-        this->checkPrintObstacles = checkPrintObstacles;
+    this->checkPrintObstacles = checkPrintObstacles;
 }
 
 guiPathplan::~guiPathplan() {};

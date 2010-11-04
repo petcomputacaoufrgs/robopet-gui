@@ -160,7 +160,7 @@ void GuiBall::draw(DisplaySettings settings)
 void drawPath(list<Point> path)
 {
     //glBegin(GL_LINE_STRIP);
-	for(std::list<state>::iterator i = path.begin(); i != path.end(); i++)
+	for(std::list<Point>::iterator i = path.begin(); i != path.end(); i++)
 		drawBox(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )), (ARENA_WIDTH_MM/MAX_X)/10 );
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
     //glEnd();
@@ -172,7 +172,7 @@ void guiPathplan::drawObstacles()
 {
     for(int i=0;i<MAX_X;i++)
         for(int k=0;k<MAX_Y;k++)
-            if( costAStar[i][k] == OBSTACULO || envRRT[i][k] == OBSTACULO)
+            if( env[i][k] == OBSTACLE)
                 drawBox( MM_TO_PIX (CELLS_TO_MM( i )),
                          MM_TO_PIX(CELLS_TO_MM( k )),
                          (ARENA_WIDTH_MM/MAX_X)/10 );
