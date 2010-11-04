@@ -45,9 +45,11 @@ class MainWindow
 	friend void pathplanButton(GtkWidget *widget, gpointer data);
 	friend void setBolaPos(GtkWidget *widget, gpointer data);
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
-        friend void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data);
+	friend void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
-        friend GtkWidget* createLateralMenu(MainWindow* mw);
+	//Interface creation functions
+	friend GtkWidget* createLateralMenu(MainWindow* mw);
+	friend void createControlTab(MainWindow* mw, GtkWidget* notebook);
 
         private:
             
@@ -63,48 +65,48 @@ class MainWindow
 		void createMWindow(string title);
 		void drawWorld();
 		void drawPlayers();
-                void iterate();
-                void generateTextOutput();
+        void iterate();
+        void generateTextOutput();
 
 		void createInterface();
 
-
-
 		//Interface variables
 		int cursorEvent;
-                GtkWidget* TextOutput;
-                GtkWidget* statusBar;
-
-                //Interface functions
-                pair<int,int> getSelectedPlayer();
-                void pushStatusMessage(string msg);
-                void fillTextOutput(char text[]);
+		GtkWidget* TextOutput;
+		GtkWidget* statusBar;
+		GtkWidget* stepsize;
 
 
-                //Communication (communication.cpp)
-                RoboPETClient *aitoguiClient;
-                void listenToAI();
-                RoboPETServer *guitoaiServer;
-                void sendToAI();
+		//Interface functions
+		pair<int,int> getSelectedPlayer();
+		void pushStatusMessage(string msg);
+		void fillTextOutput(char text[]);
+		int getStepsize();
+
+		//Communication (communication.cpp)
+		RoboPETClient *aitoguiClient;
+		void listenToAI();
+		RoboPETServer *guitoaiServer;
+		void sendToAI();
 
 	public:
 		MainWindow();
 		~MainWindow() {};
 		MainWindow(string title);
 
-                
-                //Communication (communication.cpp)
-                void communicate();
-                void openClient(int port, char* host);
-                void closeClient();
-                void openServer(int port, char* host);
-                void closeServer();
-                
 
-                Game game; //game things
+		//Communication (communication.cpp)
+		void communicate();
+		void openClient(int port, char* host);
+		void closeClient();
+		void openServer(int port, char* host);
+		void closeServer();
+
+
+		Game game; //game things
 		guiPathplan pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
-                bool isVerbose;
+		bool isVerbose;
 
 };
 
