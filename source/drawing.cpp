@@ -74,28 +74,20 @@ void drawField()
 }
 void MainWindow::drawPlayers()
 {
-	vector<guiPlayer>::iterator it;
-        it = game.players[0].begin();
-        for(int i=0; it<game.players[0].end(); it++, i++) {
-		glColor3f(YELLOW);
-		(*it).draw(i,displaySettings);
-	}
-
-        it = game.players[1].begin();
-        for(int i=0; it<game.players[1].end(); it++, i++) {
-		glColor3f(BLUE);
-		(*it).draw(i,displaySettings);
-	}
+	for(int team=0; team<2; team++)
+		for(int i=0; i<game.getNplayers(team); i++) {
+			team==0 ? glColor3f(YELLOW) : glColor3f(BLUE);
+			game.players[team][i].draw(i,displaySettings);
+		}
 }
 
 void guiPlayer::draw(int index, DisplaySettings settings)
 {
     //if(this->hasUpdatedInfo) {
-
-        double posx = MM_TO_PIX( this->getCurrentPosition().getX() );
-	double posy = MM_TO_PIX( this->getCurrentPosition().getY() );
-
-
+   
+    double posx = MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER;
+	double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
+	
 	if( !settings.isHidePlayerBody() )
 		drawBody( posx, posy);
 	if( !settings.isHidePlayerAngle() )
@@ -103,7 +95,8 @@ void guiPlayer::draw(int index, DisplaySettings settings)
 	if( !settings.isHidePlayerIndex() )
 		drawIndex(posx, posy, index);
 	if( !settings.isHidePlayerFuture() )
-		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) , MM_TO_PIX( this->getFuturePosition().getY() ));
+		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
+							   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
 
     //}
 }
@@ -124,13 +117,13 @@ void guiPlayer::drawAngle(float centerX, float centerY, float angle)
 
 void guiPlayer::drawIndex(float centerX, float centerY, int robotNumber)
 {
-        glColor3f(1, 1, 1);
+	glColor3f(1, 1, 1);
 	glRasterPos2f(centerX + ROBOT_RADIUS, centerY - ROBOT_RADIUS);
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, robotNumber + 48);
-        
-        //char buffer[200];
-        //sprintf(buffer, "%i\n pos: %i,%i", robotNumber, this->getCurrentPosition().getX(), this->getCurrentPosition().getY());        
-        //glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_10, buffer);
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, robotNumber + 48);
+
+	//char buffer[200];
+	//sprintf(buffer, "%i\n pos: %i,%i", robotNumber, this->getCurrentPosition().getX(), this->getCurrentPosition().getY());        
+	//glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_10, buffer);
 }
 
 void guiPlayer::drawVector(float startX, float startY, float endX, float endY)
@@ -156,50 +149,40 @@ void GuiBall::draw(DisplaySettings settings)
 	}
 }
 
-
 void drawPath(list<Point> path)
 {
     //glBegin(GL_LINE_STRIP);
 	for(std::list<Point>::iterator i = path.begin(); i != path.end(); i++)
-		drawBox(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )), (ARENA_WIDTH_MM/MAX_X)/10 );
+		drawBox( MM_TO_PIX( CELLS_TO_MM( i->getX() )) + BORDER,
+				 MM_TO_PIX( CELLS_TO_MM( i->getY() )) + BORDER,
+				(ARENA_WIDTH_MM/MAX_X)/10 );
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
     //glEnd();
 }
 
-
-
-void guiPathplan::drawObstacles()
+void MainWindow::drawObstacles()
 {
     for(int i=0;i<MAX_X;i++)
         for(int k=0;k<MAX_Y;k++)
-            if( env[i][k] == OBSTACLE)
-                drawBox( MM_TO_PIX (CELLS_TO_MM( i )),
-                         MM_TO_PIX(CELLS_TO_MM( k )),
+            if( pathplan->env[i][k] == OBSTACLE)
+                drawBox( MM_TO_PIX(CELLS_TO_MM( i ) + BORDER),
+                         MM_TO_PIX(CELLS_TO_MM( k ) + BORDER),
                          (ARENA_WIDTH_MM/MAX_X)/10 );
                         
-
 }
 
-void guiPathplan::draw()
+void MainWindow::drawPathplan()
 {
-	if( this->isDrawn ){ //flag que diz se � pra estar imprimindo o ultimo pathplanning configurado
-
-
-		//itera na lista de nodos caminhoSolucao
-		if(this->checkPrintFull){
+	if( toDrawPathplan ) {
+	
+		if( getPrintFullPathplan() ) {
 			glColor3f(BLACK);
-			drawPath(pathFull);
+			drawPath(pathplan->pathFull);
 		}
 		glColor3f(CIANO);
-		drawPath(pathFinal);
+		drawPath(pathplan->pathFinal);
 
-		if(this->checkPrintObstacles)
-                        drawObstacles();
-                
-		//imprime posi��es final e inicial
-		drawCircle(MM_TO_PIX( this->initialpos.getX() ), MM_TO_PIX( this->initialpos.getY() ), BALL_RADIUS*2);
-		drawCircle(MM_TO_PIX( this->initialpos.getX() ), MM_TO_PIX( this->initialpos.getY() ), BALL_RADIUS*4);
-		drawCircle(MM_TO_PIX( this->finalpos.getX() ), MM_TO_PIX( this->finalpos.getY() ), BALL_RADIUS*2);
-		drawCircle(MM_TO_PIX( this->finalpos.getX() ), MM_TO_PIX( this->finalpos.getY() ), BALL_RADIUS*4);
+		if( getPrintObstacles() )
+			drawObstacles();
 	}
 }

@@ -63,8 +63,8 @@ void MainWindow::listenToAI()
 
 
 
-            game.updateNplayersTeam1(packet.aitogui().blue_robots_size());
-            game.updateNplayersTeam2(packet.aitogui().yellow_robots_size());
+            game.updateNplayers(0, packet.aitogui().blue_robots_size());
+            game.updateNplayers(1, packet.aitogui().yellow_robots_size());
 
             vector<guiPlayer>::iterator it;
             it = game.players[0].begin();

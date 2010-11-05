@@ -6,21 +6,21 @@ using namespace std;
 
 MainWindow::MainWindow(string name)
 {
-        configuraGL();
+	configuraGL();
 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	soccer_field = gtk_drawing_area_new();
 
+	createMWindow("RoboPet GUI");
 
-        createMWindow("RoboPet GUI");
+	pushStatusMessage("GUI initialized.");
 
-        pushStatusMessage("GUI initialized.");
+	isVerbose = false;
 
-
-        isVerbose = false;
-
-        aitoguiClient = NULL;
-        guitoaiServer = NULL;
+	aitoguiClient = NULL;
+	guitoaiServer = NULL;
+	pathplan = NULL;
+	toDrawPathplan = false;
 
 	game.ball = GuiBall();
 }
@@ -59,7 +59,9 @@ void MainWindow::createMWindow(string title)
 	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(gtk_main_quit), NULL);
         g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
         gtk_signal_connect (GTK_OBJECT (window), "key_press_event", (GtkSignalFunc) key_press_event, this);
-            gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK);
+        gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
+            gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
+			cursorEvent = CURSOR_EVENT_NOTHING;
 
 
         gtk_widget_show_all(window);
@@ -114,13 +116,13 @@ void MainWindow::generateTextOutput()
 
     sprintf(text+strlen(text),"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
 
-    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayersTeam1());
-    for( int i=0; i<game.getNplayersTeam1(); i++ ) {
+    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayers(0));
+    for( int i=0; i<game.getNplayers(0); i++ ) {
         sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.players[0][i].getCurrentPosition().getX(),game.players[0][i].getCurrentPosition().getY(),game.players[0][i].getCurrentAngle());
     }
 
-    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayersTeam2());
-    for( int i=0; i<game.getNplayersTeam2(); i++ ) {
+    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayers(1));
+    for( int i=0; i<game.getNplayers(1); i++ ) {
         sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.players[1][i].getCurrentPosition().getX(),game.players[1][i].getCurrentPosition().getY(),game.players[1][i].getCurrentAngle());
     }
 
@@ -132,11 +134,11 @@ void MainWindow::generateTextOutput()
 
 void MainWindow::iterate()
 {
-        communicate();
+	communicate();
 
 	drawWorld();
 
-        generateTextOutput();
+	generateTextOutput();
 }
 
 
@@ -146,7 +148,7 @@ void MainWindow::drawWorld()
 
 	drawPlayers();
 
-	//pathplan.draw();
+	drawPathplan();
 
 	game.ball.draw(displaySettings);
 }
@@ -219,9 +221,6 @@ void MainWindow::createDrawingArea()
 	gtk_widget_set_gl_capability (soccer_field, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE);
 	gtk_widget_show(soccer_field);
 
-	gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
-            gtk_widget_set_events (soccer_field, GDK_BUTTON_PRESS_MASK);
-		cursorEvent = CURSOR_EVENT_NOTHING;
 	g_signal_connect_after(G_OBJECT(soccer_field), "realize", G_CALLBACK(realize), this);
         g_signal_connect(G_OBJECT(soccer_field), "unrealize", G_CALLBACK(timeoutRemove), this);
         g_signal_connect(G_OBJECT(soccer_field), "configure_event", G_CALLBACK(configureEvent), this);

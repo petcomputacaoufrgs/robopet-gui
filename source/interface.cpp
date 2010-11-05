@@ -26,7 +26,7 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 //CALLBACK which captures mouse clicks
 {
   MainWindow* mw = (MainWindow*) data;
-
+  
   if (event->button == 1 ){
 
 	  switch(mw->cursorEvent) {
@@ -37,9 +37,10 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 		case CURSOR_EVENT_PATHPLAN:
 			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
 			{					
-				mw->pathplan->setFinalPos( Point(event->x,event->y) );
+				mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
 				mw->pathplan->run();
 				mw->cursorEvent = CURSOR_EVENT_NOTHING;
+				mw->toDrawPathplan = true;
 			}
 			break;
 	  }
@@ -90,6 +91,16 @@ pathplanType MainWindow::getPathplanIndex()
 	return (pathplanType) gtk_combo_box_get_active((GtkComboBox*)pathplanBox);
 }
 
+int MainWindow::getPrintFullPathplan()
+{
+	return gtk_toggle_button_get_active((GtkToggleButton*)printFullPathplan);
+}
+
+int	MainWindow::getPrintObstacles()
+{
+	return gtk_toggle_button_get_active((GtkToggleButton*)printObstacles);
+}
+
 void MainWindow::fillTextOutput(char text[])
 {
     if( this->TextOutput ) {
@@ -120,13 +131,9 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
-
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget)  ){
 
 		// parameters decoding
-		int checkPrintFull = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[1]);
-		int checkPrintObstacules = gtk_toggle_button_get_active((GtkToggleButton*)parametros->widgets[2]);
-
 		pair<int,int> ret = mw->getSelectedPlayer();
 		int playerIndex, playerTeam;
 		playerIndex = ret.first;
@@ -142,31 +149,28 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 				break;
 		}
 		
-		mw->pathplan->setInitialPos( mw->game.players[playerTeam][playerIndex].getCurrentPosition() );
-		//mw->pathplan = guiPathplan(initialpos,pathplanIndex,checkPrintFull,checkPrintObstacules);
-
+		mw->pathplan->setInitialPos( Point( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX(),	
+											mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY() )	);
+		
 		// environment setting
 		vector<RP::Point> positions;
-		for(int i=0; i<(int)mw->game.getNplayersTeam1(); i++) {
-			if( !(playerTeam==1 && i==playerIndex) )
-					positions.push_back(mw->game.players[0][i].getCurrentPosition());
-		}
-		for(int i=0; i<(int)mw->game.getNplayersTeam2(); i++) {
-			if( !(playerTeam==2 && i==playerIndex) )
-					positions.push_back(mw->game.players[1][i].getCurrentPosition());
-		}
+		for(int team; team<2; team++)
+			for(int i=0; i<(int)mw->game.getNplayers(team); i++) {
+				if( !(playerTeam==team && i==playerIndex) )
+						positions.push_back(mw->game.players[team][i].getCurrentPosition());
+			}
 		mw->pathplan->fillEnv(positions);
 		
 		// GUI settings
 		gtk_button_set_label((GtkButton*)widget, "Running...");
 		//mw->pushStatusMessage("Pathplanning is running.");
 		mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
-		//mw->pathplan.isDrawn = true;
 	}
 	else{
 		gtk_button_set_label((GtkButton*)widget, "Set Destination");
-                //mw->pushStatusMessage("Waiting for destination definition.");
-		//mw->pathplan.isDrawn = false;
+		//mw->pushStatusMessage("Waiting for destination definition.");
+		delete mw->pathplan;
+		mw->toDrawPathplan = false;
 	}
 
 }
@@ -177,8 +181,8 @@ pair<int,int> MainWindow::getSelectedPlayer()
 		int index, team;
 
 		int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
-		int nPlayersTeam1 = this->game.getNplayersTeam1();
-		int nPlayersTeam2 = this->game.getNplayersTeam2();
+		int nPlayersTeam1 = this->game.getNplayers(0);
+		int nPlayersTeam2 = this->game.getNplayers(1);
 
 		team = comboBoxIndex < nPlayersTeam1?  0 : 1;
 		index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
@@ -281,7 +285,7 @@ void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
-	mw->game.addPlayerTeam1();
+	mw->game.addPlayer(0);
 
 	//mw->pushStatusMessage("Added 1 Yellow Player.");
 }
@@ -293,7 +297,7 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
-	mw->game.addPlayerTeam2();
+	mw->game.addPlayer(1);
 
 	//mw->pushStatusMessage("Added 1 Blue Player.");
 }
@@ -412,7 +416,7 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 
 
 
-        /////////////////
+    /////////////////
 	//// SIGNALS ////
 
 	//  set Bola pos
@@ -606,13 +610,13 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* label_pathplanners = gtk_label_new("Pathplanner: ");
 	mw->pathplanBox = gtk_combo_box_new_text();
 		gtk_combo_box_insert_text( GTK_COMBO_BOX(mw->pathplanBox), RRT, "RRT");
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(mw->pathplanBox), ASTAR, "A* (not working)");
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(mw->pathplanBox), ASTAR, "A* (not avaiable)");
 		gtk_combo_box_set_active( GTK_COMBO_BOX(mw->pathplanBox), 0);
 	
-	GtkWidget* checkPrintFull = gtk_check_button_new_with_label("Print full solution");
-		gtk_toggle_button_set_active((GtkToggleButton*)checkPrintFull,TRUE);
-	GtkWidget* checkPrintObstacles = gtk_check_button_new_with_label("Print obstacules");
-		gtk_toggle_button_set_active((GtkToggleButton*)checkPrintObstacles,TRUE);
+	mw->printFullPathplan = gtk_check_button_new_with_label("Print full solution");
+		gtk_toggle_button_set_active((GtkToggleButton*)mw->printFullPathplan,TRUE);
+	mw->printObstacles = gtk_check_button_new_with_label("Print obstacules");
+		gtk_toggle_button_set_active((GtkToggleButton*)mw->printObstacles,TRUE);
 	GtkWidget* ok = gtk_toggle_button_new_with_label("Set Destination");
 
 
@@ -628,7 +632,8 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 		gtk_box_pack_start(GTK_BOX(menu2Box), pathplannersBox, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(menu2Box), jogadorBox, false, false, 0);
 		//gtk_box_pack_start(GTK_BOX(menu2Box), finalPosBox, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(menu2Box), checkPrintFull, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu2Box), mw->printFullPathplan, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(menu2Box), mw->printObstacles, false, false, 0);
 		gtk_box_pack_start(GTK_BOX(menu2Box), ok, false, false, 0);
 
 
@@ -639,8 +644,6 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	static parametersType args;
 	args.mw = mw;
 	args.widgets.push_back(mw->pathplanBox);
-	args.widgets.push_back(checkPrintFull);
-        args.widgets.push_back(checkPrintObstacles);
 
 	g_signal_connect(G_OBJECT(ok), "clicked", G_CALLBACK(pathplanButton), &args);
 
