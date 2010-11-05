@@ -19,7 +19,7 @@ class DisplaySettings
 		GtkWidget* checkPlayerBody;
 		GtkWidget* checkBall;
 		GtkWidget* checkPlayerVector;
-                GtkWidget* checkPlayerFuture;
+        GtkWidget* checkPlayerFuture;
 
 
 		int isHidePlayerAngle();
@@ -27,7 +27,7 @@ class DisplaySettings
 		int isHidePlayerBody();
 		int isHideBall();
 		int isHidePlayerVector();
-                int isHidePlayerFuture();
+        int isHidePlayerFuture();
 	
 
 		void showAll();

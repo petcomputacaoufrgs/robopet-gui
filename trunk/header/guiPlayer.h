@@ -2,6 +2,7 @@
 #define	_GUIPLAYER_H
 
 #include "displaySettings.h"
+#include "guiConstants.h"
 
 #include "player.h"
 using RP::Player;
@@ -16,7 +17,6 @@ class guiPlayer: public Player
         bool hasUpdatedInfo;
         
         void draw(int index, DisplaySettings settings);
-
 
     private:
 

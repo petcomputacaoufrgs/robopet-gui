@@ -65,8 +65,10 @@ class MainWindow
 		void createMWindow(string title);
 		void drawWorld();
 		void drawPlayers();
+		void drawPathplan();
         void iterate();
         void generateTextOutput();
+        void drawObstacles();
 
 		void createInterface();
 
@@ -76,6 +78,9 @@ class MainWindow
 		GtkWidget* 		statusBar;
 		GtkWidget* 		stepsize;
 		GtkWidget* 		pathplanBox;
+		GtkWidget* 		printFullPathplan;
+		GtkWidget* 		printObstacles;
+		bool 			toDrawPathplan;
 
 		//Communication (communication.cpp)
 		RoboPETClient 	*aitoguiClient;
@@ -94,6 +99,8 @@ class MainWindow
 		void 			fillTextOutput(char text[]);
 		int 			getStepsize();
 		pathplanType 	getPathplanIndex();
+		int 			getPrintFullPathplan();
+		int				getPrintObstacles();
 		
 		//Communication (communication.cpp)
 		void 			communicate();
@@ -103,7 +110,7 @@ class MainWindow
 		void 			closeServer();
 
 		Game 			game; 		//game things
-		//guiPathplan		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		//guiPathplan*		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		Pathplan* 		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
 		bool 			isVerbose;

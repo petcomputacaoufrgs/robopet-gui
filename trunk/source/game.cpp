@@ -2,71 +2,38 @@
 #include <vector>
 
 #include "game.h"
+#include "guiConstants.h"
 
 
 Game::Game() { nplayers[0]=0; nplayers[1]=0; }
-
-Game::Game(int _nplayers1, int _nplayers2, GtkWidget* _playersComboBox)
-{ 
-    nplayers[0] = _nplayers1;
-    nplayers[1] = _nplayers2;
-    playersComboBox = _playersComboBox;
-}
 
 Game::~Game() { }
 
 
 
-void Game::updateNplayersTeam1(int n)
+void Game::updateNplayers(int team, int n)
 {
-    if( nplayers[0] != n )
+    if( nplayers[team] != n )
     {
         resetPlayersComboBox();
         
-        nplayers[0] = n;
-        players[0].resize(n);
+        nplayers[team] = n;
+        players[team].resize(n);
 
         updatePlayersComboBox();
     }
 }
 
-void Game::updateNplayersTeam2(int n)
-{
-    if( nplayers[1] != n )
-    {
-        resetPlayersComboBox();
-
-        nplayers[1] = n;
-        players[1].resize(n);
-
-        updatePlayersComboBox();
-    }
-}
-
-void Game::addPlayerTeam1()
+void Game::addPlayer( int team )
 {
     resetPlayersComboBox();
 
-    nplayers[0]++;
+    nplayers[team]++;
 
-    players[0].resize(nplayers[0]);
-
-    updatePlayersComboBox();
-}
-
-
-void Game::addPlayerTeam2()
-{
-    resetPlayersComboBox();
-
-    nplayers[1]++;
-
-    players[1].resize(nplayers[1]);
+    players[team].resize(nplayers[team]);
 
     updatePlayersComboBox();
 }
-
-
 
 void Game::resetPlayersComboBox()
 //Remove all entries (to use it before updating numbers of players in the teams)
@@ -102,6 +69,4 @@ void Game::updatePlayersComboBox()
 
 
 
-int Game::getNplayersTeam1() { return nplayers[0]; }
-
-int Game::getNplayersTeam2() { return nplayers[1]; }
+int Game::getNplayers(int team) { return nplayers[team]; }

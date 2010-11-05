@@ -7,32 +7,24 @@
 #include "guiPlayer.h"
 
 
-
 class Game
 {
     #define MAX_JOGADORES 5 //TEMPORÁRIO
 
     public:
         Game();
-        Game(int _nplayers1, int _nplayers2, GtkWidget* _playersComboBox);
         ~Game();
 
         GtkWidget* playersComboBox;
 
-        void updateNplayersTeam1(int n);
-        void updateNplayersTeam2(int n);
+        void updateNplayers(int team, int n);
 
-        void addPlayerTeam1();
-        void addPlayerTeam2();
+        void addPlayer(int team);
 
-        int getNplayersTeam1();
-        int getNplayersTeam2();
-
+        int getNplayers(int team);
 
         GuiBall ball;
         vector<guiPlayer> players[2];
-
-
 
     private:
 
@@ -40,7 +32,6 @@ class Game
 
         void updatePlayersComboBox();
         void resetPlayersComboBox();
-
 
 };
 
