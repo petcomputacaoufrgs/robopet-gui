@@ -1,13 +1,11 @@
 #ifndef _GUIBALL_H
 #define	_GUIBALL_H
 
-#include "ball.h"
-
+#include "robopet.h"
+#include "movingObject.h"
 #include "displaySettings.h"
 
-
-
-class GuiBall: public Ball
+class GuiBall: public RP::Ball
 {
     public:
 
