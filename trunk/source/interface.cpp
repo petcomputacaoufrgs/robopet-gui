@@ -5,6 +5,7 @@
 
 #include "interface.h"
 #include "rrt.h"
+#include "astar.h"
 
 #define CLIENT_INITIAL_PORT PORT_AI_TO_GUI
 #define CLIENT_INITIAL_HOST IP_AI_TO_GUI
@@ -143,9 +144,8 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 			case RRT: 
 				mw->pathplan = new Rrt();
 				break;
-			
 			case ASTAR:
-				// nothing here
+				mw->pathplan = new AStar();
 				break;
 		}
 		
@@ -154,11 +154,10 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		
 		// environment setting
 		vector<RP::Point> positions;
-		for(int team; team<2; team++)
-			for(int i=0; i<(int)mw->game.getNplayers(team); i++) {
+		for(int team=0; team<2; team++)
+			for(int i=0; i<mw->game.getNplayers(team); i++)
 				if( !(playerTeam==team && i==playerIndex) )
 						positions.push_back(mw->game.players[team][i].getCurrentPosition());
-			}
 		mw->pathplan->fillEnv(positions);
 		
 		// GUI settings
