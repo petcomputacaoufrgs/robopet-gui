@@ -164,11 +164,13 @@ void MainWindow::drawObstacles()
 {
     for(int i=0;i<MAX_X;i++)
         for(int k=0;k<MAX_Y;k++)
-            if( pathplan->env[i][k] == OBSTACLE)
+            if( pathplan->env[i][k] == OBSTACLE) 
+            {
+				cout<<pathplan->env[i][k]<<" ";
                 drawBox( MM_TO_PIX(CELLS_TO_MM( i ) + BORDER),
                          MM_TO_PIX(CELLS_TO_MM( k ) + BORDER),
                          (ARENA_WIDTH_MM/MAX_X)/10 );
-                        
+			}                        
 }
 
 void MainWindow::drawPathplan()
