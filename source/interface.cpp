@@ -609,7 +609,7 @@ void createPathplanningTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* label_pathplanners = gtk_label_new("Pathplanner: ");
 	mw->pathplanBox = gtk_combo_box_new_text();
 		gtk_combo_box_insert_text( GTK_COMBO_BOX(mw->pathplanBox), RRT, "RRT");
-		gtk_combo_box_insert_text( GTK_COMBO_BOX(mw->pathplanBox), ASTAR, "A* (not avaiable)");
+		gtk_combo_box_insert_text( GTK_COMBO_BOX(mw->pathplanBox), ASTAR, "A*");
 		gtk_combo_box_set_active( GTK_COMBO_BOX(mw->pathplanBox), 0);
 	
 	mw->printFullPathplan = gtk_check_button_new_with_label("Print full solution");
