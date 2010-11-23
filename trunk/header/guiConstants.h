@@ -41,6 +41,8 @@
 #define BLUE  0, 0, 1
 #define CIANO  0, 1, 1
 #define BLACK  0, 0, 0
+#define PURPLE 0.5, 0, 0.5
+#define RED 1, 0, 0
 
 #define TIMEOUT_INTERVAL 15
 
