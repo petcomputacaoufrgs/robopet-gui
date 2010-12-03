@@ -19,7 +19,7 @@ guiPathplan::guiPathplan()
 
 guiPathplan::guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles)
 {
-	this->initialpos = initialpos;
+	this->initialpos = Node(initialpos.getX(), initialpos.getY());
 	this->pathplanIndex = pathplanIndex;
 	this->checkPrintFull = checkPrintFull;
     this->checkPrintObstacles = checkPrintObstacles;
