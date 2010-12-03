@@ -44,11 +44,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS= 
+CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` 
-CXXFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`
+CCFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` -pg -O3
+CXXFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` -pg -O3
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -69,44 +69,44 @@ LDLIBSOPTIONS=../../communication/communication.a ../../lib/robopet.a
 
 ../gui: ${OBJECTFILES}
 	${MKDIR} -p ..
-	${LINK.cc} `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut -o ../gui  ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} `pkg-config --libs gtkglext-1.0` `pkg-config --libs protobuf` -lglut -o ../gui  ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/_ext/812168374/mainWindow.o: ../source/mainWindow.cpp 
+${OBJECTDIR}/_ext/812168374/mainWindow.o: ../source/mainWindow.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/mainWindow.o ../source/mainWindow.cpp
 
-${OBJECTDIR}/_ext/812168374/interface.o: ../source/interface.cpp 
+${OBJECTDIR}/_ext/812168374/interface.o: ../source/interface.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/interface.o ../source/interface.cpp
 
-${OBJECTDIR}/_ext/812168374/main.o: ../source/main.cpp 
+${OBJECTDIR}/_ext/812168374/main.o: ../source/main.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/main.o ../source/main.cpp
 
-${OBJECTDIR}/_ext/812168374/communication.o: ../source/communication.cpp 
+${OBJECTDIR}/_ext/812168374/communication.o: ../source/communication.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/communication.o ../source/communication.cpp
 
-${OBJECTDIR}/_ext/812168374/displaySettings.o: ../source/displaySettings.cpp 
+${OBJECTDIR}/_ext/812168374/displaySettings.o: ../source/displaySettings.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/displaySettings.o ../source/displaySettings.cpp
 
-${OBJECTDIR}/_ext/812168374/game.o: ../source/game.cpp 
+${OBJECTDIR}/_ext/812168374/game.o: ../source/game.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/game.o ../source/game.cpp
 
-${OBJECTDIR}/_ext/812168374/guiPathplan.o: ../source/guiPathplan.cpp 
+${OBJECTDIR}/_ext/812168374/guiPathplan.o: ../source/guiPathplan.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/guiPathplan.o ../source/guiPathplan.cpp
 
-${OBJECTDIR}/_ext/812168374/drawing.o: ../source/drawing.cpp 
+${OBJECTDIR}/_ext/812168374/drawing.o: ../source/drawing.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/812168374
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../header -I../../communication/packets -I../../communication/proto -I../../communication/socket -I../../communication -I../../lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/812168374/drawing.o ../source/drawing.cpp
