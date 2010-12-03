@@ -57,6 +57,7 @@ void MainWindow::createMWindow(string title)
 
 
 	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(gtk_main_quit), NULL);
+		//MAYBE I SCREWED EVERYTHING, call Fialho ;)
         g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
         gtk_signal_connect (GTK_OBJECT (window), "key_press_event", (GtkSignalFunc) key_press_event, this);
         gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);

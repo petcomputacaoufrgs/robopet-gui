@@ -149,10 +149,10 @@ void GuiBall::draw(DisplaySettings settings)
 	}
 }
 
-void drawPath(list<Point> path)
+void drawPath(list<Node> path)
 {
     //glBegin(GL_LINE_STRIP);
-	for(std::list<Point>::iterator i = path.begin(); i != path.end(); i++)
+	for(std::list<Node>::iterator i = path.begin(); i != path.end(); i++)
 		drawBox( MM_TO_PIX( CELLS_TO_MM( i->getX() )) + BORDER,
 				 MM_TO_PIX( CELLS_TO_MM( i->getY() )) + BORDER,
 				(ARENA_WIDTH_MM/MAX_X)/30 );

@@ -44,11 +44,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS= 
 
 # CC Compiler Flags
 CCFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` 
-CXXFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf` 
+CXXFLAGS=`pkg-config --cflags gtkglext-1.0` `pkg-config --cflags protobuf`
 
 # Fortran Compiler Flags
 FFLAGS=
