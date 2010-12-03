@@ -19,7 +19,7 @@ class Game
 
         void updateNplayers(int team, int n);
 
-        void addPlayer(int team);
+        void addPlayer(int team, Point pos=Point(0,0));
 
         int getNplayers(int team);
 

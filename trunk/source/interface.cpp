@@ -169,6 +169,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		gtk_button_set_label((GtkButton*)widget, "Set Destination");
 		//mw->pushStatusMessage("Waiting for destination definition.");
 		delete mw->pathplan;
+		mw->cursorEvent = CURSOR_EVENT_NOTHING;
 		mw->toDrawPathplan = false;
 	}
 

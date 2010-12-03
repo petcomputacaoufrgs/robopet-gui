@@ -24,13 +24,14 @@ void Game::updateNplayers(int team, int n)
     }
 }
 
-void Game::addPlayer( int team )
+void Game::addPlayer( int team, Point pos )
 {
     resetPlayersComboBox();
 
     nplayers[team]++;
 
     players[team].resize(nplayers[team]);
+    players[team][nplayers[team]-1].setCurrentPosition(pos);
 
     updatePlayersComboBox();
 }
