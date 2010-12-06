@@ -302,6 +302,38 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	//mw->pushStatusMessage("Added 1 Blue Player.");
 }
 
+void saveStateButton(void)
+{
+	printf("cliclou em save\n");
+	
+	/*FILE *arq = fopen("status","w");
+	if (arq != NULL)
+	{
+		fprintf(arq,"blue\n")
+		for (int i=0; i<2; i++)
+		{
+			if (i)
+			{
+				fprintf(arq,"yellow\n");
+			}
+			for (int j=0; j<getNplayers(i); j++)
+			{
+				fprintf(arq,"%d,%d\n",get*/
+}
+
+void loadStateButton(void)
+{
+	printf("cliclou em load\n");
+	/*FILE *arq = fopen("status","r");
+	if (arq != NULL){
+		while (!foef(arq)){
+
+		//adicionar os players aqui:
+		// game.addPlayer(1,Point(1500,1500));
+		}
+	}*/
+}
+
 string getParam( gpointer data )
 {
 	parametersType* parametros = (parametersType*) data;
@@ -662,7 +694,7 @@ void createLauncherTab(MainWindow* mw, GtkWidget* notebook)
 	//widgets
 	GtkWidget* buttonBox = gtk_hbutton_box_new();
 		gtk_button_box_set_layout(GTK_BUTTON_BOX(buttonBox), GTK_BUTTONBOX_CENTER);
-	GtkWidget* aiButton = gtk_button_new_with_label("AI");	
+	GtkWidget* aiButton = gtk_button_new_with_label("AI");
 	GtkWidget* radioButton = gtk_button_new_with_label("Radio");	
 	GtkWidget* trackerButton = gtk_button_new_with_label("Tracker");	
 	GtkWidget* simButton = gtk_button_new_with_label("Simulation");	
@@ -729,18 +761,25 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 
     GtkWidget* addBluePlayer = gtk_button_new_with_mnemonic("Blue++");
     GtkWidget* addYellowPlayer = gtk_button_new_with_mnemonic("Yellow++");
+    GtkWidget* saveState = gtk_button_new_with_mnemonic("Save");
+    GtkWidget* loadState = gtk_button_new_with_mnemonic("Load");
 
     GtkWidget* addPlayersBox = gtk_hbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(addPlayersBox), addBluePlayer, false, false, 0);
             gtk_box_pack_start(GTK_BOX(addPlayersBox), addYellowPlayer, false, false, 0);
+            
+    GtkWidget* stateBox = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(stateBox), saveState, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(stateBox), loadState, false, false, 0);
 
     
     GtkWidget* playerFrameVBOX = gtk_vbox_new (FALSE, 0);
-        gtk_container_add(GTK_CONTAINER(playerFrameVBOX),jogadores);
-        gtk_container_add(GTK_CONTAINER(playerFrameVBOX),addPlayersBox);
+            gtk_container_add(GTK_CONTAINER(playerFrameVBOX),jogadores);
+            gtk_container_add(GTK_CONTAINER(playerFrameVBOX),addPlayersBox);
+            gtk_container_add(GTK_CONTAINER(playerFrameVBOX),stateBox);
 
     GtkWidget* playersFrame = gtk_frame_new("Players");
-        gtk_container_add(GTK_CONTAINER(playersFrame),playerFrameVBOX);
+            gtk_container_add(GTK_CONTAINER(playersFrame),playerFrameVBOX);
 
 
     GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
@@ -757,6 +796,8 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 	parametros.mw = mw;
 	g_signal_connect(G_OBJECT(addBluePlayer), "clicked", G_CALLBACK(addBluePlayerButton), &parametros);
 	g_signal_connect(G_OBJECT(addYellowPlayer), "clicked", G_CALLBACK(addYellowPlayerButton), &parametros);
+	g_signal_connect(G_OBJECT(saveState), "clicked", G_CALLBACK(saveStateButton), &parametros);
+	g_signal_connect(G_OBJECT(loadState), "clicked", G_CALLBACK(loadStateButton), &parametros);
 
 
 
@@ -778,13 +819,11 @@ GtkWidget* createGameControl(MainWindow* mw)
 
 void about()
 {
-         GtkWidget *dialog = gtk_message_dialog_new
-	    (NULL,
-	     GTK_DIALOG_MODAL, GTK_MESSAGE_INFO,
-	     GTK_BUTTONS_CLOSE,
+    GtkWidget *dialog = gtk_message_dialog_new
+	    (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
 	     ("RoboPET GUI\n\nwww.inf.ufrgs.br/pet"));
-	  gtk_dialog_run (GTK_DIALOG (dialog));
-	  gtk_widget_destroy (dialog);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 }
 
 GtkWidget* createMenuBar(GtkWidget *window)
