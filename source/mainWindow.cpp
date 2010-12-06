@@ -23,11 +23,6 @@ MainWindow::MainWindow(string name)
 	toDrawPathplan = false;
 
 	game.ball = GuiBall();
-	
-	game.addPlayer(1,Point(1500,1500));
-	game.addPlayer(1,Point(1320,1700));
-	game.addPlayer(0,Point(1440,1160));
-	game.addPlayer(0,Point(3440,1160));
 }
 
 void MainWindow::configuraGL()
