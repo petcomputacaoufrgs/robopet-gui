@@ -6,6 +6,7 @@
 #include "interface.h"
 #include "rrt.h"
 #include "astar.h"
+#include "game.h"
 
 #define CLIENT_INITIAL_PORT PORT_AI_TO_GUI
 #define CLIENT_INITIAL_HOST IP_AI_TO_GUI
@@ -44,8 +45,26 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 				mw->toDrawPathplan = true;
 			}
 			break;
+			
+		case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
+			if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
+			&& (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER) )
+			{ 
+				mw->game.addPlayer( 0, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
+				mw->cursorEvent = CURSOR_EVENT_NOTHING;
+			}
+			break;
+			
+		case CURSOR_EVENT_ADD_BLUE_ROBOT:
+			if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
+			&& (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER) )
+			{
+				mw->game.addPlayer( 1, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
+				mw->cursorEvent = CURSOR_EVENT_NOTHING;
+			}
+			break;
 	  }
-  }
+  } 
 
 }
 
@@ -54,7 +73,22 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
     MainWindow* mw = (MainWindow*) data;
 
-    // parameters
+    //add players
+    
+	switch(  event->keyval  )
+	{
+		case GDK_z: mw->cursorEvent = CURSOR_EVENT_ADD_YELLOW_ROBOT;
+		break;
+		 
+		case GDK_x: mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
+		break;
+	}
+        
+    
+    
+    
+    
+    // players movement
     int stepsize = mw->getStepsize();  
 
     pair<int,int> ret = mw->getSelectedPlayer();
@@ -265,17 +299,18 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
 
 	//use linux command to get the local IP
 	//system( "ifconfig -a | grep 'inet end.:' | cut -f13-13 -d' ' > ip.txt");
-	system( "wget -q http://icanhazip.com/ -O ip.txt");
+	if( !system( "wget -q http://icanhazip.com/ -O ip.txt") ) {
 		ifstream file;
 		file.open ("ip.txt", fstream::out);
 		char ip[20]; file.getline(ip,20);
 		file.close();
-	//system( "rm ip.txt");
-
-	if( widget == client_getIpButton )
-		gtk_entry_set_text((GtkEntry*)clientHostEntry,ip);
-	else
-		gtk_entry_set_text((GtkEntry*)serverHostEntry,ip);
+		
+		//system( "rm ip.txt");
+		if( widget == client_getIpButton )
+			gtk_entry_set_text((GtkEntry*)clientHostEntry,ip);
+		else
+			gtk_entry_set_text((GtkEntry*)serverHostEntry,ip);
+	}
 }
 
 
@@ -285,7 +320,7 @@ void addYellowPlayerButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
-	mw->game.addPlayer(0);
+	mw->cursorEvent = CURSOR_EVENT_ADD_YELLOW_ROBOT;
 
 	//mw->pushStatusMessage("Added 1 Yellow Player.");
 }
@@ -296,42 +331,80 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	// parameters
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
-
-	mw->game.addPlayer(1);
+	
+	mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
 
 	//mw->pushStatusMessage("Added 1 Blue Player.");
 }
 
-void saveStateButton(void)
-{
-	printf("cliclou em save\n");
-	
-	/*FILE *arq = fopen("status","w");
+void saveStateButton(GtkWidget *widget, gpointer data)
+{	
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+		
+	FILE *arq = fopen("status.txt","w");
 	if (arq != NULL)
 	{
-		fprintf(arq,"blue\n")
+		fprintf(arq,"yellow\n");
 		for (int i=0; i<2; i++)
 		{
 			if (i)
 			{
-				fprintf(arq,"yellow\n");
+				fprintf(arq,"blue\n");
 			}
-			for (int j=0; j<getNplayers(i); j++)
+			for (int j=0; j<mw->game.getNplayers(i); j++)
 			{
-				fprintf(arq,"%d,%d\n",get*/
+				fprintf(arq,"%.0lf,%.0lf\n",mw->game.players[i][j].getCurrentPosition().getX(),	
+											mw->game.players[i][j].getCurrentPosition().getY());
+			}
+		}
+		
+		if(mw->isVerbose)
+			cout << "Saved game state." << endl;
+	}
+	fclose(arq);
 }
 
-void loadStateButton(void)
+void loadStateButton(GtkWidget *widget, gpointer data)
 {
-	printf("cliclou em load\n");
-	/*FILE *arq = fopen("status","r");
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+	
+	mw->game.updateNplayers(0,0);
+	mw->game.updateNplayers(1,0);
+	
+	FILE *arq = fopen("status.txt","r");
+	
+	char buffer[20];
+	int x,y;
+	int i=0;
+	
 	if (arq != NULL){
-		while (!foef(arq)){
+		while (!feof(arq)){
+			
+			fscanf(arq,"%s\n",buffer);
 
-		//adicionar os players aqui:
-		// game.addPlayer(1,Point(1500,1500));
+			//cout<<buffer<<endl;
+			if (strcmp(buffer,"yellow") != 0 && strcmp(buffer,"blue") != 0)
+			{
+				//cout<<"entrou aqui"<<endl;
+				x = atoi(strtok(buffer,","));
+				//cout<<"atoi de x: "<<x<<endl;
+				y = atoi(strtok(NULL,","));
+				//cout<<x<<" "<<y<<" "<<i<<endl;
+				mw->game.addPlayer(i,Point(x,y));
+			}
+			if (strcmp(buffer,"blue") == 0)
+			{
+				i++;
+			}
 		}
-	}*/
+	
+		if(mw->isVerbose)
+			cout << "Loaded game state." << endl;
+	}
+	fclose(arq);
+	
 }
 
 string getParam( gpointer data )
@@ -344,7 +417,7 @@ string getParam( gpointer data )
 void launch(string command )
 {
 	command = "gnome-terminal -e \"" + command + "\"&";
-    system(command.c_str());
+    if(!system(command.c_str()));
 }
 
 void launchAiButton(GtkWidget *widget, gpointer data)
@@ -422,7 +495,9 @@ void createControlTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* playersControl = gtk_vbox_new (FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(playersControl), movementControlBox1, false, false, 0);
 			gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("use WASD to move"), false, false, 0);
-	gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("and QE to rotate"), false, false, 0);
+			gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("QE to rotate"), false, false, 0);
+			gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("Z to add yellow"), false, false, 0);
+			gtk_box_pack_start(GTK_BOX(playersControl), gtk_label_new("X to add blue"), false, false, 0);
 
 	GtkWidget* ballControlBox2 = gtk_hbox_new (FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(ballControlBox2), label_bolax, false, false, 0);
@@ -759,14 +834,14 @@ GtkWidget* createLateralMenu(MainWindow* mw)
     GtkWidget* jogadores = gtk_combo_box_new_text();
                 mw->game.playersComboBox = jogadores;
 
-    GtkWidget* addBluePlayer = gtk_button_new_with_mnemonic("Blue++");
     GtkWidget* addYellowPlayer = gtk_button_new_with_mnemonic("Yellow++");
+	GtkWidget* addBluePlayer = gtk_button_new_with_mnemonic("Blue++");
     GtkWidget* saveState = gtk_button_new_with_mnemonic("Save");
     GtkWidget* loadState = gtk_button_new_with_mnemonic("Load");
 
     GtkWidget* addPlayersBox = gtk_hbox_new (FALSE, 0);
-            gtk_box_pack_start(GTK_BOX(addPlayersBox), addBluePlayer, false, false, 0);
             gtk_box_pack_start(GTK_BOX(addPlayersBox), addYellowPlayer, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(addPlayersBox), addBluePlayer, false, false, 0);
             
     GtkWidget* stateBox = gtk_hbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(stateBox), saveState, false, false, 0);
@@ -790,12 +865,12 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 
 	////////////////
 	//// SINAIS ////
-	//  BUTTON: addBluePlayer
-        //  BUTTON: yellowBluePlayer
+	//   BUTTON: addBluePlayer
+    //   BUTTON: yellowBluePlayer
 	static parametersType parametros;
 	parametros.mw = mw;
-	g_signal_connect(G_OBJECT(addBluePlayer), "clicked", G_CALLBACK(addBluePlayerButton), &parametros);
 	g_signal_connect(G_OBJECT(addYellowPlayer), "clicked", G_CALLBACK(addYellowPlayerButton), &parametros);
+	g_signal_connect(G_OBJECT(addBluePlayer), "clicked", G_CALLBACK(addBluePlayerButton), &parametros);	
 	g_signal_connect(G_OBJECT(saveState), "clicked", G_CALLBACK(saveStateButton), &parametros);
 	g_signal_connect(G_OBJECT(loadState), "clicked", G_CALLBACK(loadStateButton), &parametros);
 

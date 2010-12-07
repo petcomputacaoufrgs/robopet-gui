@@ -51,6 +51,8 @@ class MainWindow
 	friend GtkWidget* createLateralMenu(MainWindow* mw);
 	friend void createControlTab(MainWindow* mw, GtkWidget* notebook);
 	friend void createPathplanningTab(MainWindow* mw, GtkWidget* notebook);
+	friend void addYellowPlayerButton(GtkWidget *widget, gpointer data);
+	friend void addBluePlayerButton(GtkWidget *widget, gpointer data);
 
         private:
             

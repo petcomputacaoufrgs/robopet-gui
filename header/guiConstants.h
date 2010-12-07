@@ -61,7 +61,9 @@ enum{
 //flags para o controle de callback do click de mouse
 enum{
 	CURSOR_EVENT_NOTHING,
-	CURSOR_EVENT_PATHPLAN
+	CURSOR_EVENT_PATHPLAN,
+	CURSOR_EVENT_ADD_BLUE_ROBOT,
+	CURSOR_EVENT_ADD_YELLOW_ROBOT
 };
 
 
