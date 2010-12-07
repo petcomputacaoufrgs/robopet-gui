@@ -5,7 +5,7 @@
 #include "guiConstants.h"
 
 
-Game::Game() { nplayers[0]=0; nplayers[1]=0; }
+Game::Game() { nplayers[0]=0; nplayers[1]=0; lastAddedTeam=0; }
 
 Game::~Game() { }
 
@@ -33,6 +33,8 @@ void Game::addPlayer( int team, Point pos )
     players[team].resize(nplayers[team]);
     players[team][nplayers[team]-1].setCurrentPosition(pos);
 
+    lastAddedTeam = team;
+    
     updatePlayersComboBox();
 }
 
@@ -65,7 +67,10 @@ void Game::updatePlayersComboBox()
             gtk_combo_box_insert_text( GTK_COMBO_BOX(playersComboBox), nplayers[0]+i, buffer);
         }
 
-        gtk_combo_box_set_active( GTK_COMBO_BOX(playersComboBox), 0);
+        if(lastAddedTeam==0)
+			gtk_combo_box_set_active( GTK_COMBO_BOX(playersComboBox), nplayers[0]-1);
+		else
+			gtk_combo_box_set_active( GTK_COMBO_BOX(playersComboBox), nplayers[0]+nplayers[1]-1);
 }
 
 

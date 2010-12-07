@@ -27,7 +27,7 @@ class Game
         vector<guiPlayer> players[2];
 
     private:
-
+		int lastAddedTeam;
         int nplayers[2];
 
         void updatePlayersComboBox();
