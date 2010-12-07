@@ -829,8 +829,14 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 {
     
     mw->TextOutput = gtk_text_view_new();
-
-    
+	
+	GtkWidget* swindow = gtk_scrolled_window_new( NULL, NULL ); 
+			gtk_widget_set_usize(swindow,100,350);
+			gtk_container_add(GTK_CONTAINER(swindow),mw->TextOutput);
+			gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swindow),
+                                    GTK_POLICY_NEVER, 
+                                    GTK_POLICY_ALWAYS);
+		
     GtkWidget* jogadores = gtk_combo_box_new_text();
                 mw->game.playersComboBox = jogadores;
 
@@ -847,19 +853,17 @@ GtkWidget* createLateralMenu(MainWindow* mw)
             gtk_box_pack_start(GTK_BOX(stateBox), saveState, false, false, 0);
             gtk_box_pack_start(GTK_BOX(stateBox), loadState, false, false, 0);
 
-    
     GtkWidget* playerFrameVBOX = gtk_vbox_new (FALSE, 0);
             gtk_container_add(GTK_CONTAINER(playerFrameVBOX),jogadores);
             gtk_container_add(GTK_CONTAINER(playerFrameVBOX),addPlayersBox);
-            gtk_container_add(GTK_CONTAINER(playerFrameVBOX),stateBox);
 
     GtkWidget* playersFrame = gtk_frame_new("Players");
             gtk_container_add(GTK_CONTAINER(playersFrame),playerFrameVBOX);
 
-
     GtkWidget* lateralMenu = gtk_vbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(lateralMenu), playersFrame, false, false, 0);
-            gtk_box_pack_start(GTK_BOX(lateralMenu), mw->TextOutput, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(lateralMenu), stateBox, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(lateralMenu), swindow, false, false, 0);
 
    
 
