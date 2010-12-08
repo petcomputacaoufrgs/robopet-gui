@@ -96,7 +96,7 @@ class MainWindow
 		MainWindow(string title);
 
 		//Interface functions
-		pair<int,int> 	getSelectedPlayer();
+		guiPlayer		*getSelectedPlayer();
 		void 			pushStatusMessage(string msg);
 		void 			fillTextOutput(char text[]);
 		int 			getStepsize();

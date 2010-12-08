@@ -145,7 +145,7 @@ void GuiBall::draw(DisplaySettings settings)
 	if( !settings.isHideBall() )
 	{
 		glColor3f(1, 0.5, 0);
-		drawCircle(MM_TO_PIX( this->getCurrentPosition().getX() ), MM_TO_PIX( this->getCurrentPosition().getY() ), BALL_RADIUS);
+		drawCircle(MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER, BALL_RADIUS);
 	}
 }
 
@@ -153,8 +153,8 @@ void drawPath(list<Node> path)
 {
     //glBegin(GL_LINE_STRIP);
 	for(std::list<Node>::iterator i = path.begin(); i != path.end(); i++)
-		drawBox( MM_TO_PIX( CELLS_TO_MM( i->getX() )) + BORDER,
-				 MM_TO_PIX( CELLS_TO_MM( i->getY() )) + BORDER,
+		drawBox( MM_TO_PIX( CELLS_TO_MM_X( i->getX() )) + BORDER,
+				 MM_TO_PIX( CELLS_TO_MM_Y( i->getY() )) + BORDER,
 				(ARENA_WIDTH_MM/MAX_X)/30 );
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
     //glEnd();
@@ -166,8 +166,8 @@ void MainWindow::drawObstacles()
         for(int k=0;k<MAX_Y;k++)
             if( pathplan->env[i][k] == OBSTACLE) 
             {
-               drawBox( MM_TO_PIX( CELLS_TO_MM(i) ) + BORDER,
-						MM_TO_PIX( CELLS_TO_MM(k) ) + BORDER,
+               drawBox( MM_TO_PIX( CELLS_TO_MM_X(i) ) + BORDER,
+						MM_TO_PIX( CELLS_TO_MM_Y(k) ) + BORDER,
 						(ARENA_WIDTH_MM/MAX_X)/30 );;
 			}                   
 }
@@ -175,6 +175,14 @@ void MainWindow::drawObstacles()
 void MainWindow::drawPathplan()
 {
 	if( toDrawPathplan ) {
+	
+		// draw Pathplanning Envirnomnet
+		glBegin(GL_LINE_LOOP);
+            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER);
+            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(MAX_X)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER );
+            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(MAX_X)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(MAX_Y)) + BORDER );
+            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(MAX_Y)) + BORDER);
+        glEnd();
 	
 		if( getPrintFullPathplan() ) {
 			glColor3f(BLACK);
