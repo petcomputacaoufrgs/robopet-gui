@@ -27,45 +27,34 @@
 void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data)
 //CALLBACK which captures mouse clicks
 {
-  MainWindow* mw = (MainWindow*) data;
+    MainWindow* mw = (MainWindow*) data;
   
-  if (event->button == 1 ){
+    if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
 
-	  switch(mw->cursorEvent) {
+	    if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
+	     && (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER)) { 
+	  
+		    switch(mw->cursorEvent) {
 
-		case CURSOR_EVENT_NOTHING:
-			break;
-
-		case CURSOR_EVENT_PATHPLAN:
-			if( (event->x < ARENA_WIDTH) && (event->y < ARENA_HEIGHT) )
-			{					
-				mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
-				mw->pathplan->run();
-				mw->cursorEvent = CURSOR_EVENT_NOTHING;
-				mw->toDrawPathplan = true;
+				case CURSOR_EVENT_PATHPLAN:					
+						mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
+						mw->pathplan->run();
+						mw->cursorEvent = CURSOR_EVENT_NOTHING;
+						mw->toDrawPathplan = true;
+						break;
+					
+				case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
+						mw->game.addPlayer( 0, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
+						mw->cursorEvent = CURSOR_EVENT_NOTHING;
+						break;
+					
+				case CURSOR_EVENT_ADD_BLUE_ROBOT:
+						mw->game.addPlayer( 1, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
+						mw->cursorEvent = CURSOR_EVENT_NOTHING;
+						break;
 			}
-			break;
-			
-		case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
-			if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
-			&& (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER) )
-			{ 
-				mw->game.addPlayer( 0, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
-				mw->cursorEvent = CURSOR_EVENT_NOTHING;
-			}
-			break;
-			
-		case CURSOR_EVENT_ADD_BLUE_ROBOT:
-			if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
-			&& (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER) )
-			{
-				mw->game.addPlayer( 1, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
-				mw->cursorEvent = CURSOR_EVENT_NOTHING;
-			}
-			break;
-	  }
-  } 
-
+		} 
+	}
 }
 
 void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
@@ -85,30 +74,24 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
 	}
         
     
-    
-    
-    
     // players movement
     int stepsize = mw->getStepsize();  
 
-    pair<int,int> ret = mw->getSelectedPlayer();
-    int playerIndex, playerTeam;
-    playerIndex = ret.first;
-    playerTeam = ret.second;
+    guiPlayer *selected = mw->getSelectedPlayer();
 
-    if( playerIndex!=-1 ) {
+    if( selected ) {
         switch(  event->keyval  ) {
-            case GDK_s: mw->game.players[playerTeam][playerIndex].setCurrentPositionY( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY() + stepsize ); break;
+            case GDK_s: selected->setCurrentPositionY( selected->getCurrentPosition().getY() + stepsize ); break;
 
-            case GDK_w: mw->game.players[playerTeam][playerIndex].setCurrentPositionY( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY() - stepsize ); break;
+            case GDK_w: selected->setCurrentPositionY( selected->getCurrentPosition().getY() - stepsize ); break;
 
-            case GDK_a: mw->game.players[playerTeam][playerIndex].setCurrentPositionX( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX() - stepsize ); break;
+            case GDK_a: selected->setCurrentPositionX( selected->getCurrentPosition().getX() - stepsize ); break;
 
-            case GDK_d: mw->game.players[playerTeam][playerIndex].setCurrentPositionX( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX() + stepsize ); break;
+            case GDK_d: selected->setCurrentPositionX( selected->getCurrentPosition().getX() + stepsize ); break;
 
-            case GDK_q: mw->game.players[playerTeam][playerIndex].setCurrentAngle( mw->game.players[playerTeam][playerIndex].getCurrentAngle() - 10 ); break;
+            case GDK_q: selected->setCurrentAngle( selected->getCurrentAngle() - 10 ); break;
 
-            case GDK_e: mw->game.players[playerTeam][playerIndex].setCurrentAngle( mw->game.players[playerTeam][playerIndex].getCurrentAngle() + 10 ); break;
+            case GDK_e: selected->setCurrentAngle( selected->getCurrentAngle() + 10 ); break;
 
         }
     }
@@ -169,48 +152,51 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget)  ){
 
 		// parameters decoding
-		pair<int,int> ret = mw->getSelectedPlayer();
-		int playerIndex, playerTeam;
-		playerIndex = ret.first;
-		playerTeam = ret.second;
+		guiPlayer *selected = mw->getSelectedPlayer();
 
-		switch(mw->getPathplanIndex()) {
-			case RRT: 
-				mw->pathplan = new Rrt();
-				break;
-			case ASTAR:
-				mw->pathplan = new AStar();
-				break;
+		if( selected ) //has a player selected
+		{
+			// which pathplan instance to create?
+			switch(mw->getPathplanIndex()) {
+				case RRT: 
+					mw->pathplan = new Rrt();
+					break;
+				case ASTAR:
+					mw->pathplan = new AStar();
+					break;
+			}
+			
+			// set initial position to selected player's position
+			mw->pathplan->setInitialPos( Point( selected->getCurrentPosition().getX(),	
+												selected->getCurrentPosition().getY() )	);
+			
+			// sets obstacules in the environment
+			vector<RP::Point> positions;
+			for(int team=0; team<2; team++)
+				for(int i=0; i<mw->game.getNplayers(team); i++)
+					if( selected != &(mw->game.players[team][i]) )
+							positions.push_back(mw->game.players[team][i].getCurrentPosition());
+			positions.push_back(mw->game.ball.getCurrentPosition());
+			mw->pathplan->fillEnv(positions);
+			
+			// GUI settings
+			gtk_button_set_label((GtkButton*)widget, "Running...");
+			mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
+			//mw->pushStatusMessage("Pathplanning is running.");
 		}
-		
-		mw->pathplan->setInitialPos( Point( mw->game.players[playerTeam][playerIndex].getCurrentPosition().getX(),	
-											mw->game.players[playerTeam][playerIndex].getCurrentPosition().getY() )	);
-		
-		// environment setting
-		vector<RP::Point> positions;
-		for(int team=0; team<2; team++)
-			for(int i=0; i<mw->game.getNplayers(team); i++)
-				if( !(playerTeam==team && i==playerIndex) )
-						positions.push_back(mw->game.players[team][i].getCurrentPosition());
-		mw->pathplan->fillEnv(positions);
-		
-		// GUI settings
-		gtk_button_set_label((GtkButton*)widget, "Running...");
-		//mw->pushStatusMessage("Pathplanning is running.");
-		mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
 	}
 	else{
 		gtk_button_set_label((GtkButton*)widget, "Set Destination");
-		//mw->pushStatusMessage("Waiting for destination definition.");
 		delete mw->pathplan;
 		mw->cursorEvent = CURSOR_EVENT_NOTHING;
 		mw->toDrawPathplan = false;
+		//mw->pushStatusMessage("Waiting for destination definition.");
 	}
 
 }
 
 
-pair<int,int> MainWindow::getSelectedPlayer()
+guiPlayer* MainWindow::getSelectedPlayer()
 {
 		int index, team;
 
@@ -221,7 +207,10 @@ pair<int,int> MainWindow::getSelectedPlayer()
 		team = comboBoxIndex < nPlayersTeam1?  0 : 1;
 		index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
 
-		return pair<int,int>(index,team);
+		if(index==-1)
+			return NULL;
+		else
+			return &(game.players[team][index]);
 }
 
 
@@ -354,8 +343,9 @@ void saveStateButton(GtkWidget *widget, gpointer data)
 			}
 			for (int j=0; j<mw->game.getNplayers(i); j++)
 			{
-				fprintf(arq,"%.0lf,%.0lf\n",mw->game.players[i][j].getCurrentPosition().getX(),	
-											mw->game.players[i][j].getCurrentPosition().getY());
+				fprintf(arq,"%.0lf,%.0lf,%.0lf\n",mw->game.players[i][j].getCurrentPosition().getX(),	
+											      mw->game.players[i][j].getCurrentPosition().getY(),
+											      mw->game.players[i][j].getCurrentAngle());
 			}
 		}
 		
@@ -376,35 +366,34 @@ void loadStateButton(GtkWidget *widget, gpointer data)
 	FILE *arq = fopen("status.txt","r");
 	
 	char buffer[20];
-	int x,y;
-	int i=0;
+	int x,y,theta;
+	int i=0,t=0;
 	
 	if (arq != NULL){
 		while (!feof(arq)){
 			
 			fscanf(arq,"%s\n",buffer);
 
-			//cout<<buffer<<endl;
 			if (strcmp(buffer,"yellow") != 0 && strcmp(buffer,"blue") != 0)
 			{
-				//cout<<"entrou aqui"<<endl;
 				x = atoi(strtok(buffer,","));
-				//cout<<"atoi de x: "<<x<<endl;
 				y = atoi(strtok(NULL,","));
-				//cout<<x<<" "<<y<<" "<<i<<endl;
+				theta = atoi(strtok(NULL,","));
 				mw->game.addPlayer(i,Point(x,y));
+				mw->game.players[i][t].setCurrentAngle(theta);
+				t++;
 			}
 			if (strcmp(buffer,"blue") == 0)
 			{
 				i++;
+				t=0;
 			}
 		}
-	
-		if(mw->isVerbose)
+		if(mw->isVerbose){
 			cout << "Loaded game state." << endl;
-	}
-	fclose(arq);
-	
+		}	
+		fclose(arq);
+	}	
 }
 
 string getParam( gpointer data )
@@ -556,6 +545,8 @@ void createSettingsTab(MainWindow* mw, GtkWidget* notebook)
 	GtkWidget* playerIndex = gtk_check_button_new_with_label("hide Index");
 		mw->displaySettings.checkPlayerIndex = playerIndex;
 	GtkWidget* playerFuture = gtk_check_button_new_with_label("hide Future");
+		gtk_toggle_button_set_active((GtkToggleButton*)playerFuture,TRUE);
+		
 	mw->displaySettings.checkPlayerFuture = playerFuture;
 	//Ball
 	GtkWidget* ballFrame = gtk_frame_new("Ball");
@@ -869,8 +860,10 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 
 	////////////////
 	//// SINAIS ////
-	//   BUTTON: addBluePlayer
-    //   BUTTON: yellowBluePlayer
+	//   BUTTON: addYellowPlayer
+    //   BUTTON: addBluePlayer
+    //   BUTTON: saveGameState
+    //   BUTTON: loadGamState
 	static parametersType parametros;
 	parametros.mw = mw;
 	g_signal_connect(G_OBJECT(addYellowPlayer), "clicked", G_CALLBACK(addYellowPlayerButton), &parametros);
