@@ -28,18 +28,19 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 //CALLBACK which captures mouse clicks
 {
     MainWindow* mw = (MainWindow*) data;
-  
-    if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
+    
+   if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
 
 	    if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
 	     && (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER)) { 
 	  
 		    switch(mw->cursorEvent) {
 
-				case CURSOR_EVENT_PATHPLAN:					
+				case CURSOR_EVENT_PATHPLAN:	
+									
 						mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
 						mw->pathplan->run();
-						mw->cursorEvent = CURSOR_EVENT_NOTHING;
+					//	mw->cursorEvent = CURSOR_EVENT_NOTHING; 	//assim da pra ficar clicando na tela e criando caminhos direto
 						mw->toDrawPathplan = true;
 						break;
 					
@@ -52,6 +53,11 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 						mw->game.addPlayer( 1, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
+						
+		//		case CURSOR_EVENT_SET_BALL:
+			//			mw->game.ball.setCurrentPosition(Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM));
+				//		mw->cursorEvent = CURSOR_EVENT_NOTHING;
+					//	break;
 			}
 		} 
 	}
@@ -74,7 +80,7 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
 	}
         
     
-    // players movement
+    // players movement8
     int stepsize = mw->getStepsize();  
 
     guiPlayer *selected = mw->getSelectedPlayer();
@@ -142,8 +148,8 @@ void setBallPos(GtkWidget *widget, gpointer data)
 	mw->game.ball.setCurrentPosition(Point(ballx, bally));
 }
 
-
 void pathplanButton(GtkWidget *widget, gpointer data)
+
 //creates a "hanging click" to wait until the user clicks in the drawing area
 {
 	parametersType* parametros = (parametersType*) data;
@@ -324,6 +330,15 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
 
 	//mw->pushStatusMessage("Added 1 Blue Player.");
+}
+
+void setBallButton(GtkWidget *widget, gpointer data)
+{
+	// parameters
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+	
+	//mw->cursorEvent = CURSOR_EVENT_SET_BALL;
 }
 
 void saveStateButton(GtkWidget *widget, gpointer data)
@@ -835,6 +850,7 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 	GtkWidget* addBluePlayer = gtk_button_new_with_mnemonic("Blue++");
     GtkWidget* saveState = gtk_button_new_with_mnemonic("Save");
     GtkWidget* loadState = gtk_button_new_with_mnemonic("Load");
+    GtkWidget* setBall = gtk_button_new_with_mnemonic("Ball");
 
     GtkWidget* addPlayersBox = gtk_hbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(addPlayersBox), addYellowPlayer, false, false, 0);
@@ -843,6 +859,7 @@ GtkWidget* createLateralMenu(MainWindow* mw)
     GtkWidget* stateBox = gtk_hbox_new (FALSE, 0);
             gtk_box_pack_start(GTK_BOX(stateBox), saveState, false, false, 0);
             gtk_box_pack_start(GTK_BOX(stateBox), loadState, false, false, 0);
+            gtk_box_pack_start(GTK_BOX(stateBox), setBall, false, false, 0);
 
     GtkWidget* playerFrameVBOX = gtk_vbox_new (FALSE, 0);
             gtk_container_add(GTK_CONTAINER(playerFrameVBOX),jogadores);
@@ -870,6 +887,7 @@ GtkWidget* createLateralMenu(MainWindow* mw)
 	g_signal_connect(G_OBJECT(addBluePlayer), "clicked", G_CALLBACK(addBluePlayerButton), &parametros);	
 	g_signal_connect(G_OBJECT(saveState), "clicked", G_CALLBACK(saveStateButton), &parametros);
 	g_signal_connect(G_OBJECT(loadState), "clicked", G_CALLBACK(loadStateButton), &parametros);
+	g_signal_connect(G_OBJECT(setBall), "clicked", G_CALLBACK(setBallButton), &parametros);
 
 
 
