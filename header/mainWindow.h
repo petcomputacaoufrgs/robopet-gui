@@ -46,7 +46,8 @@ class MainWindow
 	friend void setBolaPos(GtkWidget *widget, gpointer data);
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
 	friend void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data);
-
+	friend void setBallButton(GtkWidget *widget, gpointer data);
+	
 	//Interface creation functions
 	friend GtkWidget* createLateralMenu(MainWindow* mw);
 	friend void createControlTab(MainWindow* mw, GtkWidget* notebook);

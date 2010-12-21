@@ -54,10 +54,10 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 						
-		//		case CURSOR_EVENT_SET_BALL:
-			//			mw->game.ball.setCurrentPosition(Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM));
-				//		mw->cursorEvent = CURSOR_EVENT_NOTHING;
-					//	break;
+				case CURSOR_EVENT_SET_BALL:
+						mw->game.ball.setCurrentPosition(Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM));
+						mw->cursorEvent = CURSOR_EVENT_NOTHING;
+						break;
 			}
 		} 
 	}
@@ -137,7 +137,7 @@ void MainWindow::fillTextOutput(char text[])
 
 void setBallPos(GtkWidget *widget, gpointer data)
 {
-        // parameters
+	// parameters
 	parametersType* parametros = (parametersType*) data;
 
 	MainWindow* mw = parametros->mw;
@@ -338,7 +338,7 @@ void setBallButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 	
-	//mw->cursorEvent = CURSOR_EVENT_SET_BALL;
+	mw->cursorEvent = CURSOR_EVENT_SET_BALL;
 }
 
 void saveStateButton(GtkWidget *widget, gpointer data)
