@@ -37,11 +37,11 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 		    switch(mw->cursorEvent) {
 
 				case CURSOR_EVENT_PATHPLAN:	
-									
 						mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
 						mw->pathplan->run();
-					//	mw->cursorEvent = CURSOR_EVENT_NOTHING; 	//assim da pra ficar clicando na tela e criando caminhos direto
+					
 						mw->toDrawPathplan = true;
+						//mw->cursorEvent = CURSOR_EVENT_NOTHING; 	//assim da pra ficar clicando na tela e criando caminhos direto
 						break;
 					
 				case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
