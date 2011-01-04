@@ -36,9 +36,8 @@ class MainWindow
 	//GTK Callbacks
 	friend void timeoutAdd(GtkWidget *widget, MainWindow* mw);
 	friend void timeoutRemove(GtkWidget *widget, MainWindow* mw);
-	friend gboolean renderScene(GtkWidget * widget, GdkEvent *event, gpointer data);
-	friend gboolean exposeEvent(GtkWidget * widget, GdkEvent *event, gpointer data);
-	friend gboolean configureEvent(GtkWidget *widget, MainWindow* mw, GdkEventConfigure *event, gpointer data);
+	friend gint expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data);
+	friend gint configure_event(GtkWidget *widget, GdkEventConfigure *event, gpointer data);
 	friend void realize(GtkWidget *widget,  MainWindow* mw, gpointer data);
 
 	//Interface Callbacks
@@ -59,21 +58,25 @@ class MainWindow
             
 		GtkWidget *window;
 		GtkWidget *soccer_field;
-		GdkGLConfig *glconfig;
+		GdkPixmap *pixmap;
 		guint timeout_handler_id;
 		//GtkWidget *statusBar;
 
 		void configuraGL();
 		void createDrawingArea();
-		void createMWindow(string title);
+		void iterate();
+        void generateTextOutput();
+		void createInterface();
+		
+		//Drawing functions
 		void drawWorld();
+		void drawRobot(float centerX, float centerY, float angle, int robotNumber);
+		void drawBall(float centerX, float centerY);
+		void drawField();
+		void drawPositionMarker(int x, int y);
+        void drawObstacles();
 		void drawPlayers();
 		void drawPathplan();
-        void iterate();
-        void generateTextOutput();
-        void drawObstacles();
-
-		void createInterface();
 
 		//Interface variables
 		int 			cursorEvent;

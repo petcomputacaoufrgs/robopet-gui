@@ -16,14 +16,14 @@ class guiPlayer: public Player
         
         bool hasUpdatedInfo;
         
-        void draw(int index, DisplaySettings settings);
+        void draw(cairo_t *cr, int index, DisplaySettings settings);
 
     private:
 
-        void drawBody(float centerX, float centerY);
-        void drawAngle(float centerX, float centerY, float angle);
-        void drawIndex(float centerX, float centerY, int robotNumber);
-        void drawVector(float centerX, float centerY, float vecX, float vecY);
+        void drawBody(cairo_t *cr, float centerX, float centerY);
+        void drawAngle(cairo_t *cr, float centerX, float centerY, float angle);
+        void drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber);
+        void drawVector(cairo_t *cr, float centerX, float centerY, float vecX, float vecY);
 
 };
 

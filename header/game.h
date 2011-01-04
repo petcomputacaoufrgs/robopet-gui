@@ -9,9 +9,7 @@
 
 class Game
 {
-    #define MAX_JOGADORES 5 //TEMPORÁRIO
-
-    public:
+	public:
         Game();
         ~Game();
 
