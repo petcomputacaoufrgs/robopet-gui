@@ -13,7 +13,7 @@ class GuiBall: public RP::Ball
 
         bool hasUpdatedInfo;
 
-        void draw(DisplaySettings settings);
+        void draw(cairo_t *cr, DisplaySettings settings);
         
 };
 

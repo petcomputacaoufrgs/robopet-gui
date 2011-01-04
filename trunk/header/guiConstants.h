@@ -36,6 +36,7 @@
 
 
 // COLORS
+#define WHITE   1.0, 1.0, 1.0
 #define DARK_GREEN   0.0, 0.5, 0.0
 #define YELLOW  1, 1, 0
 #define BLUE  0, 0, 1
@@ -43,6 +44,7 @@
 #define BLACK  0, 0, 0
 #define PURPLE 0.5, 0, 0.5
 #define RED 1, 0, 0
+#define ORANGE 1, 0.5, 0
 
 #define TIMEOUT_INTERVAL 15
 

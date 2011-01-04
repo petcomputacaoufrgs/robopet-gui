@@ -39,49 +39,62 @@ void drawBox(float centerX, float centerY, float side)
 }
 
 
-void drawField()
+void MainWindow::drawField()
 {
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glBegin(GL_LINES);
-	glVertex3f(ARENA_WIDTH/2, BORDER, 0);
-	glVertex3f(ARENA_WIDTH/2, ARENA_HEIGHT - BORDER, 0);
+	cairo_t *cr = gdk_cairo_create( pixmap );
+	//cairo_set_line_width( cr, 1);
+	
+	// green background
+	cairo_set_source_rgb( cr, DARK_GREEN);
+	cairo_rectangle (cr, 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+	cairo_fill (cr);
+	
+	// field lines	
+	cairo_set_source_rgb( cr, WHITE);
+		
+	cairo_move_to(cr, ARENA_WIDTH/2, BORDER);
+	cairo_line_to(cr, ARENA_WIDTH/2, ARENA_HEIGHT - BORDER);
 
-	glVertex3f(BORDER, BORDER, 0);
-	glVertex3f(BORDER, ARENA_HEIGHT - BORDER, 0);
+	cairo_move_to(cr, BORDER, BORDER);
+	cairo_line_to(cr, BORDER, ARENA_HEIGHT - BORDER);
 
-	glVertex3f(ARENA_WIDTH - BORDER, BORDER, 0);
-	glVertex3f(ARENA_WIDTH - BORDER, ARENA_HEIGHT - BORDER, 0);
+	cairo_move_to(cr, ARENA_WIDTH - BORDER, BORDER);
+	cairo_line_to(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT - BORDER);
 
-	glVertex3f(BORDER, BORDER, 0);
-	glVertex3f(ARENA_WIDTH - BORDER, BORDER, 0);
+	cairo_move_to(cr, BORDER, BORDER);
+	cairo_line_to(cr, ARENA_WIDTH - BORDER, BORDER);
 
-	glVertex3f(BORDER, ARENA_HEIGHT - BORDER, 0);
-	glVertex3f(ARENA_WIDTH - BORDER, ARENA_HEIGHT - BORDER, 0);
+	cairo_move_to(cr, BORDER, ARENA_HEIGHT - BORDER);
+	cairo_line_to(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT - BORDER);
 
-	glVertex3f(BORDER + GOAL_CIRC_RADIUS, ARENA_HEIGHT/2 - GOAL_LINE/2, 0);
-	glVertex3f(BORDER + GOAL_CIRC_RADIUS, ARENA_HEIGHT/2 + GOAL_LINE/2, 0);
+	cairo_stroke (cr);
+	
+	// goal areas
+	cairo_arc(cr, BORDER, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, -M_PI/2, 0);
+	cairo_arc(cr, BORDER, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, 0, M_PI/2);
+	cairo_stroke (cr);
 
-	glVertex3f(ARENA_WIDTH - BORDER - GOAL_CIRC_RADIUS, ARENA_HEIGHT/2 - GOAL_LINE/2, 0);
-	glVertex3f(ARENA_WIDTH - BORDER - GOAL_CIRC_RADIUS, ARENA_HEIGHT/2 + GOAL_LINE/2, 0);
-	glEnd();
-
-	drawQuarterCircle(BORDER, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, 4);
-	drawQuarterCircle(BORDER, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, 1);
-
-	drawQuarterCircle(ARENA_WIDTH - BORDER, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, 3);
-	drawQuarterCircle(ARENA_WIDTH - BORDER, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, 2);
-	drawCircle(ARENA_WIDTH/2, ARENA_HEIGHT/2, HALF_FIELD_RADIUS);
+	cairo_arc(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, M_PI/2, M_PI);
+	cairo_arc(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, M_PI, -M_PI/2);
+	cairo_stroke (cr);
+	
+	// field center
+	cairo_arc(cr, ARENA_WIDTH/2, ARENA_HEIGHT/2, HALF_FIELD_RADIUS, 0, 2*M_PI);
+	cairo_stroke (cr);
+	
 }
 void MainWindow::drawPlayers()
 {
+	cairo_t *cr = gdk_cairo_create( pixmap );
+	
 	for(int team=0; team<2; team++)
 		for(int i=0; i<game.getNplayers(team); i++) {
-			team==0 ? glColor3f(YELLOW) : glColor3f(BLUE);
-			game.players[team][i].draw(i,displaySettings);
+			cairo_set_source_rgb( cr, team==0?YELLOW:BLUE );
+			game.players[team][i].draw(cr,i,displaySettings);
 		}
 }
 
-void guiPlayer::draw(int index, DisplaySettings settings)
+void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 {
     //if(this->hasUpdatedInfo) {
    
@@ -89,33 +102,35 @@ void guiPlayer::draw(int index, DisplaySettings settings)
 	double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
 	
 	if( !settings.isHidePlayerBody() )
-		drawBody( posx, posy);
+		drawBody( cr, posx, posy);
 	if( !settings.isHidePlayerAngle() )
-		drawAngle(posx, posy, this->getCurrentAngle());
+		drawAngle( cr, posx, posy, this->getCurrentAngle());
 	if( !settings.isHidePlayerIndex() )
-		drawIndex(posx, posy, index);
+		drawIndex( cr, posx, posy, index);
 	if( !settings.isHidePlayerFuture() )
-		drawVector(posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
+		drawVector( cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
 							   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
 
     //}
 }
 
-void guiPlayer::drawBody(float centerX, float centerY)
+void guiPlayer::drawBody(cairo_t *cr, float centerX, float centerY)
 {
-	drawCircle(centerX, centerY, ROBOT_RADIUS);
+	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS, 0, 2*M_PI);
+	cairo_stroke (cr);
 }
 
 
-void guiPlayer::drawAngle(float centerX, float centerY, float angle)
+void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle)
 {
 	float ang = -angle * 2 * M_PI / 360;
 
-	drawLine(centerX , centerY,
-			 centerX + cos(ang) * ROBOT_RADIUS * 1.2 , centerY + sin(ang) * ROBOT_RADIUS * 1.2);
+	cairo_move_to(cr, centerX , centerY);
+	cairo_line_to(cr, centerX + cos(ang) * ROBOT_RADIUS * 1.2 , centerY + sin(ang) * ROBOT_RADIUS * 1.2);
+	cairo_stroke (cr);
 }
 
-void guiPlayer::drawIndex(float centerX, float centerY, int robotNumber)
+void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber)
 {
 	glColor3f(1, 1, 1);
 	glRasterPos2f(centerX + ROBOT_RADIUS, centerY - ROBOT_RADIUS);
@@ -126,7 +141,7 @@ void guiPlayer::drawIndex(float centerX, float centerY, int robotNumber)
 	//glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_10, buffer);
 }
 
-void guiPlayer::drawVector(float startX, float startY, float endX, float endY)
+void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, float endY)
 {
 	glColor3f(CIANO);
 	glLineStipple(2, 0xAAAA);
@@ -140,12 +155,12 @@ void guiPlayer::drawVector(float startX, float startY, float endX, float endY)
 	drawLine(endX-ROBOT_RADIUS/2, endY, endX+ROBOT_RADIUS/2, endY);
 }
 
-void GuiBall::draw(DisplaySettings settings)
+void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 {
 	if( !settings.isHideBall() )
 	{
-		glColor3f(1, 0.5, 0);
-		drawCircle(MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER, BALL_RADIUS);
+		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER, BALL_RADIUS, 0, 2*M_PI);
+		cairo_stroke (cr);
 	}
 }
 
