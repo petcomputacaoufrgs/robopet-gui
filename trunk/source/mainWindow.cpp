@@ -19,7 +19,7 @@ MainWindow::MainWindow(string name)
 
 	game.ball = GuiBall();
 	
-	//pushStatusMessage("GUI initialized.");
+	pushStatusMessage("GUI initialized.");
 }
 
 void MainWindow::generateTextOutput()
@@ -43,10 +43,7 @@ void MainWindow::generateTextOutput()
 }
 
 
-
-		
-	
-	void MainWindow::iterate()
+void MainWindow::iterate()
 {
 	communicate();
 
@@ -64,37 +61,34 @@ void MainWindow::drawWorld()
 
 	drawPathplan();
 
-	cairo_t *cr = gdk_cairo_create( pixmap );
 	cairo_set_source_rgb(cr, ORANGE);
 	game.ball.draw(cr, displaySettings);
 }
 
-gint configure_event(GtkWidget *widget, GdkEventConfigure *event, gpointer data)
+gint configure_event(GtkWidget *widget, GdkEventConfigure *event, MainWindow* mw)
 {
-	MainWindow * mw = (MainWindow*) data;
-
 	mw->pixmap = gdk_pixmap_new(widget->window,
 						  widget->allocation.width,
 						  widget->allocation.height,
 						  -1);
 	
-	gdk_draw_rectangle (mw->pixmap,
+	gdk_draw_rectangle(mw->pixmap,
 					  widget->style->white_gc,
 					  TRUE,
 					  0, 0,
 					  widget->allocation.width,
 					  widget->allocation.height);
+					  
+	mw->cr = gdk_cairo_create(mw->pixmap);
 
   return TRUE;
 }
 
 
-gint expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+gint expose_event(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
 {
-	MainWindow * mw = (MainWindow*) data;
-
 	mw->iterate();
-	cout << "updated" << endl;
+	//cout << "updated" << endl;
 	
 	gdk_draw_pixmap(widget->window,
 				  widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
@@ -106,12 +100,11 @@ gint expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	return FALSE;
 }
 
-gboolean renderScene(GtkWidget * widget, GdkEvent *event, gpointer data)
+gboolean renderScene(GtkWidget * widget, GdkEvent *event)
 {
-	cout << "renderscene" << endl;
-        gtk_widget_draw(widget, NULL);
+	gtk_widget_draw(widget, NULL);
 
-        return TRUE;
+	return TRUE;
 }
 
 
@@ -136,12 +129,9 @@ void MainWindow::createDrawingArea()
 
 	g_signal_connect(G_OBJECT(soccer_field), "configure_event", G_CALLBACK(configure_event), this);    
     g_signal_connect(G_OBJECT(soccer_field), "expose_event", G_CALLBACK(expose_event), this);    
-	g_signal_connect(G_OBJECT(soccer_field), "map_event",  G_CALLBACK(timeoutAdd), soccer_field);
-	g_signal_connect(G_OBJECT(soccer_field), "unmap_event", G_CALLBACK(timeoutRemove), soccer_field);
-	g_signal_connect(G_OBJECT(soccer_field), "unrealize", G_CALLBACK(timeoutRemove), soccer_field);
     gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
 		gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
 		cursorEvent = CURSOR_EVENT_NOTHING;
 		
-	
+	gtk_timeout_add(TIMEOUT_INTERVAL, (GtkFunction)renderScene, window);
 }
