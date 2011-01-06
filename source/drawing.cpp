@@ -7,41 +7,8 @@
 #define drawLine(x1,y1,x2,y2) glBegin(GL_LINES); glVertex2f ((x1),(y1)); glVertex2f ((x2),(y2)); glEnd();
 
 
-
-
-void drawQuarterCircle(float centerX, float centerY, float radius, int quadrante)
-{
-    const int q = 1000;
-    float ang = 2 * M_PI / q;
-   
-    glBegin(GL_LINE_STRIP);
-        for(int i = (quadrante - 1) * q / 4; i <= quadrante * q/4; i++)
-        {
-            glVertex2f(centerX + cos(i * ang) * radius, centerY + sin(i * ang) * radius);
-        }
-    glEnd();
-}
-
-void drawCircle(float centerX, float centerY, float radius)
-{
-	for(int i=1; i<5; i++)
-		drawQuarterCircle(centerX, centerY, radius, i);
-}
-
-void drawBox(float centerX, float centerY, float side)
-{
-	glBegin(GL_LINE_LOOP);
-            glVertex2f(centerX - side/2, centerY - side/2);
-            glVertex2f(centerX + side/2 -1, centerY - side/2);
-            glVertex2f(centerX + side/2 -1, centerY + side/2 -1);
-            glVertex2f(centerX - side/2, centerY + side/2 -1);
-        glEnd();
-}
-
-
 void MainWindow::drawField()
 {
-	cairo_t *cr = gdk_cairo_create( pixmap );
 	//cairo_set_line_width( cr, 1);
 	
 	// green background
@@ -85,11 +52,12 @@ void MainWindow::drawField()
 }
 void MainWindow::drawPlayers()
 {
-	cairo_t *cr = gdk_cairo_create( pixmap );
-	
 	for(int team=0; team<2; team++)
 		for(int i=0; i<game.getNplayers(team); i++) {
-			cairo_set_source_rgb( cr, team==0?YELLOW:BLUE );
+			if(team==0)
+				cairo_set_source_rgb(cr, YELLOW);
+			else
+				cairo_set_source_rgb(cr, BLUE);
 			game.players[team][i].draw(cr,i,displaySettings);
 		}
 }
@@ -102,15 +70,14 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 	double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
 	
 	if( !settings.isHidePlayerBody() )
-		drawBody( cr, posx, posy);
+		drawBody(cr, posx, posy);
 	if( !settings.isHidePlayerAngle() )
-		drawAngle( cr, posx, posy, this->getCurrentAngle());
+		drawAngle(cr, posx, posy, this->getCurrentAngle());
 	if( !settings.isHidePlayerIndex() )
-		drawIndex( cr, posx, posy, index);
+		drawIndex(cr, posx, posy, index);
 	if( !settings.isHidePlayerFuture() )
-		drawVector( cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
+		drawVector(cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
 							   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
-
     //}
 }
 
@@ -120,6 +87,12 @@ void guiPlayer::drawBody(cairo_t *cr, float centerX, float centerY)
 	cairo_stroke (cr);
 }
 
+void drawBox(cairo_t *cr, float centerX, float centerY, float side)
+{	
+	//cairo_rectangle(cr, centerX-side/2, centerY-side/2, centerX+side/2, centerY+side/2);
+	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS/3., 0, 2*M_PI);
+	cairo_stroke(cr);
+}
 
 void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle)
 {
@@ -132,27 +105,29 @@ void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle
 
 void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber)
 {
-	glColor3f(1, 1, 1);
-	glRasterPos2f(centerX + ROBOT_RADIUS, centerY - ROBOT_RADIUS);
-	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, robotNumber + 48);
-
-	//char buffer[200];
-	//sprintf(buffer, "%i\n pos: %i,%i", robotNumber, this->getCurrentPosition().getX(), this->getCurrentPosition().getY());        
-	//glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_10, buffer);
+	/*cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size(cr, 10.0);
+	cairo_move_to(cr, centerX, centerY);
+	
+	char text[2];
+	text[0] = robotNumber + 48;
+	text[1] = '\0';
+	cairo_show_text(cr, text);*/
 }
 
 void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, float endY)
 {
-	glColor3f(CIANO);
-	glLineStipple(2, 0xAAAA);
-	glEnable(GL_LINE_STIPPLE);
+	double dashes[] = {5.0};
+	int    ndash  = sizeof (dashes)/sizeof(dashes[0]);
+	cairo_set_dash (cr, dashes, ndash, 0);
 
-	drawLine(startX, startY, endX, endY);
+	cairo_set_line_width( cr, 1);
+	cairo_move_to(cr, startX, startY);
+	cairo_line_to(cr, endX, endY);
+	cairo_stroke(cr);
+	cairo_set_line_width( cr, 2);
 	
-	glDisable(GL_LINE_STIPPLE);
-
-	drawLine(endX, endY-ROBOT_RADIUS/2, endX, endY+ROBOT_RADIUS/2);
-	drawLine(endX-ROBOT_RADIUS/2, endY, endX+ROBOT_RADIUS/2, endY);
+	cairo_set_dash (cr, dashes, 0, 0);
 }
 
 void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
@@ -164,11 +139,11 @@ void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 	}
 }
 
-void drawPath(list<Node> path)
+void drawPath(cairo_t *cr, list<Node> path)
 {
     //glBegin(GL_LINE_STRIP);
 	for(std::list<Node>::iterator i = path.begin(); i != path.end(); i++)
-		drawBox( MM_TO_PIX( CELLS_TO_MM_X( i->getX() )) + BORDER,
+		drawBox( cr, MM_TO_PIX( CELLS_TO_MM_X( i->getX() )) + BORDER,
 				 MM_TO_PIX( CELLS_TO_MM_Y( i->getY() )) + BORDER,
 				(ARENA_WIDTH_MM/MAX_X)/30 );
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
@@ -177,38 +152,44 @@ void drawPath(list<Node> path)
 
 void MainWindow::drawObstacles()
 {
+	cairo_set_source_rgb( cr, RED);
+	
     for(int i=0;i<MAX_X;i++)
         for(int k=0;k<MAX_Y;k++)
             if( pathplan->env[i][k] == OBSTACLE) 
             {
-               drawBox( MM_TO_PIX( CELLS_TO_MM_X(i) ) + BORDER,
+               drawBox( cr, MM_TO_PIX( CELLS_TO_MM_X(i) ) + BORDER,
 						MM_TO_PIX( CELLS_TO_MM_Y(k) ) + BORDER,
-						(ARENA_WIDTH_MM/MAX_X)/30 );;
-			}                   
+						(ARENA_WIDTH_MM/MAX_X)/30 );
+			}
+}
+
+void drawMatrixLimits(cairo_t *cr, float x1, float y1, float x2, float y2)
+{
+	// draw Pathplanning matrix limits
+	double dashes[] = {10.0};
+	int    ndash  = sizeof (dashes)/sizeof(dashes[0]);
+	
+	cairo_set_dash (cr, dashes, ndash, 0);
+	cairo_set_source_rgb(cr, BLACK);
+	cairo_rectangle(cr, x1, y1, x2, y2 );
+	cairo_stroke(cr);
+	
+	cairo_set_dash (cr, dashes, 0, 0);
 }
 
 void MainWindow::drawPathplan()
 {
 	if( toDrawPathplan ) {
+		
+		drawMatrixLimits( cr, BORDER, BORDER, MM_TO_PIX(CELLS_TO_MM_X(MAX_X)), MM_TO_PIX(CELLS_TO_MM_X(MAX_Y)) );
 	
-		// draw Pathplanning Envirnomnet
-		glBegin(GL_LINE_LOOP);
-            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER);
-            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(MAX_X)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER );
-            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(MAX_X)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(MAX_Y)) + BORDER );
-            glVertex2f( MM_TO_PIX(CELLS_TO_MM_X(0)) + BORDER, MM_TO_PIX(CELLS_TO_MM_X(MAX_Y)) + BORDER);
-        glEnd();
-	
-		if( getPrintFullPathplan() ) {
-			glColor3f(BLACK);
-			drawPath(pathplan->pathFull);
-		}
-		glColor3f(CIANO);
-		drawPath(pathplan->pathFinal);
+		if( getPrintFullPathplan() )
+			drawPath(cr, pathplan->pathFull);
+		cairo_set_source_rgb( cr, CIANO);
+		drawPath(cr, pathplan->pathFinal);
 
-		if( getPrintObstacles() ) {
-			glColor3f(RED);
+		if( getPrintObstacles() )
 			drawObstacles();
-		}
 	}
 }

@@ -36,9 +36,9 @@ class MainWindow
 	//GTK Callbacks
 	friend void timeoutAdd(GtkWidget *widget, MainWindow* mw);
 	friend void timeoutRemove(GtkWidget *widget, MainWindow* mw);
-	friend gint expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data);
-	friend gint configure_event(GtkWidget *widget, GdkEventConfigure *event, gpointer data);
-	friend void realize(GtkWidget *widget,  MainWindow* mw, gpointer data);
+	friend gint expose_event(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
+	friend gint configure_event(GtkWidget *widget, GdkEventConfigure *event, MainWindow* mw);
+	friend void realize(GtkWidget *widget, MainWindow* mw);
 
 	//Interface Callbacks
 	friend void pathplanButton(GtkWidget *widget, gpointer data);
@@ -46,14 +46,12 @@ class MainWindow
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
 	friend void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data);
 	friend void setBallButton(GtkWidget *widget, gpointer data);
-	
-	//Interface creation functions
-	friend GtkWidget* createLateralMenu(MainWindow* mw);
-	friend void createControlTab(MainWindow* mw, GtkWidget* notebook);
-	friend void createPathplanningTab(MainWindow* mw, GtkWidget* notebook);
 	friend void addYellowPlayerButton(GtkWidget *widget, gpointer data);
 	friend void addBluePlayerButton(GtkWidget *widget, gpointer data);
-
+	friend void clientCommunicationButton(GtkWidget *widget, gpointer data);
+	friend void serverCommunicationButton(GtkWidget *widget, gpointer data);
+	
+	
         private:
             
 		GtkWidget *window;
@@ -86,7 +84,12 @@ class MainWindow
 		GtkWidget* 		pathplanBox;
 		GtkWidget* 		printFullPathplan;
 		GtkWidget* 		printObstacles;
+		GtkWidget		*clientHost, *serverHost;
+		GtkWidget		*clientPort, *serverPort;
+
+		GtkWidget		*useRrt, *useAstar;
 		bool 			toDrawPathplan;
+		cairo_t 		*cr;
 
 		//Communication (communication.cpp)
 		RoboPETClient 	*aitoguiClient;
@@ -104,7 +107,6 @@ class MainWindow
 		void 			pushStatusMessage(string msg);
 		void 			fillTextOutput(char text[]);
 		int 			getStepsize();
-		pathplanType 	getPathplanIndex();
 		int 			getPrintFullPathplan();
 		int				getPrintObstacles();
 		
@@ -116,7 +118,6 @@ class MainWindow
 		void 			closeServer();
 
 		Game 			game; 		//game things
-		//guiPathplan*		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		Pathplan* 		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
 		bool 			isVerbose;
