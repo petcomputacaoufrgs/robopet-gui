@@ -4,7 +4,6 @@
 #include<iostream>
 
 #include <gtk/gtk.h>
-#include <gtk/gtkgl.h>
 
 
 using namespace std;

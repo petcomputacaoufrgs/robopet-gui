@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <gtk/gtk.h>
-#include <gtk/gtkgl.h>
 
 #include "point.h"
 #include "guiPlayer.h"

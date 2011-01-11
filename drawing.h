@@ -2,7 +2,6 @@
 #include <math.h>
 #include <guiConstants.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkgl.h>
 
 #include "guiPlayer.h"
 #include "displaySettings.h"
