@@ -4,18 +4,17 @@
 using namespace std;
 
 
-MainWindow::MainWindow(string name)
+MainWindow::MainWindow()
 {
-	createInterface();
-	createDrawingArea();
-	gtk_widget_show_all(window);
-
 	isVerbose = false;
-
 	aitoguiClient = NULL;
 	guitoaiServer = NULL;
 	pathplan = NULL;
 	toDrawPathplan = false;
+	
+	createInterface();
+	createDrawingArea();
+	gtk_widget_show_all(window);
 
 	game.ball = GuiBall();
 	

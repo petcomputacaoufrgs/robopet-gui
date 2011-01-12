@@ -51,8 +51,31 @@ class MainWindow
 	friend void clientCommunicationButton(GtkWidget *widget, gpointer data);
 	friend void serverCommunicationButton(GtkWidget *widget, gpointer data);
 	
-	
-        private:
+	public:
+		MainWindow();
+		~MainWindow() {};
+
+		//Interface functions
+		guiPlayer		*getSelectedPlayer();
+		void 			pushStatusMessage(string msg);
+		void 			fillTextOutput(char text[]);
+		int 			getStepsize();
+		int 			getPrintFullPathplan();
+		int				getPrintObstacles();
+		
+		//Communication (communication.cpp)
+		void 			communicate();
+		void 			openClient(int port, char* host);
+		void 			closeClient();
+		void 			openServer(int port, char* host);
+		void 			closeServer();
+
+		Game 			game; 		//game things
+		Pathplan* 		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		DisplaySettings displaySettings; //configurations about the information to display on the field
+		bool 			isVerbose;
+		
+	private:
             
 		GtkWidget *window;
 		GtkWidget *soccer_field;
@@ -96,32 +119,6 @@ class MainWindow
 		void 			listenToAI();
 		RoboPETServer 	*guitoaiServer;
 		void 			sendToAI();
-
-	public:
-		MainWindow();
-		~MainWindow() {};
-		MainWindow(string title);
-
-		//Interface functions
-		guiPlayer		*getSelectedPlayer();
-		void 			pushStatusMessage(string msg);
-		void 			fillTextOutput(char text[]);
-		int 			getStepsize();
-		int 			getPrintFullPathplan();
-		int				getPrintObstacles();
-		
-		//Communication (communication.cpp)
-		void 			communicate();
-		void 			openClient(int port, char* host);
-		void 			closeClient();
-		void 			openServer(int port, char* host);
-		void 			closeServer();
-
-		Game 			game; 		//game things
-		Pathplan* 		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
-		DisplaySettings displaySettings; //configurations about the information to display on the field
-		bool 			isVerbose;
-
 };
 
 

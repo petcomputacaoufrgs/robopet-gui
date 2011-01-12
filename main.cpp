@@ -7,7 +7,7 @@ int main (int argc, char *argv[])
 {
 	gtk_init (&argc, &argv);
 
-	static MainWindow window = MainWindow("GUI");
+	static MainWindow window;
 
 	printf("GUI Rodando!\n");
         
