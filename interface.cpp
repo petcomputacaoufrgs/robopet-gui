@@ -96,9 +96,15 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
 
             case GDK_d: selected->setCurrentPositionX( selected->getCurrentPosition().getX() + stepsize ); break;
 
-            case GDK_q: selected->setCurrentAngle( selected->getCurrentAngle() + 10 ); break;
+            case GDK_q: selected->setCurrentAngle( selected->getCurrentAngle() + 10 ); 
+						if (selected->getCurrentAngle() >= 360)
+							selected->setCurrentAngle(0);
+						break;
 
-            case GDK_e: selected->setCurrentAngle( selected->getCurrentAngle() - 10 ); break;
+            case GDK_e: selected->setCurrentAngle( selected->getCurrentAngle() - 10 ); 
+						if (selected->getCurrentAngle() <= -360)
+							selected->setCurrentAngle(0);
+						break;
 
         }
     }
