@@ -30,7 +30,7 @@ $(OBJDIR)/%.o: %.cpp %.h | $(OBJDIR)
 
 $(OBJDIR):
 	@echo "Created OBJ directory."
-	@mkdir $(OBJDIR)
+	@mkdir $(OBJDIR) -p
 
 
 clean:
