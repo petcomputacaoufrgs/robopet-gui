@@ -189,7 +189,6 @@ guiPlayer* MainWindow::getSelectedPlayer()
 
 		int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)this->game.playersComboBox);
 		int nPlayersTeam1 = this->game.getNplayers(0);
-		int nPlayersTeam2 = this->game.getNplayers(1);
 
 		team = comboBoxIndex < nPlayersTeam1?  0 : 1;
 		index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
@@ -257,7 +256,6 @@ void getLocalIPButton(GtkWidget *widget, gpointer data)
 {
     // parameters
 	parametersType* parametros = (parametersType*) data;
-	MainWindow* mw = parametros->mw;
     GtkWidget* whereToPut = (GtkWidget*)parametros->widgets[0];
 
 	//use linux command to get the local IP
@@ -379,7 +377,6 @@ void loadStateButton(GtkWidget *widget, gpointer data)
 string getParam( gpointer data )
 {
 	parametersType* parametros = (parametersType*) data;
-	MainWindow* mw = parametros->mw;
 	return " " + string( (char*)gtk_entry_get_text((GtkEntry*)parametros->widgets[0]) );
 }
 
@@ -480,9 +477,9 @@ void MainWindow::createInterface()
 	this->clientHost = GTK_WIDGET( gtk_builder_get_object(builder,"clienthost") );
 	this->serverHost = GTK_WIDGET( gtk_builder_get_object(builder,"serverhost") );
 	this->clientPort = GTK_WIDGET( gtk_builder_get_object(builder,"clientport") );
-		gtk_spin_button_set_value((GtkSpinButton*)clientPort, SERVER_INITIAL_PORT);
+		gtk_spin_button_set_value((GtkSpinButton*)clientPort, CLIENT_INITIAL_PORT);
 	this->serverPort = GTK_WIDGET( gtk_builder_get_object(builder,"serverport") );
-		gtk_spin_button_set_value((GtkSpinButton*)serverPort, CLIENT_INITIAL_PORT);
+		gtk_spin_button_set_value((GtkSpinButton*)serverPort, SERVER_INITIAL_PORT);
 	this->statusBar = GTK_WIDGET( gtk_builder_get_object(builder,"statusBar") );
 		
 	// SIGNALS (over the air, over the air)	
