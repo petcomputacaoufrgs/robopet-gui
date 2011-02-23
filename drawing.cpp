@@ -103,16 +103,46 @@ void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle
 	cairo_stroke (cr);
 }
 
+char* itoa(int value, char* result, int base) {
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukás Chmela
+ * Released under GPLv3.
+ */
+	// check that the base if valid
+	if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+	char* ptr = result, *ptr1 = result, tmp_char;
+	int tmp_value;
+
+	do {
+		tmp_value = value;
+		value /= base;
+		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+	} while ( value );
+
+	// Apply negative sign
+	if (tmp_value < 0) *ptr++ = '-';
+	*ptr-- = '\0';
+	while(ptr1 < ptr) {
+		tmp_char = *ptr;
+		*ptr--= *ptr1;
+		*ptr1++ = tmp_char;
+	}
+	return result;
+}
+
 void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber)
 {
-	/*cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, 10.0);
-	cairo_move_to(cr, centerX, centerY);
+	cairo_move_to(cr, centerX, centerY+17);
 	
-	char text[2];
-	text[0] = robotNumber + 48;
-	text[1] = '\0';
-	cairo_show_text(cr, text);*/
+	char text[3];
+	itoa(robotNumber,text,10);
+	cairo_show_text(cr, text);
+	
+	cairo_stroke (cr);
 }
 
 void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, float endY)
