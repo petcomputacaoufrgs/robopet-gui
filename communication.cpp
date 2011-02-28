@@ -79,6 +79,9 @@ void MainWindow::listenToAI()
                                                    packet.aitogui().blue_robots(i).future_y() );
                 (*it).setFutureAngle( packet.aitogui().blue_robots(i).future_theta() );
                 //------
+                
+                (*it).setId( packet.aitogui().blue_robots(i).id() );
+                //------
 
                 (*it).hasUpdatedInfo = true;
 
@@ -97,6 +100,9 @@ void MainWindow::listenToAI()
                 (*it).setFuturePosition( packet.aitogui().yellow_robots(i).future_x() ,
                                                    packet.aitogui().yellow_robots(i).future_y() );
                 (*it).setFutureAngle( packet.aitogui().yellow_robots(i).future_theta() );
+                //------
+                
+                (*it).setId( packet.aitogui().yellow_robots(i).id() );
                 //------
 
                 (*it).hasUpdatedInfo = true;
