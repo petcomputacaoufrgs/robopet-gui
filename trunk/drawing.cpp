@@ -58,7 +58,7 @@ void MainWindow::drawPlayers()
 				cairo_set_source_rgb(cr, YELLOW);
 			else
 				cairo_set_source_rgb(cr, BLUE);
-			game.players[team][i].draw(cr,i,displaySettings);
+			game.players[team][i].draw(cr, game.players[team][i].getId() ,displaySettings);
 		}
 }
 
