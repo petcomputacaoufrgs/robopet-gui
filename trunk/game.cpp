@@ -32,6 +32,7 @@ void Game::addPlayer( int team, Point pos )
 
     players[team].resize(nplayers[team]);
     players[team][nplayers[team]-1].setCurrentPosition(pos);
+    players[team][nplayers[team]-1].setId( nplayers[team]-1 );
 
     lastAddedTeam = team;
     
