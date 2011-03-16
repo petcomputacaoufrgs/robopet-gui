@@ -801,6 +801,84 @@ Z/X do add yellow/blue</property>
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkFrame" id="frame9">
+                    <property name="visible">True</property>
+                    <property name="label_xalign">0</property>
+                    <child>
+                      <object class="GtkAlignment" id="alignment9">
+                        <property name="visible">True</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkFrame" id="frame10">
+                            <property name="visible">True</property>
+                            <property name="label_xalign">0</property>
+                            <child>
+                              <object class="GtkAlignment" id="alignment10">
+                                <property name="visible">True</property>
+                                <property name="left_padding">12</property>
+                                <child>
+                                  <object class="GtkHBox" id="hbox12">
+                                    <property name="visible">True</property>
+                                    <child>
+                                      <object class="GtkLabel" id="label22">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0.89999997615814209</property>
+                                        <property name="label" translatable="yes">Dimensions:</property>
+                                      </object>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSpinButton" id="spinbutton1">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="invisible_char">&#x25CF;</property>
+                                        <property name="adjustment">pathplanGridX</property>
+                                      </object>
+                                      <packing>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSpinButton" id="spinbutton2">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="invisible_char">&#x25CF;</property>
+                                        <property name="adjustment">pathplanGridY</property>
+                                      </object>
+                                      <packing>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child type="label">
+                              <object class="GtkLabel" id="label21">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Grid</property>
+                                <property name="use_markup">True</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label20">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Pathplanning</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkHButtonBox" id="hbuttonbox4">
                     <property name="visible">True</property>
                     <child>
@@ -818,7 +896,7 @@ Z/X do add yellow/blue</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -995,5 +1073,17 @@ Z/X do add yellow/blue</property>
     <property name="upper">99999</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="pathplanGridX">
+    <property name="upper">1000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
+  </object>
+  <object class="GtkAdjustment" id="pathplanGridY">
+    <property name="upper">1000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <property name="page_size">10</property>
   </object>
 </interface>
