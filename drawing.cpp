@@ -172,26 +172,17 @@ void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 void drawPath(cairo_t *cr, list<Node> path)
 {
     //glBegin(GL_LINE_STRIP);
-	for(std::list<Node>::iterator i = path.begin(); i != path.end(); i++)
+	/*for(std::list<Node>::iterator i = path.begin(); i != path.end(); i++)
 		drawBox( cr, MM_TO_PIX( CELLS_TO_MM_X( i->getX() )) + BORDER,
 				 MM_TO_PIX( CELLS_TO_MM_Y( i->getY() )) + BORDER,
-				(ARENA_WIDTH_MM/MAX_X)/30 );
+				3 );*/
 		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
     //glEnd();
 }
 
 void MainWindow::drawObstacles()
 {
-	cairo_set_source_rgb( cr, RED);
-	
-    for(int i=0;i<MAX_X;i++)
-        for(int k=0;k<MAX_Y;k++)
-            if( pathplan->env[i][k] == OBSTACLE) 
-            {
-               drawBox( cr, MM_TO_PIX( CELLS_TO_MM_X(i) ) + BORDER,
-						MM_TO_PIX( CELLS_TO_MM_Y(k) ) + BORDER,
-						(ARENA_WIDTH_MM/MAX_X)/30 );
-			}
+
 }
 
 void drawMatrixLimits(cairo_t *cr, float x1, float y1, float x2, float y2)
@@ -212,14 +203,32 @@ void MainWindow::drawPathplan()
 {
 	if( toDrawPathplan ) {
 		
-		drawMatrixLimits( cr, BORDER, BORDER, MM_TO_PIX(CELLS_TO_MM_X(MAX_X)), MM_TO_PIX(CELLS_TO_MM_X(MAX_Y)) );
+		drawMatrixLimits( 	cr, BORDER, BORDER,
+							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->envMatrixX)),
+							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->envMatrixY)) );
 	
-		if( getPrintFullPathplan() )
-			drawPath(cr, pathplan->pathFull);
+		if( getPrintFullPathplan() ) {
+			for(std::list<Node>::iterator i = pathplan->pathFull.begin(); i != pathplan->pathFull.end(); i++)
+				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( i->getX() )) + BORDER,
+						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( i->getY() )) + BORDER,
+						3 );
+		}
 		cairo_set_source_rgb( cr, CIANO);
-		drawPath(cr, pathplan->pathFinal);
+		for(std::list<Node>::iterator i = pathplan->pathFinal.begin(); i != pathplan->pathFinal.end(); i++)
+				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( i->getX() )) + BORDER,
+						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( i->getY() )) + BORDER,
+						3 );
 
-		if( getPrintObstacles() )
-			drawObstacles();
+		if( getPrintObstacles() ) {
+			cairo_set_source_rgb( cr, RED);
+			for(int i=0;i<pathplan->envMatrixX;i++)
+				for(int k=0;k<pathplan->envMatrixY;k++)
+					if( pathplan->env[i][k] == OBSTACLE) 
+					{
+					   drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X(i) ) + BORDER,
+								MM_TO_PIX( pathplan->CELLS_TO_MM_Y(k) ) + BORDER,
+								3 );
+					}
+		}
 	}
 }
