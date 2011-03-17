@@ -109,6 +109,8 @@ class MainWindow
 		GtkWidget* 		printObstacles;
 		GtkWidget		*clientHost, *serverHost;
 		GtkWidget		*clientPort, *serverPort;
+		GtkWidget		*pathplanGridX, *pathplanGridY;
+		GtkWidget*		obstaculesRadius;
 
 		GtkWidget		*useRrt, *useAstar;
 		bool 			toDrawPathplan;

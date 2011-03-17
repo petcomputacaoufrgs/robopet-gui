@@ -24,7 +24,7 @@ MainWindow::MainWindow()
 void MainWindow::generateTextOutput()
 {
     static char text[1024];
-    sprintf(text,""); //resets text buffer
+    sprintf(text," "); //resets text buffer
 
     sprintf(text+strlen(text),"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
 
