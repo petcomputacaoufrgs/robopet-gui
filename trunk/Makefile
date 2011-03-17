@@ -29,7 +29,6 @@ $(OBJDIR)/%.o: %.cpp %.h | $(OBJDIR)
 	@$(CC) -c $< -o $@ $(FLAGS)
 
 $(OBJDIR):
-	@echo "Created OBJ directory."
 	@mkdir $(OBJDIR) -p
 
 

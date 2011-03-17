@@ -153,6 +153,13 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useAstar) )
 					mw->pathplan = new AStar();
 			
+			// set environment matrix dimensions
+			mw->pathplan->setEnvDimensions( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+											gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
+											
+			// set the radius of the obstacules
+			mw->pathplan->setRadius( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->obstaculesRadius) );
+			
 			// set initial position to selected player's position
 			mw->pathplan->setInitialPos( Point( selected->getCurrentPosition().getX(),	
 												selected->getCurrentPosition().getY() )	);
@@ -481,6 +488,12 @@ void MainWindow::createInterface()
 	this->serverPort = GTK_WIDGET( gtk_builder_get_object(builder,"serverport") );
 		gtk_spin_button_set_value((GtkSpinButton*)serverPort, SERVER_INITIAL_PORT);
 	this->statusBar = GTK_WIDGET( gtk_builder_get_object(builder,"statusBar") );
+	this->pathplanGridX = GTK_WIDGET( gtk_builder_get_object(builder,"pathplanGridXSpin") );
+		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridX, ENV_MATRIX_SIZE_X);
+	this->pathplanGridY = GTK_WIDGET( gtk_builder_get_object(builder,"pathplanGridYSpin") );
+		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridY, (int)(ENV_MATRIX_SIZE_X * (FIELD_HEIGHT/(float)FIELD_WIDTH) + 1));
+	this->obstaculesRadius = GTK_WIDGET( gtk_builder_get_object(builder,"obstaculesRadiusSpin") );
+		gtk_spin_button_set_value((GtkSpinButton*)obstaculesRadius, OBSTACULE_RADIUS);
 		
 	// SIGNALS (over the air, over the air)	
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(about), NULL);

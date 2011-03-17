@@ -809,58 +809,122 @@ Z/X do add yellow/blue</property>
                         <property name="visible">True</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkFrame" id="frame10">
+                          <object class="GtkHBox" id="hbox11">
                             <property name="visible">True</property>
-                            <property name="label_xalign">0</property>
                             <child>
-                              <object class="GtkAlignment" id="alignment10">
+                              <object class="GtkFrame" id="frame10">
                                 <property name="visible">True</property>
-                                <property name="left_padding">12</property>
+                                <property name="label_xalign">0</property>
                                 <child>
-                                  <object class="GtkHBox" id="hbox12">
+                                  <object class="GtkAlignment" id="alignment10">
                                     <property name="visible">True</property>
+                                    <property name="left_padding">12</property>
                                     <child>
-                                      <object class="GtkLabel" id="label22">
+                                      <object class="GtkHBox" id="hbox12">
                                         <property name="visible">True</property>
-                                        <property name="xalign">0.89999997615814209</property>
-                                        <property name="label" translatable="yes">Dimensions:</property>
+                                        <child>
+                                          <object class="GtkLabel" id="label22">
+                                            <property name="visible">True</property>
+                                            <property name="xalign">0.89999997615814209</property>
+                                            <property name="label" translatable="yes">Dimensions:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSpinButton" id="pathplanGridXSpin">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">&#x25CF;</property>
+                                            <property name="adjustment">pathplanGridX</property>
+                                          </object>
+                                          <packing>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSpinButton" id="pathplanGridYSpin">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">&#x25CF;</property>
+                                            <property name="adjustment">pathplanGridY</property>
+                                          </object>
+                                          <packing>
+                                            <property name="position">2</property>
+                                          </packing>
+                                        </child>
                                       </object>
-                                      <packing>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton1">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="invisible_char">&#x25CF;</property>
-                                        <property name="adjustment">pathplanGridX</property>
-                                      </object>
-                                      <packing>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton2">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="invisible_char">&#x25CF;</property>
-                                        <property name="adjustment">pathplanGridY</property>
-                                      </object>
-                                      <packing>
-                                        <property name="position">2</property>
-                                      </packing>
                                     </child>
                                   </object>
                                 </child>
+                                <child type="label">
+                                  <object class="GtkLabel" id="label21">
+                                    <property name="visible">True</property>
+                                    <property name="label" translatable="yes">Grid</property>
+                                    <property name="use_markup">True</property>
+                                  </object>
+                                </child>
                               </object>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label21">
+                            <child>
+                              <object class="GtkFrame" id="frame11">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Grid</property>
-                                <property name="use_markup">True</property>
+                                <property name="label_xalign">0</property>
+                                <child>
+                                  <object class="GtkAlignment" id="alignment11">
+                                    <property name="visible">True</property>
+                                    <property name="left_padding">12</property>
+                                    <child>
+                                      <object class="GtkHBox" id="hbox13">
+                                        <property name="visible">True</property>
+                                        <child>
+                                          <object class="GtkLabel" id="label23">
+                                            <property name="visible">True</property>
+                                            <property name="xalign">0.89999997615814209</property>
+                                            <property name="label" translatable="yes">Radius:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSpinButton" id="obstaculesRadiusSpin">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">&#x25CF;</property>
+                                            <property name="adjustment">obstaculesRadius</property>
+                                          </object>
+                                          <packing>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child type="label">
+                                  <object class="GtkLabel" id="label24">
+                                    <property name="visible">True</property>
+                                    <property name="label" translatable="yes">Obstacules</property>
+                                    <property name="use_markup">True</property>
+                                  </object>
+                                </child>
                               </object>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkFixed" id="fixed1">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="position">2</property>
+                              </packing>
                             </child>
                           </object>
                         </child>
@@ -869,7 +933,7 @@ Z/X do add yellow/blue</property>
                     <child type="label">
                       <object class="GtkLabel" id="label20">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Pathplanning</property>
+                        <property name="label" translatable="yes">Settings</property>
                         <property name="use_markup">True</property>
                       </object>
                     </child>
@@ -1078,12 +1142,15 @@ Z/X do add yellow/blue</property>
     <property name="upper">1000</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
-    <property name="page_size">10</property>
   </object>
   <object class="GtkAdjustment" id="pathplanGridY">
     <property name="upper">1000</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
-    <property name="page_size">10</property>
+  </object>
+  <object class="GtkAdjustment" id="obstaculesRadius">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
   </object>
 </interface>
