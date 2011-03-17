@@ -23,6 +23,7 @@ class Game
 
         GuiBall ball;
         vector<guiPlayer> players[2];
+        guiPlayer joyPlayer;
 
     private:
 		int lastAddedTeam;

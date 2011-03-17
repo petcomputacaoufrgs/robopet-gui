@@ -3,6 +3,9 @@
 
 #include "gdk/gdkkeysyms.h"
 
+#include <fcntl.h>
+#include <linux/joystick.h>
+
 #include "interface.h"
 #include "rrt.h"
 #include "astar.h"
@@ -258,6 +261,18 @@ void serverCommunicationButton(GtkWidget *widget, gpointer data)
 	}
 }
 
+void openJoystick(GtkWidget *widget, gpointer data)
+{
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+	
+	mw->joystickFd = open("/dev/input/js0", 0 );
+	fcntl(mw->joystickFd, F_SETFL, O_RDONLY | O_NONBLOCK );	
+	
+	if(mw->isVerbose)
+		cout << "Opened /dev/input/js0." << endl;
+}
+
 
 void getLocalIPButton(GtkWidget *widget, gpointer data)
 {
@@ -434,8 +449,6 @@ void MainWindow::pushStatusMessage(string msg)
 
 
 
-
-
 ///////////////////////////////////////////////
 ///////////////               /////////////////
 ///////////////   structure   /////////////////
@@ -510,6 +523,7 @@ void MainWindow::createInterface()
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"setdestination")), "clicked", G_CALLBACK(pathplanButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"openclient")), "clicked", G_CALLBACK(clientCommunicationButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"openserver")), "clicked", G_CALLBACK(serverCommunicationButton), &args);
+	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"joyButton")), "clicked", G_CALLBACK(openJoystick), &args);
 		
 	static parametersType args2;
 	args2.mw = this;

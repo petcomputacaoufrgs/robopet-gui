@@ -123,6 +123,16 @@ void MainWindow::listenToAI()
 
 void MainWindow::sendToAI()
 {
+	RoboPET_WrapperPacket packet;
+	GUIToAI *guitoai = packet.mutable_guitoai();
 
-    //nothing here yet
+	GUIToAI::Robot *r = guitoai->add_robots();
+	r->set_displacement_x( 0 );
+	r->set_displacement_y( 0 );
+	r->set_displacement_theta( 0 );
+	r->set_drible( game.joyPlayer.isDribling() );
+	r->set_kick( game.joyPlayer.isKicking() );
+	r->set_chip_kick(0);
+	r->set_id( game.joyPlayer.getId() );
+	r->set_current_theta(0);
 }

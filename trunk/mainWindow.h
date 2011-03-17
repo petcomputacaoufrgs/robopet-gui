@@ -22,9 +22,6 @@
 #include <vector>
 
 
-//#include "joystick\joystick.h"
-
-
 
 using namespace std;
 
@@ -50,6 +47,7 @@ class MainWindow
 	friend void addBluePlayerButton(GtkWidget *widget, gpointer data);
 	friend void clientCommunicationButton(GtkWidget *widget, gpointer data);
 	friend void serverCommunicationButton(GtkWidget *widget, gpointer data);
+	friend void openJoystick(GtkWidget *widget, gpointer data);
 	
 	public:
 		MainWindow();
@@ -88,6 +86,7 @@ class MainWindow
 		void iterate();
         void generateTextOutput();
 		void createInterface();
+		void joystick();
 		
 		//Drawing functions
 		void drawWorld();
@@ -111,6 +110,7 @@ class MainWindow
 		GtkWidget		*clientPort, *serverPort;
 		GtkWidget		*pathplanGridX, *pathplanGridY;
 		GtkWidget*		obstaculesRadius;
+		int 			joystickFd;
 
 		GtkWidget		*useRrt, *useAstar;
 		bool 			toDrawPathplan;
