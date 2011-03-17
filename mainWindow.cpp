@@ -3,14 +3,22 @@
 
 using namespace std;
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <fcntl.h>
+#include <linux/joystick.h>
+
 
 MainWindow::MainWindow()
 {
-	isVerbose = false;
+	isVerbose = true;
 	aitoguiClient = NULL;
 	guitoaiServer = NULL;
 	pathplan = NULL;
 	toDrawPathplan = false;
+	
+	joystickFd = -1;
 	
 	createInterface();
 	createDrawingArea();
@@ -41,6 +49,34 @@ void MainWindow::generateTextOutput()
     fillTextOutput(text);
 }
 
+void dump_event(struct js_event e) {
+
+	printf("----\n");
+	printf("time: %u\n", e.time);
+	printf("value: %s\n", e.value == 1 ? "DOWN" : "UP" );
+	printf("type: %d\n", e.type);
+	printf("number: %d\n", e.number);
+}
+
+void MainWindow::joystick()
+{
+	//cout << "iterated joy" << endl;
+	
+	unsigned int len = 0;
+	struct js_event msg;
+
+	if (joystickFd != -1)
+	{
+		len = read(joystickFd, &msg, sizeof(msg));
+
+		if (len == sizeof(msg)) { //read was succesfull
+
+			if (msg.type == JS_EVENT_BUTTON) { // seems to be a key press
+				dump_event(msg);
+			}
+		}
+	}
+}
 
 void MainWindow::iterate()
 {
@@ -49,8 +85,9 @@ void MainWindow::iterate()
 	drawWorld();
 
 	generateTextOutput();
-}
-
+	
+	joystick();
+}	
 
 void MainWindow::drawWorld()
 {
@@ -134,3 +171,4 @@ void MainWindow::createDrawingArea()
 		
 	gtk_timeout_add(TIMEOUT_INTERVAL, (GtkFunction)renderScene, window);
 }
+
