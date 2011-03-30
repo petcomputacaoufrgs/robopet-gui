@@ -151,11 +151,19 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		if( selected ) //has a player selected
 		{
 			// which pathplan instance to create?
-			if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useRrt) )
+			if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useRrt) ) {
 				mw->pathplan = new Rrt();
+				((Rrt*)mw->pathplan)->stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtStepsize);
+				((Rrt*)mw->pathplan)->timeLimit = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtTimeLimit);
+				((Rrt*)mw->pathplan)->goalProb = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtGoalProb);
+			}
 			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useAstar) )
 					mw->pathplan = new AStar();
 			
+			// set environment matrix dimensions
+			mw->pathplan->setEnvDimensions( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+											gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
+											
 			// set environment matrix dimensions
 			mw->pathplan->setEnvDimensions( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
 											gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
@@ -507,6 +515,12 @@ void MainWindow::createInterface()
 		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridY, (int)(ENV_MATRIX_SIZE_X * (FIELD_HEIGHT/(float)FIELD_WIDTH) + 1));
 	this->obstaculesRadius = GTK_WIDGET( gtk_builder_get_object(builder,"obstaculesRadiusSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)obstaculesRadius, OBSTACULE_RADIUS);
+	this->rrtTimeLimit = GTK_WIDGET( gtk_builder_get_object(builder,"rrtTimeLimitSpin") );
+		gtk_spin_button_set_value((GtkSpinButton*)rrtTimeLimit, 1);
+	this->rrtGoalProb = GTK_WIDGET( gtk_builder_get_object(builder,"rrtGoalProbSpin") );
+		gtk_spin_button_set_value((GtkSpinButton*)rrtGoalProb, 0.5);
+	this->rrtStepsize = GTK_WIDGET( gtk_builder_get_object(builder,"rrtStepsizeSpin") );
+		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, 1);
 		
 	// SIGNALS (over the air, over the air)	
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(about), NULL);
