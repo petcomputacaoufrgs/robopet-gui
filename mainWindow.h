@@ -111,6 +111,7 @@ class MainWindow
 		GtkWidget		*pathplanGridX, *pathplanGridY;
 		GtkWidget*		obstaculesRadius;
 		int 			joystickFd;
+		GtkWidget		*rrtTimeLimit, *rrtGoalProb, *rrtStepsize;
 
 		GtkWidget		*useRrt, *useAstar;
 		bool 			toDrawPathplan;
