@@ -184,6 +184,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 			positions.push_back(mw->game.ball.getCurrentPosition());
 			mw->pathplan->fillEnv(positions);
 			
+			
 			// GUI settings
 			gtk_button_set_label((GtkButton*)widget, "Running...");
 			mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
