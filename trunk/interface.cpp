@@ -161,12 +161,12 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 					mw->pathplan = new AStar();
 			
 			// set environment matrix dimensions
-			mw->pathplan->setEnvDimensions( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
-											gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
+			mw->pathplan->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+									gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
 											
 			// set environment matrix dimensions
-			mw->pathplan->setEnvDimensions( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
-											gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
+			mw->pathplan->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+									gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
 											
 			// set the radius of the obstacules
 			mw->pathplan->setRadius( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->obstaculesRadius) );
