@@ -204,8 +204,8 @@ void MainWindow::drawPathplan()
 	if( toDrawPathplan ) {
 		
 		drawMatrixLimits( 	cr, BORDER, BORDER,
-							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->envMatrixX)),
-							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->envMatrixY)) );
+							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->getEnvMatrixX())),
+							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->getEnvMatrixY())) );
 	
 		if( getPrintFullPathplan() ) {
 			for(std::list<Node>::iterator i = pathplan->pathFull.begin(); i != pathplan->pathFull.end(); i++)
@@ -221,8 +221,8 @@ void MainWindow::drawPathplan()
 
 		if( getPrintObstacles() ) {
 			cairo_set_source_rgb( cr, RED);
-			for(int i=0;i<pathplan->envMatrixX;i++)
-				for(int k=0;k<pathplan->envMatrixY;k++)
+			for(int i=0;i<pathplan->getEnvMatrixX();i++)
+				for(int k=0;k<pathplan->getEnvMatrixY();k++)
 					if( pathplan->env[i][k] == OBSTACLE) 
 					{
 					   drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X(i) ) + BORDER,
