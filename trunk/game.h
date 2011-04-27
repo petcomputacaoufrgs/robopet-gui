@@ -13,7 +13,10 @@ class Game
         Game();
         ~Game();
 
-        GtkWidget* playersComboBox;
+        double*		scaleFactorLength;
+		double*		scaleFactorWidth;
+        GtkWidget*	playersComboBox;
+
 
         void updateNplayers(int team, int n);
 

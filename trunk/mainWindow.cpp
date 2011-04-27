@@ -9,6 +9,10 @@ using namespace std;
 #include <fcntl.h>
 #include <linux/joystick.h>
 
+#include "global.cpp"
+
+extern double scaleFactorLength;
+extern double scaleFactorWidth;
 
 MainWindow::MainWindow()
 {
@@ -25,6 +29,8 @@ MainWindow::MainWindow()
 	gtk_widget_show_all(window);
 
 	game.ball = GuiBall();
+	this->game.scaleFactorLength = &scaleFactorLength;
+	this->game.scaleFactorWidth = &scaleFactorWidth;
 	
 	pushStatusMessage("GUI initialized.");
 }
