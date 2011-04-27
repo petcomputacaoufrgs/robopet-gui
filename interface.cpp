@@ -158,7 +158,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 				((Rrt*)mw->pathplan)->goalProb = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtGoalProb);
 			}
 			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useAstar) )
-					mw->pathplan = new AStar();
+					;//mw->pathplan = new AStar();
 			
 			// set environment matrix dimensions
 			mw->pathplan->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
