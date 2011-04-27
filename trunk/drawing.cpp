@@ -55,9 +55,9 @@ void MainWindow::drawPlayers()
 	for(int team=0; team<2; team++)
 		for(int i=0; i<game.getNplayers(team); i++) {
 			if(team==0)
-				cairo_set_source_rgb(cr, YELLOW);
-			else
 				cairo_set_source_rgb(cr, BLUE);
+			else
+				cairo_set_source_rgb(cr, YELLOW);
 			game.players[team][i].draw(cr, game.players[team][i].getId() ,displaySettings);
 		}
 }
@@ -66,18 +66,25 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 {
     //if(this->hasUpdatedInfo) {
    
-    double posx = MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER;
-	double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
-	
-	if( !settings.isHidePlayerBody() )
-		drawBody(cr, posx, posy);
-	if( !settings.isHidePlayerAngle() )
-		drawAngle(cr, posx, posy, this->getCurrentAngle());
-	if( !settings.isHidePlayerIndex() )
-		drawIndex(cr, posx, posy, index);
-	if( !settings.isHidePlayerFuture() )
-		drawVector(cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
-							   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
+		double posx = MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER;
+		double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
+		
+		if( !settings.isHidePlayerBody() )
+			drawBody(cr, posx, posy);
+		if( !settings.isHidePlayerAngle() )
+			drawAngle(cr, posx, posy, this->getCurrentAngle());
+		if( !settings.isHidePlayerIndex() )
+			drawIndex(cr, posx, posy, index);
+		if( !settings.isHidePlayerFuture() )
+			if( this->getFuturePosition().getX()!=-1 && this->getFuturePosition().getY()!=-1 )
+				drawVector(cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
+									   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
+		//if( !settings.isHidePlayerPath() )
+			for(unsigned int i=0; i<this->path.size(); i++)
+				drawBox( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+						 MM_TO_PIX( path[i].getY() ) + BORDER,
+						2 );
+    
     //}
 }
 
@@ -169,10 +176,10 @@ void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 	}
 }
 
-void drawPath(cairo_t *cr, list<Node> path)
+void drawPath(cairo_t *cr, list<Point> path)
 {
     //glBegin(GL_LINE_STRIP);
-	/*for(std::list<Node>::iterator i = path.begin(); i != path.end(); i++)
+	/*for(std::list<Point>::iterator i = path.begin(); i != path.end(); i++)
 		drawBox( cr, MM_TO_PIX( CELLS_TO_MM_X( i->getX() )) + BORDER,
 				 MM_TO_PIX( CELLS_TO_MM_Y( i->getY() )) + BORDER,
 				3 );*/
@@ -208,13 +215,13 @@ void MainWindow::drawPathplan()
 							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->getEnvMatrixY())) );
 	
 		if( getPrintFullPathplan() ) {
-			for(std::list<Node>::iterator i = pathplan->pathFull.begin(); i != pathplan->pathFull.end(); i++)
+			for(std::list<Point>::iterator i = pathplan->pathFull.begin(); i != pathplan->pathFull.end(); i++)
 				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( i->getX() )) + BORDER,
 						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( i->getY() )) + BORDER,
 						3 );
 		}
 		cairo_set_source_rgb( cr, CIANO);
-		for(std::list<Node>::iterator i = pathplan->pathFinal.begin(); i != pathplan->pathFinal.end(); i++)
+		for(std::list<Point>::iterator i = pathplan->pathFinal.begin(); i != pathplan->pathFinal.end(); i++)
 				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( i->getX() )) + BORDER,
 						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( i->getY() )) + BORDER,
 						3 );

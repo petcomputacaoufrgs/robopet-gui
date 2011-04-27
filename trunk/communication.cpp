@@ -71,13 +71,19 @@ void MainWindow::listenToAI()
             for(int i=0; it<game.players[0].end(); it++, i++) {
 
                 (*it).setCurrentPosition( packet.aitogui().blue_robots(i).current_x() ,
-                                                    packet.aitogui().blue_robots(i).current_y() );
+											packet.aitogui().blue_robots(i).current_y() );
                 (*it).setCurrentAngle( packet.aitogui().blue_robots(i).current_theta() );
                 //------
 
                 (*it).setFuturePosition( packet.aitogui().blue_robots(i).future_x() ,
-                                                   packet.aitogui().blue_robots(i).future_y() );
+										packet.aitogui().blue_robots(i).future_y() );
                 (*it).setFutureAngle( packet.aitogui().blue_robots(i).future_theta() );
+                //------
+                
+                for(int k=0; k<packet.aitogui().blue_robots(i).path_size(); k++) {
+					AIToGUI::Point p = packet.aitogui().blue_robots(i).path(k);
+					(*it).addPathPoint( Point(p.x(), p.y()) );
+				}
                 //------
                 
                 (*it).setId( packet.aitogui().blue_robots(i).id() );
@@ -101,6 +107,12 @@ void MainWindow::listenToAI()
                                                    packet.aitogui().yellow_robots(i).future_y() );
                 (*it).setFutureAngle( packet.aitogui().yellow_robots(i).future_theta() );
                 //------
+                
+                for(int k=0; k<packet.aitogui().yellow_robots(i).path_size(); k++) {
+					AIToGUI::Point p = packet.aitogui().yellow_robots(i).path(k);
+					(*it).addPathPoint( Point(p.x(), p.y()) );
+				}
+                //------                
                 
                 (*it).setId( packet.aitogui().yellow_robots(i).id() );
                 //------

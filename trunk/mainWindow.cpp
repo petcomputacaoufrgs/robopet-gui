@@ -42,14 +42,14 @@ void MainWindow::generateTextOutput()
 
     sprintf(text+strlen(text),"Ball: %0.f,%0.f",game.ball.getCurrentPosition().getX(),game.ball.getCurrentPosition().getY());
 
-    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayers(0));
+    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayers(0));
     for( int i=0; i<game.getNplayers(0); i++ ) {
-        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.players[0][i].getCurrentPosition().getX(),game.players[0][i].getCurrentPosition().getY(),game.players[0][i].getCurrentAngle());
+        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",game.players[0][i].getId(), game.players[0][i].getCurrentPosition().getX(),game.players[0][i].getCurrentPosition().getY(),game.players[0][i].getCurrentAngle());
     }
 
-    sprintf(text+strlen(text),"\n%i Blue Players:",game.getNplayers(1));
+    sprintf(text+strlen(text),"\n%i Yellow Players:",game.getNplayers(1));
     for( int i=0; i<game.getNplayers(1); i++ ) {
-        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",i, game.players[1][i].getCurrentPosition().getX(),game.players[1][i].getCurrentPosition().getY(),game.players[1][i].getCurrentAngle());
+        sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",game.players[1][i].getId(), game.players[1][i].getCurrentPosition().getX(),game.players[1][i].getCurrentPosition().getY(),game.players[1][i].getCurrentAngle());
     }
 
     fillTextOutput(text);
