@@ -80,6 +80,7 @@ void MainWindow::listenToAI()
                 (*it).setFutureAngle( packet.aitogui().blue_robots(i).future_theta() );
                 //------
                 
+                (*it).clearPath();
                 for(int k=0; k<packet.aitogui().blue_robots(i).path_size(); k++) {
 					AIToGUI::Point p = packet.aitogui().blue_robots(i).path(k);
 					(*it).addPathPoint( Point(p.x(), p.y()) );

@@ -6,6 +6,8 @@
 
 #define drawLine(x1,y1,x2,y2) glBegin(GL_LINES); glVertex2f ((x1),(y1)); glVertex2f ((x2),(y2)); glEnd();
 
+extern double scaleFactorLength;
+extern double scaleFactorWidth;
 
 void MainWindow::drawField()
 {
@@ -90,7 +92,7 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 
 void guiPlayer::drawBody(cairo_t *cr, float centerX, float centerY)
 {
-	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS, 0, 2*M_PI);
+	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS*scaleFactorLength, 0, 2*M_PI);
 	cairo_stroke (cr);
 }
 

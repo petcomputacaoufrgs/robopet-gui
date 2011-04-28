@@ -21,6 +21,7 @@ class guiPlayer: public Player
         
         bool hasUpdatedInfo;
         
+		void clearPath() { path.clear(); }
 		void addPathPoint(Point p) { path.push_back(p); }
         void draw(cairo_t *cr, int index, DisplaySettings settings);
 
