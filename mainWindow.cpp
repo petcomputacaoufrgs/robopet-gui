@@ -11,9 +11,6 @@ using namespace std;
 
 #include "global.cpp"
 
-extern double scaleFactorLength;
-extern double scaleFactorWidth;
-
 MainWindow::MainWindow()
 {
 	isVerbose = true;
@@ -29,8 +26,8 @@ MainWindow::MainWindow()
 	gtk_widget_show_all(window);
 
 	game.ball = GuiBall();
-	this->game.scaleFactorLength = &scaleFactorLength;
-	this->game.scaleFactorWidth = &scaleFactorWidth;
+	//this->game.scaleFactorLength = &scaleFactorLength;
+	//this->game.scaleFactorWidth = &scaleFactorWidth;
 	
 	pushStatusMessage("GUI initialized.");
 }
