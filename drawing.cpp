@@ -215,23 +215,22 @@ void MainWindow::drawPathplan()
 							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->getEnvMatrixY())) );
 	
 		if( getPrintFullPathplan() ) {
-			for(std::list<Point>::iterator i = pathplan->pathFull.begin(); i != pathplan->pathFull.end(); i++)
-				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( i->getX() )) + BORDER,
-						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( i->getY() )) + BORDER,
+			for(unsigned int i = 0; i < pathplan->path.size(); i++)
+				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( pathplan->path[i].getX() )) + BORDER,
+						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( pathplan->path[i].getY() )) + BORDER,
 						3 );
 		}
 		cairo_set_source_rgb( cr, CIANO);
-		for(std::list<Point>::iterator i = pathplan->pathFinal.begin(); i != pathplan->pathFinal.end(); i++)
-				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( i->getX() )) + BORDER,
-						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( i->getY() )) + BORDER,
+		for(unsigned int i = 0; i < pathplan->path.size(); i++)
+				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( pathplan->path[i].getX() )) + BORDER,
+						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( pathplan->path[i].getY() )) + BORDER,
 						3 );
 
 		if( getPrintObstacles() ) {
 			cairo_set_source_rgb( cr, RED);
 			for(int i=0;i<pathplan->getEnvMatrixX();i++)
 				for(int k=0;k<pathplan->getEnvMatrixY();k++)
-					if( pathplan->env[i][k] == OBSTACLE) 
-					{
+					if( pathplan->env[i][k] == OBSTACLE)  {
 					   drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X(i) ) + BORDER,
 								MM_TO_PIX( pathplan->CELLS_TO_MM_Y(k) ) + BORDER,
 								3 );
