@@ -32,5 +32,6 @@ class guiPlayer: public Player
         void drawAngle(cairo_t *cr, float centerX, float centerY, float angle);
         void drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber);
         void drawVector(cairo_t *cr, float centerX, float centerY, float vecX, float vecY);
+        void drawPath(cairo_t *cr, vector<Point> path);
 
 };
