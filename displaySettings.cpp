@@ -25,3 +25,8 @@ int DisplaySettings::isHidePlayerFuture()
 {
 	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerFuture);
 }
+
+int DisplaySettings::isHidePlayerPath()
+{
+	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerPath);
+}

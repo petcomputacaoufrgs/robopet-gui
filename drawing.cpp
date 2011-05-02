@@ -3,15 +3,15 @@
 
 #include "drawing.h"
 #include "mainWindow.h"
+#include "rrt.h"
 
-#define drawLine(x1,y1,x2,y2) glBegin(GL_LINES); glVertex2f ((x1),(y1)); glVertex2f ((x2),(y2)); glEnd();
 
 extern double scaleFactorLength;
 extern double scaleFactorWidth;
 
 void MainWindow::drawField()
 {
-	//cairo_set_line_width( cr, 1);
+	cairo_set_line_width( cr, 2);
 	
 	// green background
 	cairo_set_source_rgb( cr, DARK_GREEN);
@@ -71,21 +71,24 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 		double posx = MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER;
 		double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
 		
+		cairo_set_line_width(cr, 2);
+		
 		if( !settings.isHidePlayerBody() )
 			drawBody(cr, posx, posy);
+		
 		if( !settings.isHidePlayerAngle() )
 			drawAngle(cr, posx, posy, this->getCurrentAngle());
+		
 		if( !settings.isHidePlayerIndex() )
 			drawIndex(cr, posx, posy, index);
+		
 		if( !settings.isHidePlayerFuture() )
 			if( this->getFuturePosition().getX()!=-1 && this->getFuturePosition().getY()!=-1 )
 				drawVector(cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
 									   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
-		//if( !settings.isHidePlayerPath() )
-			for(unsigned int i=0; i<this->path.size(); i++)
-				drawBox( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-						 MM_TO_PIX( path[i].getY() ) + BORDER,
-						2 );
+		
+		if( !settings.isHidePlayerPath() )
+			drawLinedPath(cr, this->path);
     
     //}
 }
@@ -110,6 +113,31 @@ void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle
 	cairo_move_to(cr, centerX , centerY);
 	cairo_line_to(cr, centerX + cos(ang) * ROBOT_RADIUS * 1.2 , centerY + sin(ang) * ROBOT_RADIUS * 1.2);
 	cairo_stroke (cr);
+}
+
+void drawLinedPath(cairo_t *cr, vector<Point> path)
+{
+	if(path.size()>0) {
+		 
+		cairo_set_line_width (cr, 1);
+		
+		cairo_move_to (cr, MM_TO_PIX( path[0].getX() ) + BORDER,
+							MM_TO_PIX( path[0].getY() ) + BORDER );
+									
+		for (unsigned int i=0; i<path.size(); i++) {
+					
+					cairo_line_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+									  MM_TO_PIX( path[i].getY() ) + BORDER);
+					
+					drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+							 MM_TO_PIX( path[i].getY() ) + BORDER,
+							2 );
+							
+					if (i != path.size()-1)
+						cairo_move_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+										  MM_TO_PIX( path[i].getY() ) + BORDER);
+				}
+	}
 }
 
 char* itoa(int value, char* result, int base) {
@@ -156,17 +184,23 @@ void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNu
 
 void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, float endY)
 {
-	double dashes[] = {5.0};
+	double dashes[] = {2.5};
 	int    ndash  = sizeof (dashes)/sizeof(dashes[0]);
 	cairo_set_dash (cr, dashes, ndash, 0);
-
-	cairo_set_line_width( cr, 1);
-	cairo_move_to(cr, startX, startY);
-	cairo_line_to(cr, endX, endY);
-	cairo_stroke(cr);
-	cairo_set_line_width( cr, 2);
-	
+		cairo_set_line_width( cr, 1);
+		cairo_move_to(cr, startX, startY);
+		cairo_line_to(cr, endX, endY);
+		cairo_stroke(cr);	
 	cairo_set_dash (cr, dashes, 0, 0);
+	
+	#define CROSS_SIZE 3
+	cairo_move_to(cr, endX-CROSS_SIZE, endY-CROSS_SIZE);
+	cairo_line_to(cr, endX+CROSS_SIZE, endY+CROSS_SIZE);
+	cairo_move_to(cr, endX+CROSS_SIZE, endY-CROSS_SIZE);
+	cairo_line_to(cr, endX-CROSS_SIZE, endY+CROSS_SIZE);
+	cairo_stroke(cr);
+	
+	cairo_set_line_width( cr, 2);
 }
 
 void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
@@ -212,29 +246,38 @@ void MainWindow::drawPathplan()
 {
 	if( toDrawPathplan ) {
 		
+		// limits of the environment matrix
 		drawMatrixLimits( 	cr, BORDER, BORDER,
-							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->getEnvMatrixX())),
-							MM_TO_PIX(pathplan->CELLS_TO_MM_X(pathplan->getEnvMatrixY())) );
+							MM_TO_PIX(pathplan->getEnvMatrixX()),
+							MM_TO_PIX(pathplan->getEnvMatrixY()) );
 	
+		// full pathplan
 		if( getPrintFullPathplan() ) {
-			for(unsigned int i = 0; i < pathplan->path.size(); i++)
-				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( pathplan->path[i].getX() )) + BORDER,
-						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( pathplan->path[i].getY() )) + BORDER,
+			cairo_set_source_rgb(cr, BLACK);
+			for(unsigned int i = 0; i < ((Rrt*)pathplan)->fullPath.size(); i++)
+				drawBox( cr, MM_TO_PIX( ((Rrt*)pathplan)->fullPath[i].getX() ) + BORDER,
+							 MM_TO_PIX( ((Rrt*)pathplan)->fullPath[i].getY() ) + BORDER,
 						3 );
 		}
-		cairo_set_source_rgb( cr, CIANO);
+		
+		// pathplan solution
+		cairo_set_source_rgb(cr, CIANO);
+		drawLinedPath(cr, pathplan->path);
 		for(unsigned int i = 0; i < pathplan->path.size(); i++)
-				drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X( pathplan->path[i].getX() )) + BORDER,
-						 MM_TO_PIX( pathplan->CELLS_TO_MM_Y( pathplan->path[i].getY() )) + BORDER,
+				drawBox( cr, MM_TO_PIX( pathplan->path[i].getX() ) + BORDER,
+							 MM_TO_PIX( pathplan->path[i].getY() ) + BORDER,
 						3 );
+		drawLinedPath(cr, pathplan->path);
 
+		// obstacles
 		if( getPrintObstacles() ) {
+			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, RED);
 			for(int i=0;i<pathplan->getEnvMatrixX();i++)
 				for(int k=0;k<pathplan->getEnvMatrixY();k++)
 					if( pathplan->env[i][k] == OBSTACLE)  {
-					   drawBox( cr, MM_TO_PIX( pathplan->CELLS_TO_MM_X(i) ) + BORDER,
-								MM_TO_PIX( pathplan->CELLS_TO_MM_Y(k) ) + BORDER,
+					   drawBox( cr, MM_TO_PIX(i*(FIELD_WIDTH/(float)pathplan->getEnvMatrixX())) + BORDER,
+									MM_TO_PIX(k*(FIELD_HEIGHT/(float)pathplan->getEnvMatrixY())) + BORDER,
 								3 );
 					}
 		}

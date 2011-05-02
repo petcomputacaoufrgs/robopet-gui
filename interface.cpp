@@ -182,7 +182,8 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 					if( selected != &(mw->game.players[team][i]) )
 							positions.push_back(mw->game.players[team][i].getCurrentPosition());
 			positions.push_back(mw->game.ball.getCurrentPosition());
-			mw->pathplan->fillEnv(positions);
+			mw->pathplan->obstacles = positions;
+			mw->pathplan->fillEnv();
 			
 			
 			// GUI settings
@@ -496,6 +497,7 @@ void MainWindow::createInterface()
 	this->displaySettings.checkPlayerAngle = GTK_WIDGET( gtk_builder_get_object(builder,"checkplayerangle") );
 	this->displaySettings.checkPlayerIndex = GTK_WIDGET( gtk_builder_get_object(builder,"checkplayerindex") );
 	this->displaySettings.checkPlayerFuture = GTK_WIDGET( gtk_builder_get_object(builder,"checkfuturepos") );
+	this->displaySettings.checkPlayerPath = GTK_WIDGET( gtk_builder_get_object(builder,"checkpath") );
 	this->displaySettings.checkBall = GTK_WIDGET( gtk_builder_get_object(builder,"checkball") );
 	this->stepsize = GTK_WIDGET( gtk_builder_get_object(builder,"stepsize") );
 		gtk_spin_button_set_value((GtkSpinButton*)stepsize,300);
