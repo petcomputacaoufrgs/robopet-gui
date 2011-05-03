@@ -161,29 +161,29 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 					;//mw->pathplan = new AStar();
 			
 			// set environment matrix dimensions
-			mw->pathplan->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+			((DiscretePathplan*)mw->pathplan)->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
 									gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
 											
 			// set environment matrix dimensions
-			mw->pathplan->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+			((DiscretePathplan*)mw->pathplan)->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
 									gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
 											
 			// set the radius of the obstacules
-			mw->pathplan->setRadius( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->obstaculesRadius) );
+			((DiscretePathplan*)mw->pathplan)->setRadius( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->obstaculesRadius) );
 			
 			// set initial position to selected player's position
 			mw->pathplan->setInitialPos( Point( selected->getCurrentPosition().getX(),	
 												selected->getCurrentPosition().getY() )	);
 			
 			// sets obstacules in the environment
-			vector<RP::Point> positions;
+			vector<ppObstacle> obstacles;
 			for(int team=0; team<2; team++)
 				for(int i=0; i<mw->game.getNplayers(team); i++)
 					if( selected != &(mw->game.players[team][i]) )
-							positions.push_back(mw->game.players[team][i].getCurrentPosition());
-			positions.push_back(mw->game.ball.getCurrentPosition());
-			mw->pathplan->obstacles = positions;
-			mw->pathplan->fillEnv();
+							obstacles.push_back( ppObstacle(mw->game.players[team][i].getCurrentPosition(),ROBOT) );
+			obstacles.push_back( ppObstacle(mw->game.ball.getCurrentPosition(),BALL) );
+			mw->pathplan->obstacles = obstacles;
+			((DiscretePathplan*)mw->pathplan)->fillEnv();
 			
 			
 			// GUI settings
@@ -466,11 +466,20 @@ void MainWindow::pushStatusMessage(string msg)
 ///////////////////////////////////////////////
 
 
-void about()
+void helpAbout()
 {
     GtkWidget *dialog = gtk_message_dialog_new
 	    (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
 	     ("RoboPET GUI\n\nwww.inf.ufrgs.br/pet\nrobopet-gui.googlecode.com"));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+}
+
+void aboutKeyboard()
+{
+    GtkWidget *dialog = gtk_message_dialog_new
+	    (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+	     ("These are the avaiable keyboard controls:\n\nWASD to move\nQE to rotate\nZ/X do add yellow/blue\n"));
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 }
@@ -526,7 +535,8 @@ void MainWindow::createInterface()
 		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, 1);
 		
 	// SIGNALS (over the air, over the air)	
-	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(about), NULL);
+	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutkeyboard")), "activate", G_CALLBACK(aboutKeyboard), NULL);
+	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(helpAbout), NULL);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"exitmenu")), "activate", G_CALLBACK(gtk_main_quit), NULL);
 	
 	static parametersType args;

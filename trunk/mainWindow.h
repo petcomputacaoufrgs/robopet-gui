@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H_
-#define MAINWINDOW_H_
+#pragma once
 
 
 #include <stdlib.h>
@@ -69,7 +68,7 @@ class MainWindow
 		void 			closeServer();
 
 		Game 			game; 		//game things
-		Pathplan* 		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
+		Pathplan*		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
 		DisplaySettings displaySettings; //configurations about the information to display on the field
 		bool 			isVerbose;
 		
@@ -130,6 +129,3 @@ struct parametersType {
 	vector<GtkWidget*> widgets;
 	MainWindow *mw;
 };
-
-
-#endif

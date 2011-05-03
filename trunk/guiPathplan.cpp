@@ -11,13 +11,13 @@ using namespace std;
 
 
 
-guiPathplan::guiPathplan()
+GuiPathplan::GuiPathplan()
 {
 	isDrawn = false;
 	
 }
 
-guiPathplan::guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles)
+GuiPathplan::GuiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles)
 {
 	this->initialpos = initialpos;
 	this->pathplanIndex = pathplanIndex;
@@ -25,4 +25,4 @@ guiPathplan::guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, 
     this->checkPrintObstacles = checkPrintObstacles;
 }
 
-guiPathplan::~guiPathplan() {};
+GuiPathplan::~GuiPathplan() {};

@@ -12,3 +12,4 @@
 
 void drawBox(cairo_t *cr, float centerX, float centerY, float side);
 void drawLinedPath(cairo_t *cr, vector<Point> path);
+void drawPath(cairo_t *cr, vector<Point> path);
