@@ -8,10 +8,10 @@
 #include "point.h"
 #include "guiPlayer.h"
 #include "guiConstants.h"
-#include "pathplan.h"
+#include "discretePathplan.h"
 
 
-class guiPathplan : public Pathplan
+class GuiPathplan : public DiscretePathplan //, public ContinuousPathplan
 {
 	private:
 		void drawObstacles();
@@ -22,9 +22,9 @@ class guiPathplan : public Pathplan
 		int checkPrintObstacles;
 		bool isDrawn;
 
-		guiPathplan();
-		guiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles);
-		~guiPathplan();
+		GuiPathplan();
+		GuiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles);
+		~GuiPathplan();
 
 		//void runPathplan();
 		void draw();

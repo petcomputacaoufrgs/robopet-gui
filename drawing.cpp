@@ -126,18 +126,27 @@ void drawLinedPath(cairo_t *cr, vector<Point> path)
 									
 		for (unsigned int i=0; i<path.size(); i++) {
 					
-					cairo_line_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-									  MM_TO_PIX( path[i].getY() ) + BORDER);
+			cairo_line_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+							  MM_TO_PIX( path[i].getY() ) + BORDER);
+			
+			drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+						  MM_TO_PIX( path[i].getY() ) + BORDER,
+					  2);
 					
-					drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-							 MM_TO_PIX( path[i].getY() ) + BORDER,
-							2 );
-							
-					if (i != path.size()-1)
-						cairo_move_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-										  MM_TO_PIX( path[i].getY() ) + BORDER);
-				}
+			if (i != path.size()-1)
+				cairo_move_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+								   MM_TO_PIX( path[i].getY() ) + BORDER);
+		}
 	}
+}
+
+void drawPath(cairo_t *cr, vector<Point> path)
+{
+	if(path.size()>0)		 							
+		for (unsigned int i=0; i<path.size(); i++)		
+			drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+					      MM_TO_PIX( path[i].getY() ) + BORDER,
+					  2);
 }
 
 char* itoa(int value, char* result, int base) {
@@ -246,38 +255,33 @@ void MainWindow::drawPathplan()
 {
 	if( toDrawPathplan ) {
 		
+		GuiPathplan* apath = (GuiPathplan*) pathplan;
+		
 		// limits of the environment matrix
 		drawMatrixLimits( 	cr, BORDER, BORDER,
-							MM_TO_PIX(pathplan->getEnvMatrixX()),
-							MM_TO_PIX(pathplan->getEnvMatrixY()) );
+							MM_TO_PIX(apath->getEnvMatrixX()),
+							MM_TO_PIX(apath->getEnvMatrixY()) );
 	
 		// full pathplan
 		if( getPrintFullPathplan() ) {
 			cairo_set_source_rgb(cr, BLACK);
-			for(unsigned int i = 0; i < ((Rrt*)pathplan)->fullPath.size(); i++)
-				drawBox( cr, MM_TO_PIX( ((Rrt*)pathplan)->fullPath[i].getX() ) + BORDER,
-							 MM_TO_PIX( ((Rrt*)pathplan)->fullPath[i].getY() ) + BORDER,
-						3 );
+			cairo_set_line_width( cr, 1);
+			drawPath(cr, ((Rrt*)pathplan)->fullPath);
 		}
 		
 		// pathplan solution
 		cairo_set_source_rgb(cr, CIANO);
-		drawLinedPath(cr, pathplan->path);
-		for(unsigned int i = 0; i < pathplan->path.size(); i++)
-				drawBox( cr, MM_TO_PIX( pathplan->path[i].getX() ) + BORDER,
-							 MM_TO_PIX( pathplan->path[i].getY() ) + BORDER,
-						3 );
 		drawLinedPath(cr, pathplan->path);
 
 		// obstacles
 		if( getPrintObstacles() ) {
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, RED);
-			for(int i=0;i<pathplan->getEnvMatrixX();i++)
-				for(int k=0;k<pathplan->getEnvMatrixY();k++)
-					if( pathplan->env[i][k] == OBSTACLE)  {
-					   drawBox( cr, MM_TO_PIX(i*(FIELD_WIDTH/(float)pathplan->getEnvMatrixX())) + BORDER,
-									MM_TO_PIX(k*(FIELD_HEIGHT/(float)pathplan->getEnvMatrixY())) + BORDER,
+			for(int i=0;i<apath->getEnvMatrixX();i++)
+				for(int k=0;k<apath->getEnvMatrixY();k++)
+					if( apath->env[i][k] == OBSTACLE)  {
+					   drawBox( cr, MM_TO_PIX(i*(FIELD_WIDTH/(float)apath->getEnvMatrixX())) + BORDER,
+									MM_TO_PIX(k*(FIELD_HEIGHT/(float)apath->getEnvMatrixY())) + BORDER,
 								3 );
 					}
 		}
