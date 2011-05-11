@@ -11,6 +11,10 @@ extern double scaleFactorWidth;
 
 void MainWindow::drawField()
 {
+	#pragma warning Hardcoded scaleFactor setting!
+	scaleFactorLength = 3;
+	scaleFactorWidth = 3;
+	
 	cairo_set_line_width( cr, 2);
 	
 	// green background
@@ -102,7 +106,7 @@ void guiPlayer::drawBody(cairo_t *cr, float centerX, float centerY)
 void drawBox(cairo_t *cr, float centerX, float centerY, float side)
 {	
 	//cairo_rectangle(cr, centerX-side/2, centerY-side/2, centerX+side/2, centerY+side/2);
-	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS/3., 0, 2*M_PI);
+	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS*scaleFactorLength/3., 0, 2*M_PI);
 	cairo_stroke(cr);
 }
 
@@ -111,7 +115,7 @@ void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle
 	float ang = -angle * 2 * M_PI / 360;
 
 	cairo_move_to(cr, centerX , centerY);
-	cairo_line_to(cr, centerX + cos(ang) * ROBOT_RADIUS * 1.2 , centerY + sin(ang) * ROBOT_RADIUS * 1.2);
+	cairo_line_to(cr, centerX + cos(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2 , centerY + sin(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2);
 	cairo_stroke (cr);
 }
 
@@ -182,8 +186,7 @@ void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNu
 {
 	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, 10.0);
-	cairo_move_to(cr, centerX, centerY+17);
-	
+	cairo_move_to(cr, centerX, centerY + 1.5*ROBOT_RADIUS*scaleFactorLength);
 	char text[3];
 	itoa(robotNumber,text,10);
 	cairo_show_text(cr, text);
@@ -214,10 +217,9 @@ void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, 
 
 void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 {
-	if( !settings.isHideBall() )
-	{
-		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER, BALL_RADIUS, 0, 2*M_PI);
-		cairo_stroke (cr);
+	if( !settings.isHideBall() ) {
+		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER, BALL_RADIUS*scaleFactorLength, 0, 2*M_PI);
+		cairo_fill(cr);
 	}
 }
 
