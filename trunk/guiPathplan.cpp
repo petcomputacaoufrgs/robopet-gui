@@ -5,7 +5,6 @@
 #include "mainWindow.h"
 #include "point.h"
 
-//#include "rrt.h"
 
 using namespace std;
 

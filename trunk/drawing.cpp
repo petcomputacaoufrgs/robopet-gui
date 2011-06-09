@@ -11,7 +11,7 @@ extern double scaleFactorWidth;
 
 void MainWindow::drawField()
 {
-	#pragma warning Hardcoded scaleFactor setting!
+	// WARNING: Hardcoded scaleFactor setting!
 	scaleFactorLength = 3;
 	scaleFactorWidth = 3;
 	
@@ -146,11 +146,10 @@ void drawLinedPath(cairo_t *cr, vector<Point> path)
 
 void drawPath(cairo_t *cr, vector<Point> path)
 {
-	if(path.size()>0)		 							
-		for (unsigned int i=0; i<path.size(); i++)		
-			drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-					      MM_TO_PIX( path[i].getY() ) + BORDER,
-					  2);
+	for (unsigned int i=0; i<path.size(); i++)		
+		drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
+					  MM_TO_PIX( path[i].getY() ) + BORDER,
+				  1);
 }
 
 char* itoa(int value, char* result, int base) {
@@ -223,17 +222,6 @@ void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 	}
 }
 
-void drawPath(cairo_t *cr, list<Point> path)
-{
-    //glBegin(GL_LINE_STRIP);
-	/*for(std::list<Point>::iterator i = path.begin(); i != path.end(); i++)
-		drawBox( cr, MM_TO_PIX( CELLS_TO_MM_X( i->getX() )) + BORDER,
-				 MM_TO_PIX( CELLS_TO_MM_Y( i->getY() )) + BORDER,
-				3 );*/
-		//glVertex2f(MM_TO_PIX( CELLS_TO_MM( i->getX() )) , MM_TO_PIX( CELLS_TO_MM( i->getY() )) );
-    //glEnd();
-}
-
 void MainWindow::drawObstacles()
 {
 
@@ -264,18 +252,18 @@ void MainWindow::drawPathplan()
 							MM_TO_PIX(apath->getEnvMatrixX()),
 							MM_TO_PIX(apath->getEnvMatrixY()) );
 	
-		// full pathplan
-		if( getPrintFullPathplan() ) {
+		// full pathplan (only for RRT)
+		if( getPrintFullPathplan() && gtk_toggle_button_get_active( (GtkToggleButton*)this->useRrt) ) {
 			cairo_set_source_rgb(cr, BLACK);
 			cairo_set_line_width( cr, 1);
 			drawPath(cr, ((Rrt*)pathplan)->fullPath);
 		}
 		
-		// pathplan solution
+		// draw calculated path
 		cairo_set_source_rgb(cr, CIANO);
 		drawLinedPath(cr, pathplan->path);
 
-		// obstacles
+		// draw obstacles
 		if( getPrintObstacles() ) {
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, RED);
