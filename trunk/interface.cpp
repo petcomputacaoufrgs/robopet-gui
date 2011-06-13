@@ -9,6 +9,7 @@
 #include "interface.h"
 #include "rrt.h"
 #include "astar.h"
+#include "gstar.h"
 #include "game.h"
 
 #define CLIENT_INITIAL_PORT PORT_AI_TO_GUI
@@ -43,7 +44,7 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 						mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
 						mw->pathplan->run();
 					
-						mw->toDrawPathplan = true;
+						mw->pathplanSettings.toDraw = true;
 						//mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 					
@@ -137,15 +138,14 @@ void MainWindow::fillTextOutput(char text[])
 }
 
 void pathplanButton(GtkWidget *widget, gpointer data)
-
-//creates a "hanging click" to wait until the user clicks in the drawing area
+// Handles the two-states Pathplan button.
 {
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget) ){
+		// pathplan button is deactivated
 
-		// parameters decoding
 		guiPlayer *selected = mw->getSelectedPlayer();
 
 		if( selected ) //has a player selected
@@ -153,29 +153,38 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 			// which pathplan instance to create?
 			if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useRrt) ) {
 				mw->pathplan = new Rrt();
+				mw->pathplanSettings.isGridBased = true;
 				((Rrt*)mw->pathplan)->stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtStepsize);
 				((Rrt*)mw->pathplan)->timeLimit = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtTimeLimit);
 				((Rrt*)mw->pathplan)->goalProb = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtGoalProb);
 			}
-			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useAstar) )
+			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useAstar) ) {
 					mw->pathplan = new AStar();
+					mw->pathplanSettings.isGridBased = true;
+			}
+			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useGstar) ) {
+					mw->pathplan = new GStar();
+					mw->pathplanSettings.isGridBased = false;
+			}
 			
-			// set environment matrix dimensions
-			((DiscretePathplan*)mw->pathplan)->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
-									gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
-											
-			// set environment matrix dimensions
-			((DiscretePathplan*)mw->pathplan)->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
-									gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
-											
-			// set the radius of the obstacules
-			((DiscretePathplan*)mw->pathplan)->setRadius( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->obstaculesRadius) );
+			if(mw->pathplanSettings.isGridBased) {
+				// set environment matrix dimensions
+				((DiscretePathplan*)mw->pathplan)->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+										gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
+												
+				// set environment matrix dimensions
+				((DiscretePathplan*)mw->pathplan)->setEnvXY( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridX),
+										gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->pathplanGridY));
+												
+				// set the radius of the obstacules
+				((DiscretePathplan*)mw->pathplan)->setRadius( gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->obstaculesRadius) );
+			}
 			
 			// set initial position to selected player's position
 			mw->pathplan->setInitialPos( Point( selected->getCurrentPosition().getX(),	
 												selected->getCurrentPosition().getY() )	);
 			
-			// sets obstacules in the environment
+			// obstacules
 			vector<ppObstacle> obstacles;
 			for(int team=0; team<2; team++)
 				for(int i=0; i<mw->game.getNplayers(team); i++)
@@ -183,7 +192,9 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 							obstacles.push_back( ppObstacle(mw->game.players[team][i].getCurrentPosition(),ROBOT) );
 			obstacles.push_back( ppObstacle(mw->game.ball.getCurrentPosition(),BALL) );
 			mw->pathplan->obstacles = obstacles;
-			((DiscretePathplan*)mw->pathplan)->fillEnv();
+			
+			if(mw->pathplanSettings.isGridBased)
+				((DiscretePathplan*)mw->pathplan)->fillEnv(); //fill obstacules in the grid
 			
 			
 			// GUI settings
@@ -196,7 +207,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		gtk_button_set_label((GtkButton*)widget, "Set Destination");
 		delete mw->pathplan;
 		mw->cursorEvent = CURSOR_EVENT_NOTHING;
-		mw->toDrawPathplan = false;
+		mw->pathplanSettings.toDraw = false;
 		//mw->pushStatusMessage("Waiting for destination definition.");
 	}
 
@@ -512,6 +523,7 @@ void MainWindow::createInterface()
 		gtk_spin_button_set_value((GtkSpinButton*)stepsize,300);
 	this->useRrt = GTK_WIDGET( gtk_builder_get_object(builder,"userrt") );
 	this->useAstar = GTK_WIDGET( gtk_builder_get_object(builder,"useastar") );
+	this->useGstar = GTK_WIDGET( gtk_builder_get_object(builder,"usegstar") );
 	this->printFullPathplan = GTK_WIDGET( gtk_builder_get_object(builder,"showfullpath") );
 	this->printObstacles = GTK_WIDGET( gtk_builder_get_object(builder,"showobstacles") );
 	this->clientHost = GTK_WIDGET( gtk_builder_get_object(builder,"clienthost") );

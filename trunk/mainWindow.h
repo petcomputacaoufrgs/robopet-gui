@@ -14,6 +14,8 @@
 #include "communication.h"
 #include "game.h"
 
+#include "pathplan.h"
+
 #include "rp_client.h"
 #include "rp_server.h"
 
@@ -67,9 +69,11 @@ class MainWindow
 		void 			openServer(int port, char* host);
 		void 			closeServer();
 
-		Game 			game; 		//game things
-		Pathplan*		pathplan; //pathplanning configurations (interface between GUI and PathPlanners Codes)
-		DisplaySettings displaySettings; //configurations about the information to display on the field
+		Game 			game;
+		Pathplan*		pathplan;
+		GuiPathplan		pathplanSettings;
+		DisplaySettings displaySettings;
+		
 		bool 			isVerbose;
 		
 	private:
@@ -112,8 +116,7 @@ class MainWindow
 		int 			joystickFd;
 		GtkWidget		*rrtTimeLimit, *rrtGoalProb, *rrtStepsize;
 
-		GtkWidget		*useRrt, *useAstar;
-		bool 			toDrawPathplan;
+		GtkWidget		*useRrt, *useAstar, *useGstar;
 		cairo_t 		*cr;
 
 		//Communication (communication.cpp)

@@ -25,30 +25,30 @@ void MainWindow::drawField()
 	// field lines	
 	cairo_set_source_rgb( cr, WHITE);
 		
-	cairo_move_to(cr, ARENA_WIDTH/2, BORDER);
-	cairo_line_to(cr, ARENA_WIDTH/2, ARENA_HEIGHT - BORDER);
+	cairo_move_to(cr, ARENA_WIDTH/2, BORDER_PIX);
+	cairo_line_to(cr, ARENA_WIDTH/2, ARENA_HEIGHT - BORDER_PIX);
 
-	cairo_move_to(cr, BORDER, BORDER);
-	cairo_line_to(cr, BORDER, ARENA_HEIGHT - BORDER);
+	cairo_move_to(cr, BORDER_PIX, BORDER_PIX);
+	cairo_line_to(cr, BORDER_PIX, ARENA_HEIGHT - BORDER_PIX);
 
-	cairo_move_to(cr, ARENA_WIDTH - BORDER, BORDER);
-	cairo_line_to(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT - BORDER);
+	cairo_move_to(cr, ARENA_WIDTH - BORDER_PIX, BORDER_PIX);
+	cairo_line_to(cr, ARENA_WIDTH - BORDER_PIX, ARENA_HEIGHT - BORDER_PIX);
 
-	cairo_move_to(cr, BORDER, BORDER);
-	cairo_line_to(cr, ARENA_WIDTH - BORDER, BORDER);
+	cairo_move_to(cr, BORDER_PIX, BORDER_PIX);
+	cairo_line_to(cr, ARENA_WIDTH - BORDER_PIX, BORDER_PIX);
 
-	cairo_move_to(cr, BORDER, ARENA_HEIGHT - BORDER);
-	cairo_line_to(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT - BORDER);
+	cairo_move_to(cr, BORDER_PIX, ARENA_HEIGHT - BORDER_PIX);
+	cairo_line_to(cr, ARENA_WIDTH - BORDER_PIX, ARENA_HEIGHT - BORDER_PIX);
 
 	cairo_stroke (cr);
 	
 	// goal areas
-	cairo_arc(cr, BORDER, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, -M_PI/2, 0);
-	cairo_arc(cr, BORDER, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, 0, M_PI/2);
+	cairo_arc(cr, BORDER_PIX, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, -M_PI/2, 0);
+	cairo_arc(cr, BORDER_PIX, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, 0, M_PI/2);
 	cairo_stroke (cr);
 
-	cairo_arc(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, M_PI/2, M_PI);
-	cairo_arc(cr, ARENA_WIDTH - BORDER, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, M_PI, -M_PI/2);
+	cairo_arc(cr, ARENA_WIDTH - BORDER_PIX, ARENA_HEIGHT/2 + GOAL_LINE/2, GOAL_CIRC_RADIUS, M_PI/2, M_PI);
+	cairo_arc(cr, ARENA_WIDTH - BORDER_PIX, ARENA_HEIGHT/2 - GOAL_LINE/2, GOAL_CIRC_RADIUS, M_PI, -M_PI/2);
 	cairo_stroke (cr);
 	
 	// field center
@@ -72,8 +72,8 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 {
     //if(this->hasUpdatedInfo) {
    
-		double posx = MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER;
-		double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER;
+		double posx = MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER_PIX;
+		double posy = MM_TO_PIX( this->getCurrentPosition().getY() ) + BORDER_PIX;
 		
 		cairo_set_line_width(cr, 2);
 		
@@ -88,8 +88,8 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 		
 		if( !settings.isHidePlayerFuture() )
 			if( this->getFuturePosition().getX()!=-1 && this->getFuturePosition().getY()!=-1 )
-				drawVector(cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER,
-									   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER);
+				drawVector(cr, posx, posy, MM_TO_PIX( this->getFuturePosition().getX() ) + BORDER_PIX,
+									   MM_TO_PIX( this->getFuturePosition().getY() ) + BORDER_PIX);
 		
 		if( !settings.isHidePlayerPath() )
 			drawLinedPath(cr, this->path);
@@ -103,10 +103,9 @@ void guiPlayer::drawBody(cairo_t *cr, float centerX, float centerY)
 	cairo_stroke (cr);
 }
 
-void drawBox(cairo_t *cr, float centerX, float centerY, float side)
+void drawCircle(cairo_t *cr, float centerX, float centerY, float radius)
 {	
-	//cairo_rectangle(cr, centerX-side/2, centerY-side/2, centerX+side/2, centerY+side/2);
-	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS*scaleFactorLength/3., 0, 2*M_PI);
+	cairo_arc(cr, centerX, centerY, radius, 0, 2*M_PI);
 	cairo_stroke(cr);
 }
 
@@ -125,21 +124,21 @@ void drawLinedPath(cairo_t *cr, vector<Point> path)
 		 
 		cairo_set_line_width (cr, 1);
 		
-		cairo_move_to (cr, MM_TO_PIX( path[0].getX() ) + BORDER,
-							MM_TO_PIX( path[0].getY() ) + BORDER );
+		cairo_move_to (cr, MM_TO_PIX( path[0].getX() ) + BORDER_PIX,
+							MM_TO_PIX( path[0].getY() ) + BORDER_PIX );
 									
 		for (unsigned int i=0; i<path.size(); i++) {
 					
-			cairo_line_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-							  MM_TO_PIX( path[i].getY() ) + BORDER);
+			cairo_line_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER_PIX,
+							  MM_TO_PIX( path[i].getY() ) + BORDER_PIX);
 			
-			drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-						  MM_TO_PIX( path[i].getY() ) + BORDER,
-					  2);
+			drawCircle ( cr, MM_TO_PIX( path[i].getX() ) + BORDER_PIX,
+						  MM_TO_PIX( path[i].getY() ) + BORDER_PIX,
+					  3);
 					
 			if (i != path.size()-1)
-				cairo_move_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-								   MM_TO_PIX( path[i].getY() ) + BORDER);
+				cairo_move_to (cr, MM_TO_PIX( path[i].getX() ) + BORDER_PIX,
+								   MM_TO_PIX( path[i].getY() ) + BORDER_PIX);
 		}
 	}
 }
@@ -147,9 +146,9 @@ void drawLinedPath(cairo_t *cr, vector<Point> path)
 void drawPath(cairo_t *cr, vector<Point> path)
 {
 	for (unsigned int i=0; i<path.size(); i++)		
-		drawBox ( cr, MM_TO_PIX( path[i].getX() ) + BORDER,
-					  MM_TO_PIX( path[i].getY() ) + BORDER,
-				  1);
+		drawCircle ( cr, MM_TO_PIX( path[i].getX() ) + BORDER_PIX,
+					  MM_TO_PIX( path[i].getY() ) + BORDER_PIX,
+				  3);
 }
 
 char* itoa(int value, char* result, int base) {
@@ -217,7 +216,7 @@ void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, 
 void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 {
 	if( !settings.isHideBall() ) {
-		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER, BALL_RADIUS*scaleFactorLength, 0, 2*M_PI);
+		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER_PIX, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER_PIX, BALL_RADIUS*scaleFactorLength, 0, 2*M_PI);
 		cairo_fill(cr);
 	}
 }
@@ -243,37 +242,41 @@ void drawMatrixLimits(cairo_t *cr, float x1, float y1, float x2, float y2)
 
 void MainWindow::drawPathplan()
 {
-	if( toDrawPathplan ) {
+	if( pathplanSettings.toDraw ) {
 		
-		GuiPathplan* apath = (GuiPathplan*) pathplan;
-		
-		// limits of the environment matrix
-		drawMatrixLimits( 	cr, BORDER, BORDER,
-							MM_TO_PIX(apath->getEnvMatrixX()),
-							MM_TO_PIX(apath->getEnvMatrixY()) );
-	
-		// full pathplan (only for RRT)
+		// draw the path
+		cairo_set_source_rgb(cr, CIANO);
+		drawLinedPath(cr, pathplan->path);
+
+		// RRT only: full pathplan drawing
 		if( getPrintFullPathplan() && gtk_toggle_button_get_active( (GtkToggleButton*)this->useRrt) ) {
 			cairo_set_source_rgb(cr, BLACK);
 			cairo_set_line_width( cr, 1);
 			drawPath(cr, ((Rrt*)pathplan)->fullPath);
 		}
 		
-		// draw calculated path
-		cairo_set_source_rgb(cr, CIANO);
-		drawLinedPath(cr, pathplan->path);
-
-		// draw obstacles
-		if( getPrintObstacles() ) {
-			cairo_set_line_width( cr, 2);
-			cairo_set_source_rgb( cr, RED);
-			for(int i=0;i<apath->getEnvMatrixX();i++)
-				for(int k=0;k<apath->getEnvMatrixY();k++)
-					if( apath->env[i][k] == OBSTACLE)  {
-					   drawBox( cr, MM_TO_PIX(i*(FIELD_WIDTH/(float)apath->getEnvMatrixX())) + BORDER,
-									MM_TO_PIX(k*(FIELD_HEIGHT/(float)apath->getEnvMatrixY())) + BORDER,
-								3 );
-					}
+		// grid-based pathplans only drawings
+		if( pathplanSettings.isGridBased ) {
+			
+			DiscretePathplan* pp = (DiscretePathplan*) pathplan;
+			
+			// limits of the environment matrix
+			drawMatrixLimits( 	cr, BORDER_PIX, BORDER_PIX,
+								MM_TO_PIX(pp->getEnvMatrixX()),
+								MM_TO_PIX(pp->getEnvMatrixY()) );
+			// draw obstacles
+			if( getPrintObstacles() ) {
+				cairo_set_line_width( cr, 2);
+				cairo_set_source_rgb( cr, RED);
+				for(int i=0;i<pp->getEnvMatrixX();i++)
+					for(int k=0;k<pp->getEnvMatrixY();k++)
+						if( pp->env[i][k] == OBSTACLE)  {
+						   drawCircle( cr, MM_TO_PIX(i*(FIELD_WIDTH/(float)pp->getEnvMatrixX())) + BORDER_PIX,
+										MM_TO_PIX(k*(FIELD_HEIGHT/(float)pp->getEnvMatrixY())) + BORDER_PIX,
+									3 );
+						}
+			}
 		}
+		
 	}
 }

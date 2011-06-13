@@ -1,5 +1,4 @@
-#ifndef CONSTANTES_H_
-#define CONSTANTES_H_
+#pragma once
 
 #include "constants.h"
 
@@ -25,7 +24,7 @@
 #define GOAL_SIZE 700 * PIX_PER_MM
 
 #define BORDER_MM 675
-#define BORDER (BORDER_MM * PIX_PER_MM)
+#define BORDER_PIX (BORDER_MM * PIX_PER_MM)
 
 #define ROBOT_RADIUS ROBOT_RADIUS_MM * PIX_PER_MM
 #define BALL_RADIUS BALL_RADIUS_MM * PIX_PER_MM / 2
@@ -68,7 +67,3 @@ enum{
 	CURSOR_EVENT_ADD_YELLOW_ROBOT,
 	CURSOR_EVENT_SET_BALL
 };
-
-
-
-#endif

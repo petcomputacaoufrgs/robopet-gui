@@ -17,7 +17,6 @@ MainWindow::MainWindow()
 	aitoguiClient = NULL;
 	guitoaiServer = NULL;
 	pathplan = NULL;
-	toDrawPathplan = false;
 	
 	joystickFd = -1;
 	

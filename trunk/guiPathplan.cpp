@@ -12,16 +12,9 @@ using namespace std;
 
 GuiPathplan::GuiPathplan()
 {
-	isDrawn = false;
+	toDraw = false;
+	isGridBased = false;
 	
-}
-
-GuiPathplan::GuiPathplan(Point initialpos,int pathplanIndex,int checkPrintFull, int checkPrintObstacles)
-{
-	this->initialpos = initialpos;
-	this->pathplanIndex = pathplanIndex;
-	this->checkPrintFull = checkPrintFull;
-    this->checkPrintObstacles = checkPrintObstacles;
 }
 
 GuiPathplan::~GuiPathplan() {};
