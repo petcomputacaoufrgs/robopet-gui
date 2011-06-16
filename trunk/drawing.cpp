@@ -61,9 +61,9 @@ void MainWindow::drawPlayers()
 	for(int team=0; team<2; team++)
 		for(int i=0; i<game.getNplayers(team); i++) {
 			if(team==0)
-				cairo_set_source_rgb(cr, BLUE);
-			else
 				cairo_set_source_rgb(cr, YELLOW);
+			else
+				cairo_set_source_rgb(cr, BLUE);
 			game.players[team][i].draw(cr, game.players[team][i].getId() ,displaySettings);
 		}
 }
