@@ -4,6 +4,7 @@
 #include "drawing.h"
 #include "mainWindow.h"
 #include "rrt.h"
+#include "gstar.h"
 
 
 extern double scaleFactorLength;
@@ -277,6 +278,14 @@ void MainWindow::drawPathplan()
 						}
 			}
 		}
-		
+		else//GStar
+		{
+			GStar* g = (GStar*) pathplan;
+			Point A = g->getPoints().A;
+
+			cairo_set_line_width( cr, 2);
+			cairo_set_source_rgb( cr, BLACK);
+			drawCircle( cr, MM_TO_PIX(A.getX()) + BORDER_PIX, MM_TO_PIX(A.getY()) + BORDER_PIX, 3); //scaleFactor? :S
+		}
 	}
 }
