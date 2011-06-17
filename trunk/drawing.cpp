@@ -281,11 +281,27 @@ void MainWindow::drawPathplan()
 		else//GStar
 		{
 			GStar* g = (GStar*) pathplan;
-			Point A = g->getPoints().A;
+			
+			struct Vertexes vert;
+			vert = g->getPoints();
+			
+			Point center = g->getPoints().center;
+
+			vert.A.setX(((center.getX()-vert.A.getX())*scaleFactorLength)+center.getX());
+			vert.A.setY(((center.getY()-vert.A.getY())*scaleFactorWidth)+center.getY());
+			vert.B.setX(((center.getX()-vert.B.getX())*scaleFactorLength)+center.getX());
+			vert.B.setY(((center.getY()-vert.B.getY())*scaleFactorWidth)+center.getY());
+			vert.C.setX(((center.getX()-vert.C.getX())*scaleFactorLength)+center.getX());
+			vert.C.setY(((center.getY()-vert.C.getY())*scaleFactorWidth)+center.getY());
+			vert.D.setX(((center.getX()-vert.D.getX())*scaleFactorLength)+center.getX());
+			vert.D.setY(((center.getY()-vert.D.getY())*scaleFactorWidth)+center.getY());
 
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, BLACK);
-			drawCircle( cr, MM_TO_PIX(A.getX()) + BORDER_PIX, MM_TO_PIX(A.getY()) + BORDER_PIX, 3); //scaleFactor? :S
+			drawCircle( cr, MM_TO_PIX(vert.A.getX()) + BORDER_PIX, MM_TO_PIX(vert.A.getY()) + BORDER_PIX, 3);
+			drawCircle( cr, MM_TO_PIX(vert.B.getX()) + BORDER_PIX, MM_TO_PIX(vert.B.getY()) + BORDER_PIX, 3);
+			drawCircle( cr, MM_TO_PIX(vert.C.getX()) + BORDER_PIX, MM_TO_PIX(vert.C.getY()) + BORDER_PIX, 3);
+			drawCircle( cr, MM_TO_PIX(vert.D.getX()) + BORDER_PIX, MM_TO_PIX(vert.D.getY()) + BORDER_PIX, 3);
 		}
 	}
 }
