@@ -283,16 +283,19 @@ void MainWindow::drawPathplan()
 			GStar* g = (GStar*) pathplan;
 			
 			Obstacle o;
-			o = g->getLastObstacle();
 
-			cairo_set_line_width( cr, 2);
-			cairo_set_source_rgb( cr, BLACK);
-
-			for(int j=0; j<4; j++)
+			for(int i=0; i<g->getObstaclesSize(); i++)
 			{
-				o.p[j].setX(((o.center.getX()-o.p[j].getX())*scaleFactorLength)+o.center.getX());
-				o.p[j].setY(((o.center.getY()-o.p[j].getY())*scaleFactorWidth)+o.center.getY());
-				drawCircle( cr, MM_TO_PIX(o.p[j].getX()) + BORDER_PIX, MM_TO_PIX(o.p[j].getY()) + BORDER_PIX, 3);
+				o = g->getObstacle(i);
+				cairo_set_line_width( cr, 2);
+				cairo_set_source_rgb( cr, BLACK);
+
+				for(int j=0; j<4; j++)
+				{
+					o.p[j].setX(((o.center.getX()-o.p[j].getX())*scaleFactorLength)+o.center.getX());
+					o.p[j].setY(((o.center.getY()-o.p[j].getY())*scaleFactorWidth)+o.center.getY());
+					drawCircle( cr, MM_TO_PIX(o.p[j].getX()) + BORDER_PIX, MM_TO_PIX(o.p[j].getY()) + BORDER_PIX, 3);
+				}
 			}
 		}
 	}
