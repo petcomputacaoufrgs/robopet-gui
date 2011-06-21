@@ -13,8 +13,8 @@ extern double scaleFactorWidth;
 void MainWindow::drawField()
 {
 	// WARNING: Hardcoded scaleFactor setting!
-	scaleFactorLength = 3;
-	scaleFactorWidth = 3;
+	scaleFactorLength = 1;
+	scaleFactorWidth = 1;
 	
 	cairo_set_line_width( cr, 2);
 	
