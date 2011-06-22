@@ -244,6 +244,10 @@ void drawMatrixLimits(cairo_t *cr, float x1, float y1, float x2, float y2)
 void MainWindow::drawPathplan()
 {
 	if( pathplanSettings.toDraw ) {
+			
+		// draw the path
+		cairo_set_source_rgb(cr, CIANO);
+		drawLinedPath(cr, pathplan->path);
 
 		// RRT only: full pathplan drawing
 		if( getPrintFullPathplan() && gtk_toggle_button_get_active( (GtkToggleButton*)this->useRrt) ) {
@@ -256,10 +260,6 @@ void MainWindow::drawPathplan()
 		if( pathplanSettings.isGridBased ) {
 			
 			DiscretePathplan* pp = (DiscretePathplan*) pathplan;
-			
-			// draw the path
-			cairo_set_source_rgb(cr, CIANO);
-			drawLinedPath(cr, pathplan->path);
 
 			// limits of the environment matrix
 			drawMatrixLimits( 	cr, BORDER_PIX, BORDER_PIX,
@@ -288,28 +288,31 @@ void MainWindow::drawPathplan()
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, BLACK);
 
-			/*for(int i=0; i<g->getObstaclesSize(); i++)
+			for(int i=0; i<g->obstacles.size(); i++)
 			{
 				o = g->getObstacle(i);
 
-				for(int j=0; j<4; j++)
+				if(o.p[0].getX()!=-1)
 				{
-					o.p[j].setX(((o.center.getX()-o.p[j].getX())*scaleFactorLength)+o.center.getX());
-					o.p[j].setY(((o.center.getY()-o.p[j].getY())*scaleFactorWidth)+o.center.getY());
-					drawCircle( cr, MM_TO_PIX(o.p[j].getX()) + BORDER_PIX, MM_TO_PIX(o.p[j].getY()) + BORDER_PIX, 3);
+					for(int j=0; j<4; j++)
+					{
+						//o.p[j].setX(((o.center.getX()-o.p[j].getX())*scaleFactorLength)+o.center.getX());
+						//o.p[j].setY(((o.center.getY()-o.p[j].getY())*scaleFactorWidth)+o.center.getY());
+						drawCircle( cr, MM_TO_PIX(o.p[j].getX()) + BORDER_PIX, MM_TO_PIX(o.p[j].getY()) + BORDER_PIX, 1);
+					}
 				}
-			}*/
+			}
 
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, RED);
 
-			for(unsigned int i=0; i<g->path.size(); i+=2)
-			{
-				temp.clear();
-				temp.push_back(g->path[i]);
-				temp.push_back(g->path[i+1]);
-				drawLinedPath( cr, temp);
-			}
+//			for(unsigned int i=0; i<g->path.size(); i+=2)
+//			{
+//				temp.clear();
+//				temp.push_back(g->path[i]);
+//				temp.push_back(g->path[i+1]);
+//				drawLinedPath( cr, temp);
+//			}
 		}
 	}
 }
