@@ -82,6 +82,8 @@ void MainWindow::joystick()
 
 void MainWindow::iterate()
 {
+	system("clear");
+	
 	communicate();
 
 	drawWorld();
@@ -89,6 +91,8 @@ void MainWindow::iterate()
 	generateTextOutput();
 	
 	joystick();
+	
+	usleep(1000);
 }	
 
 void MainWindow::drawWorld()
