@@ -52,16 +52,11 @@ void MainWindow::listenToAI()
 {
 
     RoboPET_WrapperPacket packet;
-    if(aitoguiClient->receive(packet))
-    {
-        if(isVerbose) cout<<"opa, recebi um pacote!"<<endl;
+    if(aitoguiClient->receive(packet)) {
 
-        if(packet.has_aitogui())
-        {
-            if(isVerbose) cout<<"ah, esse pacote eh meu."<<endl;
-            //pushStatusMessage("Packet received!");
-
-
+        if(packet.has_aitogui()) {
+			
+            if(isVerbose) printf("----------------------------\nReceived AI-To-GUI\n");
 
             game.updateNplayers(0, packet.aitogui().blue_robots_size());
             game.updateNplayers(1, packet.aitogui().yellow_robots_size());
@@ -92,7 +87,7 @@ void MainWindow::listenToAI()
 
                 (*it).hasUpdatedInfo = true;
 
-                //cout << packet.aitogui().blue_robots(i).current_x() << " , " << packet.aitogui().blue_robots(i).current_y() << endl;
+                if(isVerbose) printf("RECEIVED Blue Robot %i: %f,%f\n", i, (*it).getPosition().getX(), (*it).getPosition().getY() );
 
             }
 
@@ -119,15 +114,17 @@ void MainWindow::listenToAI()
                 //------
 
                 (*it).hasUpdatedInfo = true;
-
+                
+                if(isVerbose) printf("RECEIVED Yellow Robot %i: %f,%f\n", i, (*it).getPosition().getX(), (*it).getPosition().getY() );
             }
 
 
             game.ball.setCurrentPosition( packet.aitogui().ball().x(),
                                      packet.aitogui().ball().y()  );
-
             game.ball.hasUpdatedInfo = true;
-
+            if(isVerbose) printf("RECEIVED Ball: %f,%f\n", game.ball.getPosition().getX(), game.ball.getPosition().getY() );
+            
+            gtk_widget_draw(this->window, NULL);
         }
 
     }

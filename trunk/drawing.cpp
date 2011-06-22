@@ -217,7 +217,9 @@ void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, 
 void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 {
 	if( !settings.isHideBall() ) {
-		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER_PIX, MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER_PIX, BALL_RADIUS*scaleFactorLength, 0, 2*M_PI);
+		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER_PIX,
+					  MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER_PIX,
+					  BALL_RADIUS*scaleFactorLength, 0, 2*M_PI);
 		cairo_fill(cr);
 	}
 }
