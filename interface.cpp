@@ -63,10 +63,12 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 			}
+			
+			// Update the drawing widget on demand
+			mw->updateScene();
 		} 
 	}
 	
-	//gtk_widget_draw(widget, NULL);
 }
 
 void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
@@ -75,16 +77,15 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
     MainWindow* mw = (MainWindow*) data;
 
     //add players
-	switch(  event->keyval  )
-	{
-		case GDK_z: mw->cursorEvent = CURSOR_EVENT_ADD_YELLOW_ROBOT;
-		break;
-		 
-		case GDK_x: mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
-		break;
+	switch(event->keyval) {
+		case GDK_z:
+			mw->cursorEvent = CURSOR_EVENT_ADD_YELLOW_ROBOT;
+			break;
+		case GDK_x:
+			mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
+			break;
 	}
         
-    
     // players movement
     int stepsize = mw->getStepsize();
 
@@ -112,8 +113,9 @@ void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
 
         }
     }
-	
-	//gtk_widget_draw(widget, NULL);
+
+	// Update the drawing widget on demand	
+	mw->updateScene();
 }
 
 int MainWindow::getStepsize()
@@ -210,7 +212,9 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		mw->pathplanSettings.toDraw = false;
 		//mw->pushStatusMessage("Waiting for destination definition.");
 	}
-
+	
+	// Update the drawing widget on demand
+	mw->updateScene();
 }
 
 
@@ -414,7 +418,10 @@ void loadStateButton(GtkWidget *widget, gpointer data)
 			cout << "Loaded game state." << endl;
 		}	
 		fclose(arq);
-	}	
+	}
+	
+	// Update the drawing widget on demand
+	mw->updateScene();
 }
 
 string getParam( gpointer data )
@@ -450,7 +457,7 @@ void launchTrackerButton(GtkWidget *widget, gpointer data)
 void launchSimButton(GtkWidget *widget, gpointer data)
 {
     cout << "Launching Simulator..." << endl;
-	launch("../simulator/simulator" + getParam(data));
+	launch("../simulation/simulator" + getParam(data));
 }
 
 void launchComButton(GtkWidget *widget, gpointer data)

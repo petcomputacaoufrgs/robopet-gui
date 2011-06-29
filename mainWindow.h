@@ -49,6 +49,7 @@ class MainWindow
 	friend void clientCommunicationButton(GtkWidget *widget, gpointer data);
 	friend void serverCommunicationButton(GtkWidget *widget, gpointer data);
 	friend void openJoystick(GtkWidget *widget, gpointer data);
+	friend void loadStateButton(GtkWidget *widget, gpointer data);
 	
 	public:
 		MainWindow();
@@ -84,7 +85,7 @@ class MainWindow
 		guint timeout_handler_id;
 		//GtkWidget *statusBar;
 
-		void configuraGL();
+		void updateScene();
 		void createDrawingArea();
 		void iterate();
         void generateTextOutput();

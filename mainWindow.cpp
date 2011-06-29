@@ -11,6 +11,8 @@ using namespace std;
 
 #include "global.cpp"
 
+
+
 MainWindow::MainWindow()
 {
 	isVerbose = true;
@@ -27,6 +29,8 @@ MainWindow::MainWindow()
 	game.ball = GuiBall();
 	//this->game.scaleFactorLength = &scaleFactorLength;
 	//this->game.scaleFactorWidth = &scaleFactorWidth;
+	
+	//openClient(PORT_AI_TO_GUI, "localhost");
 	
 	pushStatusMessage("GUI initialized.");
 }
@@ -92,7 +96,7 @@ void MainWindow::iterate()
 	
 	joystick();
 	
-	usleep(1000);
+	//usleep(1000);
 }	
 
 void MainWindow::drawWorld()
@@ -103,7 +107,6 @@ void MainWindow::drawWorld()
 
 	drawPathplan();
 
-	cairo_set_source_rgb(cr, ORANGE);
 	game.ball.draw(cr, displaySettings);
 }
 
@@ -130,7 +133,6 @@ gint configure_event(GtkWidget *widget, GdkEventConfigure *event, MainWindow* mw
 gint expose_event(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
 {
 	mw->iterate();
-	//cout << "updated" << endl;
 	
 	gdk_draw_pixmap(widget->window,
 				  widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
@@ -142,28 +144,11 @@ gint expose_event(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
 	return FALSE;
 }
 
-gboolean renderScene(GtkWidget * widget, GdkEvent *event)
+void MainWindow::updateScene()
 {
-	gtk_widget_draw(widget, NULL);
-
-	return TRUE;
+	gtk_widget_draw(this->window, NULL);
 }
 
-
-void timeoutAdd(GtkWidget *widget, MainWindow* mw)
-{
-        if (mw->timeout_handler_id == 0)
-                mw->timeout_handler_id = gtk_timeout_add(TIMEOUT_INTERVAL, (GtkFunction)renderScene, widget);
-}
-
-
-void timeoutRemove(GtkWidget *widget, MainWindow* mw)
-{
-        if (mw->timeout_handler_id != 0) {
-                gtk_timeout_remove(mw->timeout_handler_id);
-                mw->timeout_handler_id = 0;
-        }
-}
 
 void MainWindow::createDrawingArea()
 {
@@ -174,7 +159,4 @@ void MainWindow::createDrawingArea()
     gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
 		gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
 		cursorEvent = CURSOR_EVENT_NOTHING;
-		
-	gtk_timeout_add(TIMEOUT_INTERVAL, (GtkFunction)renderScene, window);
 }
-

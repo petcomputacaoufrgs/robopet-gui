@@ -126,9 +126,9 @@ void MainWindow::listenToAI()
             
             gtk_widget_draw(this->window, NULL);
         }
-
     }
-    //else printf("Communication Client NULL!\n");
+    else
+		if(isVerbose) printf("Didn't receive AItoGUI\n");
 }
 
 void MainWindow::sendToAI()

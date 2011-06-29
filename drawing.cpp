@@ -183,11 +183,13 @@ char* itoa(int value, char* result, int base) {
 
 void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber)
 {
+	int fontSize = 10;
 	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-	cairo_set_font_size(cr, 10.0);
-	cairo_move_to(cr, centerX, centerY + 1.5*ROBOT_RADIUS*scaleFactorLength);
+	cairo_set_font_size(cr, fontSize);
+	cairo_move_to(cr, centerX,
+					  centerY + fontSize + ROBOT_RADIUS*scaleFactorLength);
 	char text[3];
-	itoa(robotNumber,text,10);
+	itoa(robotNumber,text,fontSize);
 	cairo_show_text(cr, text);
 	
 	cairo_stroke (cr);
@@ -217,6 +219,7 @@ void guiPlayer::drawVector(cairo_t *cr, float startX, float startY, float endX, 
 void GuiBall::draw(cairo_t *cr, DisplaySettings settings)
 {
 	if( !settings.isHideBall() ) {
+		cairo_set_source_rgb(cr, ORANGE);
 		cairo_arc(cr, MM_TO_PIX( this->getCurrentPosition().getX() ) + BORDER_PIX,
 					  MM_TO_PIX(this->getCurrentPosition().getY()) + BORDER_PIX,
 					  BALL_RADIUS*scaleFactorLength, 0, 2*M_PI);
@@ -290,7 +293,7 @@ void MainWindow::drawPathplan()
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, BLACK);
 
-			for(int i=0; i<g->obstacles.size(); i++)
+			for(unsigned int i=0; i<g->obstacles.size(); i++)
 			{
 				o = g->getObstacle(i);
 
