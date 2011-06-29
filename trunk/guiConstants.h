@@ -45,8 +45,6 @@
 #define RED 1, 0, 0
 #define ORANGE 1, 0.5, 0
 
-#define TIMEOUT_INTERVAL 100
-
 
 //ASCII
 enum{
