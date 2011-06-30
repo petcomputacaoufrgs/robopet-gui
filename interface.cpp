@@ -157,8 +157,8 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 				mw->pathplan = new Rrt();
 				mw->pathplanSettings.isGridBased = true;
 				((Rrt*)mw->pathplan)->stepsize = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtStepsize);
-				((Rrt*)mw->pathplan)->timeLimit = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtTimeLimit);
-				((Rrt*)mw->pathplan)->goalProb = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->rrtGoalProb);
+				((Rrt*)mw->pathplan)->timeLimit = gtk_spin_button_get_value_as_float((GtkSpinButton*)mw->rrtTimeLimit);
+				((Rrt*)mw->pathplan)->goalProb = gtk_spin_button_get_value_as_float((GtkSpinButton*)mw->rrtGoalProb);
 			}
 			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useAstar) ) {
 					mw->pathplan = new AStar();
@@ -547,9 +547,9 @@ void MainWindow::createInterface()
 	this->obstaculesRadius = GTK_WIDGET( gtk_builder_get_object(builder,"obstaculesRadiusSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)obstaculesRadius, OBSTACULE_RADIUS);
 	this->rrtTimeLimit = GTK_WIDGET( gtk_builder_get_object(builder,"rrtTimeLimitSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)rrtTimeLimit, 1);
+		gtk_spin_button_set_value((GtkSpinButton*)rrtTimeLimit, 1.0);
 	this->rrtGoalProb = GTK_WIDGET( gtk_builder_get_object(builder,"rrtGoalProbSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)rrtGoalProb, 0.5);
+		gtk_spin_button_set_value((GtkSpinButton*)rrtGoalProb, 0.45);
 	this->rrtStepsize = GTK_WIDGET( gtk_builder_get_object(builder,"rrtStepsizeSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, 1);
 		
