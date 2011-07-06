@@ -23,14 +23,13 @@ class guiPlayer: public Player
         
 		void clearPath() { path.clear(); }
 		void addPathPoint(Point p) { path.push_back(p); }
-        void draw(cairo_t *cr, int index, DisplaySettings settings);
+        void draw(cairo_t *cr, DisplaySettings settings);
 
     private:
 		vector<Point> path;
 		
         void drawBody(cairo_t *cr, float centerX, float centerY);
-        void drawAngle(cairo_t *cr, float centerX, float centerY, float angle);
-        void drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber);
+        void drawData(cairo_t *cr, float centerX, float centerY);
         void drawVector(cairo_t *cr, float centerX, float centerY, float vecX, float vecY);
         void drawPath(cairo_t *cr, vector<Point> path);
 

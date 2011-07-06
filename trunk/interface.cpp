@@ -33,32 +33,62 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 {
 	MainWindow* mw = (MainWindow*) data;
 	
+	// click with left button
 	if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
 
+		// if click is inside arena area
 		if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
 			&& (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER)) { 
 	  
 		    switch(mw->cursorEvent) {
 
 				case CURSOR_EVENT_PATHPLAN:	
+				// GUI was waiting for click event to set final pathplan position
+						mw->pushStatusMessage("Running pathplanning...");
+						while(gtk_events_pending()) gtk_main_iteration(); //force gtk to update the StatusBar widget before running the algorithm
+						
 						mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
 						mw->pathplan->run();
+						
+						switch(mw->pathplan->status) {
+							case SUCCESS:
+								{
+									char msg[128];
+									sprintf(msg,"Pathplan DONE (%f sec)", mw->pathplan->elapsedTime);
+									mw->pushStatusMessage(msg);
+								}
+								break;
+								
+							case ERROR_TIMELIMIT:
+								mw->pushStatusMessage("Pathplan ERROR: time limit exceeded."); break;
+								
+							case ERROR_UNKNOWN:
+								mw->pushStatusMessage("Pathplan ERROR: unkown cause."); break;
+								
+							case ERROR_UNREACHABLE:
+								mw->pushStatusMessage("Pathplan ERROR: objective is unreachable."); break;
+								
+							case NOTHING:
+								mw->pushStatusMessage("Pathplan completed with no status flag."); break;
+						}
 					
 						mw->pathplanSettings.toDraw = true;
-						//mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 					
 				case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
+				// GUI was waiting for click event to put a yellow robot
 						mw->game.addPlayer( 0, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 					
 				case CURSOR_EVENT_ADD_BLUE_ROBOT:
+				// GUI was waiting for click event to put a blue robot
 						mw->game.addPlayer( 1, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 						
 				case CURSOR_EVENT_SET_BALL:
+				// GUI was waiting for click event to set the ball position
 						mw->game.ball.setCurrentPosition(Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM));
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
@@ -71,7 +101,7 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 	
 }
 
-void key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
+void key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
 //CALLBACK which captures keyboard keys
 {
     MainWindow* mw = (MainWindow*) data;
@@ -200,17 +230,17 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 			
 			
 			// GUI settings
-			gtk_button_set_label((GtkButton*)widget, "Running...");
+			gtk_button_set_label((GtkButton*)widget, "Pathplanning Mode ON");
 			mw->cursorEvent = CURSOR_EVENT_PATHPLAN;
-			mw->pushStatusMessage("Pathplanning is running.");
+			mw->pushStatusMessage("Waiting for destination definition.");
 		}
 	}
 	else{
-		gtk_button_set_label((GtkButton*)widget, "Set Destination");
+		gtk_button_set_label((GtkButton*)widget, "Enter Pathplanning Mode");
 		delete mw->pathplan;
 		mw->cursorEvent = CURSOR_EVENT_NOTHING;
 		mw->pathplanSettings.toDraw = false;
-		//mw->pushStatusMessage("Waiting for destination definition.");
+		mw->pushStatusMessage("");
 	}
 	
 	// Update the drawing widget on demand
@@ -245,7 +275,6 @@ void isVerboseButton(GtkWidget *widget, gpointer data)
 		mw->isVerbose = true;
 	else
 		mw->isVerbose = false;
-
 }
 
 
@@ -255,10 +284,9 @@ void clientCommunicationButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->clientPort);
-	char *host = (char*) gtk_entry_get_text((GtkEntry*)mw->clientHost);
 
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget) ) {
-		mw->openClient(port, host);
+		mw->openClient(port, "localhost");
 		gtk_button_set_label((GtkButton*)widget, "Disconnect");
 	}
 	else {
@@ -296,6 +324,8 @@ void openJoystick(GtkWidget *widget, gpointer data)
 	
 	if(mw->isVerbose)
 		cout << "Opened /dev/input/js0." << endl;
+		
+	mw->pushStatusMessage("Opened /dev/input/js0.");
 }
 
 
@@ -376,6 +406,8 @@ void saveStateButton(GtkWidget *widget, gpointer data)
 		
 		if(mw->isVerbose)
 			cout << "Saved game state." << endl;
+			
+		mw->pushStatusMessage("Saved game state.");
 	}
 	fclose(arq);
 }
@@ -414,9 +446,11 @@ void loadStateButton(GtkWidget *widget, gpointer data)
 				t=0;
 			}
 		}
-		if(mw->isVerbose){
+		if(mw->isVerbose)
 			cout << "Loaded game state." << endl;
-		}	
+		
+		mw->pushStatusMessage("Loaded game state.");
+		
 		fclose(arq);
 	}
 	
@@ -468,10 +502,13 @@ void launchComButton(GtkWidget *widget, gpointer data)
 
 void MainWindow::pushStatusMessage(string msg)
 {
-    if( statusBar )
-        gtk_statusbar_push((GtkStatusbar*)statusBar, gtk_statusbar_get_context_id((GtkStatusbar*)statusBar,"general use"), msg.c_str());
+	gtk_statusbar_push((GtkStatusbar*)statusBar, gtk_statusbar_get_context_id((GtkStatusbar*)statusBar,""), msg.c_str());
 }
 
+void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
+{
+	gtk_widget_draw(mw->window, NULL);
+}
 
 
 
@@ -497,7 +534,7 @@ void aboutKeyboard()
 {
     GtkWidget *dialog = gtk_message_dialog_new
 	    (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-	     ("These are the avaiable keyboard controls:\n\nWASD to move\nQE to rotate\nZ/X do add yellow/blue\n"));
+	     ("These are the available keyboard controls:\n\nWASD to move\nQE to rotate\nZ/X do add yellow/blue\n"));
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 }
@@ -519,10 +556,10 @@ void MainWindow::createInterface()
 		gtk_cell_layout_pack_start( GTK_CELL_LAYOUT( this->game.playersComboBox ), cell, TRUE );
 		gtk_cell_layout_set_attributes( GTK_CELL_LAYOUT( this->game.playersComboBox ), cell, "text", 0, NULL );
 	this->soccer_field = GTK_WIDGET( gtk_builder_get_object(builder,"field") );
-	this->TextOutput = GTK_WIDGET( gtk_builder_get_object(builder,"textview") );
+	//this->TextOutput = GTK_WIDGET( gtk_builder_get_object(builder,"textview") );
 	this->displaySettings.checkPlayerBody = GTK_WIDGET( gtk_builder_get_object(builder,"checkplayerbody") );
-	this->displaySettings.checkPlayerAngle = GTK_WIDGET( gtk_builder_get_object(builder,"checkplayerangle") );
-	this->displaySettings.checkPlayerIndex = GTK_WIDGET( gtk_builder_get_object(builder,"checkplayerindex") );
+	this->displaySettings.checkPlayerData = GTK_WIDGET( gtk_builder_get_object(builder,"checkplayerdata") );
+		//gtk_signal_connect_after(GTK_OBJECT(displaySettings.checkPlayerData), "toggled", (GtkSignalFunc) updateSceneCB, this); //not working :(
 	this->displaySettings.checkPlayerFuture = GTK_WIDGET( gtk_builder_get_object(builder,"checkfuturepos") );
 	this->displaySettings.checkPlayerPath = GTK_WIDGET( gtk_builder_get_object(builder,"checkpath") );
 	this->displaySettings.checkBall = GTK_WIDGET( gtk_builder_get_object(builder,"checkball") );
@@ -539,7 +576,7 @@ void MainWindow::createInterface()
 		gtk_spin_button_set_value((GtkSpinButton*)clientPort, CLIENT_INITIAL_PORT);
 	this->serverPort = GTK_WIDGET( gtk_builder_get_object(builder,"serverport") );
 		gtk_spin_button_set_value((GtkSpinButton*)serverPort, SERVER_INITIAL_PORT);
-	this->statusBar = GTK_WIDGET( gtk_builder_get_object(builder,"statusBar") );
+	this->statusBar = GTK_WIDGET( gtk_builder_get_object(builder,"statusbar") );
 	this->pathplanGridX = GTK_WIDGET( gtk_builder_get_object(builder,"pathplanGridXSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridX, ENV_MATRIX_SIZE_X);
 	this->pathplanGridY = GTK_WIDGET( gtk_builder_get_object(builder,"pathplanGridYSpin") );
@@ -547,11 +584,11 @@ void MainWindow::createInterface()
 	this->obstaculesRadius = GTK_WIDGET( gtk_builder_get_object(builder,"obstaculesRadiusSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)obstaculesRadius, OBSTACULE_RADIUS);
 	this->rrtTimeLimit = GTK_WIDGET( gtk_builder_get_object(builder,"rrtTimeLimitSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)rrtTimeLimit, 1.0);
+		gtk_spin_button_set_value((GtkSpinButton*)rrtTimeLimit, RRT_DEFAULT_TIMELIMIT);
 	this->rrtGoalProb = GTK_WIDGET( gtk_builder_get_object(builder,"rrtGoalProbSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)rrtGoalProb, 0.45);
+		gtk_spin_button_set_value((GtkSpinButton*)rrtGoalProb, RRT_DEFAULT_GOALPROB);
 	this->rrtStepsize = GTK_WIDGET( gtk_builder_get_object(builder,"rrtStepsizeSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, 1);
+		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, RRT_DEFAULT_STEPSIZE);
 		
 	// SIGNALS (over the air, over the air)	
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutkeyboard")), "activate", G_CALLBACK(aboutKeyboard), NULL);
@@ -560,6 +597,7 @@ void MainWindow::createInterface()
 	
 	static parametersType args;
 	args.mw = this;
+	
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"savemenu")), "activate", G_CALLBACK(saveStateButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"openmenu")), "activate", G_CALLBACK(loadStateButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"checkverbose")), "clicked", G_CALLBACK(isVerboseButton), &args);
@@ -590,8 +628,15 @@ void MainWindow::createInterface()
 	args4.widgets.push_back(serverHost);
 	g_signal_connect(GTK_WIDGET(gtk_builder_get_object(builder,"icanhazip2")), "clicked", G_CALLBACK(getLocalIPButton), &args4);
 	
-	// main window signals
+	
+	// Main Window Signals
 	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-	gtk_signal_connect(GTK_OBJECT(window), "key_press_event", (GtkSignalFunc) key_press_event, this);
+	
+	//Connect the event of a key pressing with our own signal handling funciont
+	//  Must use the "after" signal connection to don't overhide GTK's signal handling (i.e. accelerators handling)
+	gtk_signal_connect_after(GTK_OBJECT(window), "key_press_event", (GtkSignalFunc) key_press_event, this);
+	
+	gtk_signal_connect_after(GTK_OBJECT(window), "button_press_event", (GtkSignalFunc) updateSceneCB, this);
+		gtk_widget_set_events (window, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
 }

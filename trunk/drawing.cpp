@@ -65,11 +65,11 @@ void MainWindow::drawPlayers()
 				cairo_set_source_rgb(cr, YELLOW);
 			else
 				cairo_set_source_rgb(cr, BLUE);
-			game.players[team][i].draw(cr, game.players[team][i].getId() ,displaySettings);
+			game.players[team][i].draw(cr, displaySettings);
 		}
 }
 
-void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
+void guiPlayer::draw(cairo_t *cr, DisplaySettings settings)
 {
     //if(this->hasUpdatedInfo) {
    
@@ -81,11 +81,8 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 		if( !settings.isHidePlayerBody() )
 			drawBody(cr, posx, posy);
 		
-		if( !settings.isHidePlayerAngle() )
-			drawAngle(cr, posx, posy, this->getCurrentAngle());
-		
-		if( !settings.isHidePlayerIndex() )
-			drawIndex(cr, posx, posy, index);
+		if( !settings.isHidePlayerData() )
+			drawData(cr, posx, posy);
 		
 		if( !settings.isHidePlayerFuture() )
 			if( this->getFuturePosition().getX()!=-1 && this->getFuturePosition().getY()!=-1 )
@@ -100,7 +97,15 @@ void guiPlayer::draw(cairo_t *cr, int index, DisplaySettings settings)
 
 void guiPlayer::drawBody(cairo_t *cr, float centerX, float centerY)
 {
+	// draw body circle
 	cairo_arc(cr, centerX, centerY, ROBOT_RADIUS*scaleFactorLength, 0, 2*M_PI);
+	cairo_stroke (cr);
+	
+	// draw angle
+	float ang = -getCurrentAngle() * 2 * M_PI / 360;
+
+	cairo_move_to(cr, centerX , centerY);
+	cairo_line_to(cr, centerX + cos(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2 , centerY + sin(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2);
 	cairo_stroke (cr);
 }
 
@@ -108,15 +113,6 @@ void drawCircle(cairo_t *cr, float centerX, float centerY, float radius)
 {	
 	cairo_arc(cr, centerX, centerY, radius, 0, 2*M_PI);
 	cairo_stroke(cr);
-}
-
-void guiPlayer::drawAngle(cairo_t *cr, float centerX, float centerY, float angle)
-{
-	float ang = -angle * 2 * M_PI / 360;
-
-	cairo_move_to(cr, centerX , centerY);
-	cairo_line_to(cr, centerX + cos(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2 , centerY + sin(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2);
-	cairo_stroke (cr);
 }
 
 void drawLinedPath(cairo_t *cr, vector<Point> path)
@@ -152,45 +148,41 @@ void drawPath(cairo_t *cr, vector<Point> path)
 				  3);
 }
 
-char* itoa(int value, char* result, int base) {
-/**
- * C++ version 0.4 char* style "itoa":
- * Written by Lukás Chmela
- * Released under GPLv3.
- */
-	// check that the base if valid
-	if (base < 2 || base > 36) { *result = '\0'; return result; }
-
-	char* ptr = result, *ptr1 = result, tmp_char;
-	int tmp_value;
-
-	do {
-		tmp_value = value;
-		value /= base;
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-	} while ( value );
-
-	// Apply negative sign
-	if (tmp_value < 0) *ptr++ = '-';
-	*ptr-- = '\0';
-	while(ptr1 < ptr) {
-		tmp_char = *ptr;
-		*ptr--= *ptr1;
-		*ptr1++ = tmp_char;
-	}
-	return result;
-}
-
-void guiPlayer::drawIndex(cairo_t *cr, float centerX, float centerY, int robotNumber)
+void guiPlayer::drawData(cairo_t *cr, float centerX, float centerY)
 {
+	char text[16], tmp[8];
 	int fontSize = 10;
-	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_set_font_size(cr, fontSize);
-	cairo_move_to(cr, centerX,
-					  centerY + fontSize + ROBOT_RADIUS*scaleFactorLength);
-	char text[3];
-	itoa(robotNumber,text,fontSize);
+	
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_move_to(cr, centerX - fontSize - ROBOT_RADIUS*scaleFactorLength,
+					  centerY - ROBOT_RADIUS*scaleFactorLength);
+	itoa(getId(),text,fontSize);
 	cairo_show_text(cr, text);
+	
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	
+	// angle data
+	fontSize = 8;
+	cairo_set_font_size(cr, fontSize);
+	cairo_move_to(cr, centerX + fontSize + ROBOT_RADIUS*scaleFactorLength,
+					  centerY - ROBOT_RADIUS*scaleFactorLength);
+	itoa(getCurrentAngle(),text,10);
+	strcat(text,"º");
+	cairo_show_text(cr, text);
+	
+	// position data
+	fontSize = 7;
+	cairo_set_font_size(cr, fontSize);
+	itoa(getCurrentPosition().getX(),text,10);
+	strcat(text,",");
+	itoa(getCurrentPosition().getY(),tmp,10);
+	strcat(text,tmp);
+	cairo_move_to(cr, centerX - strlen(text)*fontSize/4,
+					  centerY + fontSize + ROBOT_RADIUS*scaleFactorLength);
+	cairo_show_text(cr, text);
+	
+	//sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",game.players[1][i].getId(), game.players[1][i].getCurrentPosition().getX(),game.players[1][i].getCurrentPosition().getY(),);
 	
 	cairo_stroke (cr);
 }

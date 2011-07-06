@@ -86,13 +86,13 @@ void MainWindow::joystick()
 
 void MainWindow::iterate()
 {
-	system("clear");
+	//system("clear");
 	
 	communicate();
 
 	drawWorld();
 
-	generateTextOutput();
+	//generateTextOutput();
 	
 	joystick();
 	

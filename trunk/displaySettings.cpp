@@ -1,14 +1,9 @@
 #include "displaySettings.h"
 
 
-int DisplaySettings::isHidePlayerAngle()
+int DisplaySettings::isHidePlayerData()
 {
-	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerAngle);
-}
-
-int DisplaySettings::isHidePlayerIndex()
-{
-	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerIndex);
+	return gtk_toggle_button_get_active((GtkToggleButton*)this->checkPlayerData);
 }
 
 int DisplaySettings::isHidePlayerBody()

@@ -50,6 +50,7 @@ class MainWindow
 	friend void serverCommunicationButton(GtkWidget *widget, gpointer data);
 	friend void openJoystick(GtkWidget *widget, gpointer data);
 	friend void loadStateButton(GtkWidget *widget, gpointer data);
+	friend void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
 	
 	public:
 		MainWindow();
