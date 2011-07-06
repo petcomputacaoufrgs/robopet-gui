@@ -13,8 +13,7 @@ class DisplaySettings
 {
 	public:
 
-		GtkWidget* checkPlayerAngle;
-		GtkWidget* checkPlayerIndex;
+		GtkWidget* checkPlayerData;
 		GtkWidget* checkPlayerBody;
 		GtkWidget* checkBall;
 		GtkWidget* checkPlayerVector;
@@ -22,8 +21,7 @@ class DisplaySettings
         GtkWidget* checkPlayerPath;
 
 
-		int isHidePlayerAngle();
-		int isHidePlayerIndex();
+		int isHidePlayerData();
 		int isHidePlayerBody();
 		int isHideBall();
         int isHidePlayerFuture();
