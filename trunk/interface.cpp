@@ -470,34 +470,55 @@ void launch(string command )
     if(!system(command.c_str()));
 }
 
+void simLoopButton(GtkWidget *widget, gpointer data)
+{
+	//if(mw->isVerbose) cout << "Launching Simulation Loop..." << endl;
+   // mw->pushStatusMessage("Launching Simulation Loop...");
+    
+	launch("../simulation/simulator");
+	launch("../tracker/tracker -sim");
+	launch("../ai/ai");
+	launch("../radio/radio -d");
+}
+
 void launchAiButton(GtkWidget *widget, gpointer data)
 {
-    cout << "Launching AI..." << endl;
+    //if(mw->isVerbose) cout << "Launching AI..." << endl;
+    //mw->pushStatusMessage("Launching AI...");
+     
 	launch("../ai/ai" + getParam(data));
 }
 
 void launchRadioButton(GtkWidget *widget, gpointer data)
 {
-    cout << "Launching Radio..." << endl;
+    //if(mw->isVerbose) cout << "Launching Radio..." << endl;
+   // mw->pushStatusMessage("Launching Radio...");
+    
 	launch("../radio/radio" + getParam(data));
 }
 
 void launchTrackerButton(GtkWidget *widget, gpointer data)
 {
-    cout << "Launching Tracker..." << endl;
+    //if(mw->isVerbose) cout << "Launching Tracker..." << endl;
+    //mw->pushStatusMessage("Launching Tracker...");
+    
 	launch("../tracker/tracker" + getParam(data));
 }
 
 void launchSimButton(GtkWidget *widget, gpointer data)
 {
-    cout << "Launching Simulator..." << endl;
+    //if(mw->isVerbose) cout << "Launching Simulator..." << endl;
+	//mw->pushStatusMessage("Launching Simulator...");
+	
 	launch("../simulation/simulator" + getParam(data));
 }
 
 void launchComButton(GtkWidget *widget, gpointer data)
 {
-    cout << "Launching Communication Test..." << endl;
-	launch("../communication/communication_test" + getParam(data));
+    //cout << "Launching Communication Test..." << endl;
+    //mw->pushStatusMessage("Launching Communication Test...");
+    
+   	launch("../communication/communication_test" + getParam(data));
 }
 
 void MainWindow::pushStatusMessage(string msg)
@@ -594,7 +615,8 @@ void MainWindow::createInterface()
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutkeyboard")), "activate", G_CALLBACK(aboutKeyboard), NULL);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(helpAbout), NULL);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"exitmenu")), "activate", G_CALLBACK(gtk_main_quit), NULL);
-	
+	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"simLoopButton")), "clicked", G_CALLBACK(simLoopButton), NULL);
+
 	static parametersType args;
 	args.mw = this;
 	
@@ -617,11 +639,6 @@ void MainWindow::createInterface()
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"trackerButton")), "clicked", G_CALLBACK(launchTrackerButton), &args2);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"simButton")), "clicked", G_CALLBACK(launchSimButton), &args2);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"comButton")), "clicked", G_CALLBACK(launchComButton), &args2);
-
-	static parametersType args3;
-	args3.mw = this;
-	args3.widgets.push_back(clientHost);
-	g_signal_connect(GTK_WIDGET(gtk_builder_get_object(builder,"icanhazip1")), "clicked", G_CALLBACK(getLocalIPButton), &args3);
 	
 	static parametersType args4;
 	args4.mw = this;
