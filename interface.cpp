@@ -464,10 +464,37 @@ string getParam( gpointer data )
 	return " " + string( (char*)gtk_entry_get_text((GtkEntry*)parametros->widgets[0]) );
 }
 
-void launch(string command )
+void launch(string dir, string bin, string param )
 {
-	command = "gnome-terminal -e \"" + command + "\"&";
+	string command;
+	command = "gnome-terminal --working-directory=\"$(pwd)/" + dir + "\" -e \"" + dir + bin + " " + param + "\"";
+	cout << command << endl;
     if(!system(command.c_str()));
+}
+
+void launchAi(string param)
+{
+	launch("../ai/", "ai", param);
+}
+
+void launchRadio(string param)
+{
+	launch("../radio/", "radio", param);
+}
+
+void launchTracker(string param)
+{
+	launch("../tracker/", "tracker", param);
+}
+
+void launchSimulator(string param)
+{
+	launch("../simulation/", "simulator", param);
+}
+
+void launchCom(string param)
+{
+	launch("../communication/", "communication_test", param);
 }
 
 void simLoopButton(GtkWidget *widget, gpointer data)
@@ -475,10 +502,10 @@ void simLoopButton(GtkWidget *widget, gpointer data)
 	//if(mw->isVerbose) cout << "Launching Simulation Loop..." << endl;
    // mw->pushStatusMessage("Launching Simulation Loop...");
     
-	launch("../simulation/simulator");
-	launch("../tracker/tracker -sim");
-	launch("../ai/ai");
-	launch("../radio/radio -d");
+	launchSimulator("");
+	launchTracker("-sim");
+	launchAi("");
+	launchRadio("-d");
 }
 
 void launchAiButton(GtkWidget *widget, gpointer data)
@@ -486,7 +513,7 @@ void launchAiButton(GtkWidget *widget, gpointer data)
     //if(mw->isVerbose) cout << "Launching AI..." << endl;
     //mw->pushStatusMessage("Launching AI...");
      
-	launch("../ai/ai" + getParam(data));
+	launchAi(getParam(data));
 }
 
 void launchRadioButton(GtkWidget *widget, gpointer data)
@@ -494,7 +521,7 @@ void launchRadioButton(GtkWidget *widget, gpointer data)
     //if(mw->isVerbose) cout << "Launching Radio..." << endl;
    // mw->pushStatusMessage("Launching Radio...");
     
-	launch("../radio/radio" + getParam(data));
+	launchRadio(getParam(data));
 }
 
 void launchTrackerButton(GtkWidget *widget, gpointer data)
@@ -502,7 +529,7 @@ void launchTrackerButton(GtkWidget *widget, gpointer data)
     //if(mw->isVerbose) cout << "Launching Tracker..." << endl;
     //mw->pushStatusMessage("Launching Tracker...");
     
-	launch("../tracker/tracker" + getParam(data));
+	launchTracker(getParam(data));
 }
 
 void launchSimButton(GtkWidget *widget, gpointer data)
@@ -510,7 +537,7 @@ void launchSimButton(GtkWidget *widget, gpointer data)
     //if(mw->isVerbose) cout << "Launching Simulator..." << endl;
 	//mw->pushStatusMessage("Launching Simulator...");
 	
-	launch("../simulation/simulator" + getParam(data));
+	launchSimulator(getParam(data));
 }
 
 void launchComButton(GtkWidget *widget, gpointer data)
@@ -518,7 +545,7 @@ void launchComButton(GtkWidget *widget, gpointer data)
     //cout << "Launching Communication Test..." << endl;
     //mw->pushStatusMessage("Launching Communication Test...");
     
-   	launch("../communication/communication_test" + getParam(data));
+   	launchCom(getParam(data));
 }
 
 void MainWindow::pushStatusMessage(string msg)
