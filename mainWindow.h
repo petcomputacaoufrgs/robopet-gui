@@ -116,7 +116,7 @@ class MainWindow
 		GtkWidget		*pathplanGridX, *pathplanGridY;
 		GtkWidget*		obstaculesRadius;
 		int 			joystickFd;
-		GtkWidget		*rrtTimeLimit, *rrtGoalProb, *rrtStepsize;
+		GtkWidget		*rrtTimeLimit, *rrtGoalProb, *rrtStepsize, *gstarPath;
 
 		GtkWidget		*useRrt, *useAstar, *useGstar;
 		cairo_t 		*cr;
