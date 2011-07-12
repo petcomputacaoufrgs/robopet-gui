@@ -378,10 +378,6 @@ void deletePlayerButton(GtkWidget *widget, gpointer data)
 	parametersType* parametros = (parametersType*) data;
 	MainWindow* mw = parametros->mw;
 	
-	//mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
-	
-	guiPlayer *selected = mw->getSelectedPlayer();
-	
 	int index, team;
 
 	int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)mw->game.playersComboBox);
@@ -390,13 +386,13 @@ void deletePlayerButton(GtkWidget *widget, gpointer data)
 	team = comboBoxIndex < nPlayersTeam1?  0 : 1;
 	index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
 	
-	if ( selected )
+	if ( index>=0 )
 		mw->game.deletePlayer( team, index );
 
 	// Update the drawing widget on demand
 	mw->updateScene();
 
-	//mw->pushStatusMessage("Delete button clicked");
+	//mw->pushStatusMessage("Player Deleted");
 }
 
 void setBallButton(GtkWidget *widget, gpointer data)
