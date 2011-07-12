@@ -372,6 +372,33 @@ void addBluePlayerButton(GtkWidget *widget, gpointer data)
 	//mw->pushStatusMessage("Added 1 Blue Player.");
 }
 
+void deletePlayerButton(GtkWidget *widget, gpointer data)
+{
+	// parameters
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+	
+	//mw->cursorEvent = CURSOR_EVENT_ADD_BLUE_ROBOT;
+	
+	guiPlayer *selected = mw->getSelectedPlayer();
+	
+	int index, team;
+
+	int comboBoxIndex = gtk_combo_box_get_active((GtkComboBox*)mw->game.playersComboBox);
+	int nPlayersTeam1 = mw->game.getNplayers(0);
+
+	team = comboBoxIndex < nPlayersTeam1?  0 : 1;
+	index = team==0 ? comboBoxIndex : comboBoxIndex - nPlayersTeam1;
+	
+	if ( selected )
+		mw->game.deletePlayer( team, index );
+
+	// Update the drawing widget on demand
+	mw->updateScene();
+
+	//mw->pushStatusMessage("Delete button clicked");
+}
+
 void setBallButton(GtkWidget *widget, gpointer data)
 {
 	// parameters
@@ -654,6 +681,7 @@ void MainWindow::createInterface()
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"checkverbose")), "clicked", G_CALLBACK(isVerboseButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"yellowpp")), "clicked", G_CALLBACK(addYellowPlayerButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"bluepp")), "clicked", G_CALLBACK(addBluePlayerButton), &args);
+	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"deletepp")), "clicked", G_CALLBACK(deletePlayerButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"setballpos")), "clicked", G_CALLBACK(setBallButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"setdestination")), "clicked", G_CALLBACK(pathplanButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"openclient")), "clicked", G_CALLBACK(clientCommunicationButton), &args);

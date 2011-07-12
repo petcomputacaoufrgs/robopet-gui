@@ -39,6 +39,20 @@ void Game::addPlayer( int team, Point pos )
     updatePlayersComboBox();
 }
 
+void Game::deletePlayer( int team, int player )
+{
+    resetPlayersComboBox();
+
+    nplayers[team]--;
+
+    players[team].erase(players[team].begin()+player);
+    players[team].resize(nplayers[team]);
+    
+    lastAddedTeam = team;
+    
+    updatePlayersComboBox();
+}
+
 void Game::resetPlayersComboBox()
 //Remove all entries (to use it before updating numbers of players in the teams)
 {
