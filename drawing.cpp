@@ -302,7 +302,16 @@ void MainWindow::drawPathplan()
 
 			cairo_set_line_width( cr, 2);
 			cairo_set_source_rgb( cr, RED);
-
+			
+			float colors[8][3]={{WHITE},{YELLOW},{BLUE},{CIANO},{BLACK},{PURPLE}
+			,{RED},{ORANGE}};
+			
+			for(unsigned int i=0; i<g->paths.size(); i++)
+			{
+				cairo_set_source_rgb( cr, colors[i%8][0], colors[i%8][1], colors[i%8][2]);
+				drawLinedPath(cr, g->paths[i]);
+			}
+			
 //			for(unsigned int i=0; i<g->path.size(); i+=2)
 //			{
 //				temp.clear();
