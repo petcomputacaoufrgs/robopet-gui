@@ -21,6 +21,7 @@ class Game
         void updateNplayers(int team, int n);
 
         void addPlayer(int team, Point pos=Point(0,0));
+        void deletePlayer( int team, int player );
 
         int getNplayers(int team);
 

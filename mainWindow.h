@@ -51,6 +51,7 @@ class MainWindow
 	friend void openJoystick(GtkWidget *widget, gpointer data);
 	friend void loadStateButton(GtkWidget *widget, gpointer data);
 	friend void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
+	friend void deletePlayerButton(GtkWidget *widget, gpointer data);
 	
 	public:
 		MainWindow();
