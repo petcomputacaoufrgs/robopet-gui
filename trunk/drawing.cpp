@@ -306,11 +306,18 @@ void MainWindow::drawPathplan()
 			float colors[8][3]={{WHITE},{YELLOW},{BLUE},{CIANO},{BLACK},{PURPLE}
 			,{RED},{ORANGE}};
 			
+			if(gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)==-1)
 			for(unsigned int i=0; i<g->paths.size(); i++)
 			{
 				cairo_set_source_rgb( cr, colors[i%8][0], colors[i%8][1], colors[i%8][2]);
 				drawLinedPath(cr, g->paths[i]);
 			}
+			else
+				if(gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)<g->paths.size())
+				{
+					cairo_set_source_rgb( cr, colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][0], colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][1], colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][2]);
+					drawLinedPath(cr, g->paths[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)]);
+				}
 			
 //			for(unsigned int i=0; i<g->path.size(); i+=2)
 //			{
