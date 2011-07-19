@@ -269,8 +269,8 @@ void MainWindow::drawPathplan()
 				for(int i=0;i<pp->getEnvMatrixX();i++)
 					for(int k=0;k<pp->getEnvMatrixY();k++)
 						if( pp->env[i][k] == OBSTACLE)  {
-						   drawCircle( cr, MM_TO_PIX(i*(FIELD_WIDTH/(float)pp->getEnvMatrixX())) + BORDER_PIX,
-										MM_TO_PIX(k*(FIELD_HEIGHT/(float)pp->getEnvMatrixY())) + BORDER_PIX,
+						   drawCircle( cr, MM_TO_PIX(i*(FIELD_WIDTH_MM/(float)pp->getEnvMatrixX())) + BORDER_PIX,
+										MM_TO_PIX(k*(FIELD_HEIGHT_MM/(float)pp->getEnvMatrixY())) + BORDER_PIX,
 									3 );
 						}
 			}

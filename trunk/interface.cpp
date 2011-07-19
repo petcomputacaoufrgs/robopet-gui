@@ -651,7 +651,7 @@ void MainWindow::createInterface()
 	this->pathplanGridX = GTK_WIDGET( gtk_builder_get_object(builder,"pathplanGridXSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridX, ENV_MATRIX_SIZE_X);
 	this->pathplanGridY = GTK_WIDGET( gtk_builder_get_object(builder,"pathplanGridYSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridY, (int)(ENV_MATRIX_SIZE_X * (FIELD_HEIGHT/(float)FIELD_WIDTH) + 1));
+		gtk_spin_button_set_value((GtkSpinButton*)pathplanGridY, (int)(ENV_MATRIX_SIZE_X * (FIELD_HEIGHT_MM/(float)FIELD_WIDTH_MM) + 1));
 	this->obstaculesRadius = GTK_WIDGET( gtk_builder_get_object(builder,"obstaculesRadiusSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)obstaculesRadius, OBSTACULE_RADIUS);
 	this->rrtTimeLimit = GTK_WIDGET( gtk_builder_get_object(builder,"rrtTimeLimitSpin") );
