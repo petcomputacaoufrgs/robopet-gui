@@ -661,7 +661,7 @@ void MainWindow::createInterface()
 	this->rrtStepsize = GTK_WIDGET( gtk_builder_get_object(builder,"rrtStepsizeSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, RRT_DEFAULT_STEPSIZE);
 	this->gstarPath = GTK_WIDGET( gtk_builder_get_object(builder,"gstarPathSpin") );
-		gtk_spin_button_set_value((GtkSpinButton*)gstarPath, 0);
+		gtk_spin_button_set_value((GtkSpinButton*)gstarPath, -1);
 		
 	// SIGNALS (over the air, over the air)	
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutkeyboard")), "activate", G_CALLBACK(aboutKeyboard), NULL);
