@@ -37,8 +37,8 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 	if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
 
 		// if click is inside arena area
-		if( ( event->x < ARENA_WIDTH - BORDER) && (event->x > BORDER) 
-			&& (event->y < ARENA_HEIGHT - BORDER) && (event->y > BORDER)) { 
+		if( ( event->x < ARENA_WIDTH - BORDER_PIX) && (event->x > BORDER_PIX) 
+			&& (event->y < ARENA_HEIGHT - BORDER_PIX) && (event->y > BORDER_PIX)) { 
 	  
 		    switch(mw->cursorEvent) {
 
