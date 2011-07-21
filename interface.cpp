@@ -1,4 +1,4 @@
-#include<iostream>
+#include <iostream>
 #include <fstream>
 
 #include "gdk/gdkkeysyms.h"
@@ -37,8 +37,8 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 	if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
 
 		// if click is inside arena area
-		if( ( event->x < ARENA_WIDTH - BORDER_PIX) && (event->x > BORDER_PIX) 
-			&& (event->y < ARENA_HEIGHT - BORDER_PIX) && (event->y > BORDER_PIX)) { 
+		if( ( event->x < mw->fieldWidth - mw->BORDER_PIX) && (event->x > mw->BORDER_PIX) 
+			&& (event->y < mw->fieldHeight - mw->BORDER_PIX) && (event->y > mw->BORDER_PIX)) { 
 	  
 		    switch(mw->cursorEvent) {
 
@@ -47,7 +47,7 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 						mw->pushStatusMessage("Running pathplanning...");
 						while(gtk_events_pending()) gtk_main_iteration(); //force gtk to update the StatusBar widget before running the algorithm
 						
-						mw->pathplan->setFinalPos( Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
+						mw->pathplan->setFinalPos( Point(mw->PIX_TO_MM(event->x)-BORDER_MM, mw->PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
 						mw->pathplan->run();
 						
 						switch(mw->pathplan->status) {
@@ -77,19 +77,19 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 					
 				case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
 				// GUI was waiting for click event to put a yellow robot
-						mw->game.addPlayer( 0, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
+						mw->game.addPlayer( 0, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 					
 				case CURSOR_EVENT_ADD_BLUE_ROBOT:
 				// GUI was waiting for click event to put a blue robot
-						mw->game.addPlayer( 1, Point(PIX_TO_MM(event->x)-BORDER_MM,PIX_TO_MM(event->y)-BORDER_MM) );
+						mw->game.addPlayer( 1, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 						
 				case CURSOR_EVENT_SET_BALL:
 				// GUI was waiting for click event to set the ball position
-						mw->game.ball.setCurrentPosition(Point(PIX_TO_MM(event->x)-BORDER_MM, PIX_TO_MM(event->y)-BORDER_MM));
+						mw->game.ball.setCurrentPosition(Point(mw->PIX_TO_MM(event->x)-BORDER_MM, mw->PIX_TO_MM(event->y)-BORDER_MM));
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 			}
@@ -119,7 +119,7 @@ void key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
     // players movement
     int stepsize = mw->getStepsize();
 
-    guiPlayer *selected = mw->getSelectedPlayer();
+    GuiPlayer *selected = mw->getSelectedPlayer();
 
     if( selected ) {
         switch(  event->keyval  ) {
@@ -178,7 +178,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget) ){
 		// pathplan button is deactivated
 
-		guiPlayer *selected = mw->getSelectedPlayer();
+		GuiPlayer *selected = mw->getSelectedPlayer();
 
 		if( selected ) //has a player selected
 		{
@@ -245,10 +245,10 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 	
 	// Update the drawing widget on demand
 	mw->updateScene();
-}
+} 
 
 
-guiPlayer* MainWindow::getSelectedPlayer()
+GuiPlayer* MainWindow::getSelectedPlayer()
 {
 		int index, team;
 
@@ -581,8 +581,36 @@ void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
 	gtk_widget_draw(mw->window, NULL);
 }
 
+void sizeRequestCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
+{
+	int w = mw->soccer_field->allocation.width, 
+		h = mw->soccer_field->allocation.height;
+	
+	if( h > w*FIELD_RATIOXY )
+		h = w*FIELD_RATIOXY;
+	else if ( w > h/FIELD_RATIOXY )
+			w = h/FIELD_RATIOXY;
+			
+	mw->fieldWidth = w;
+	mw->fieldHeight = h;
+	
+	mw->BORDER_PIX = mw->MM_TO_PIX(BORDER_MM);
+	mw->GOAL_LINE = mw->MM_TO_PIX(GOAL_LINE_MM); 
+	mw->GOAL_CIRC_RADIUS = mw->MM_TO_PIX(GOAL_CIRC_RADIUS_MM);
+	mw->HALF_FIELD_RADIUS = mw->MM_TO_PIX(HALF_FIELD_RADIUS_MM);
+	mw->ROBOT_RADIUS =  mw->MM_TO_PIX(ROBOT_RADIUS_MM);
+	mw->BALL_RADIUS =  mw->MM_TO_PIX(BALL_RADIUS_MM);
 
+	mw->updateScene();
+}
 
+void expanderCB(GtkWidget *widget, MainWindow* mw)
+{
+	//none of these worked :(
+	
+	//sizeRequestCB(0,0,mw);
+	mw->updateScene();
+}
 
 
 ///////////////////////////////////////////////
@@ -663,6 +691,8 @@ void MainWindow::createInterface()
 	this->gstarPath = GTK_WIDGET( gtk_builder_get_object(builder,"gstarPathSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)gstarPath, -1);
 		
+	g_signal_connect_after( GTK_WIDGET(GTK_WIDGET(gtk_builder_get_object(builder,"expander"))), "activate", G_CALLBACK(expanderCB), this);
+		
 	// SIGNALS (over the air, over the air)	
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutkeyboard")), "activate", G_CALLBACK(aboutKeyboard), NULL);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(helpAbout), NULL);
@@ -709,4 +739,6 @@ void MainWindow::createInterface()
 	
 	gtk_signal_connect_after(GTK_OBJECT(window), "button_press_event", (GtkSignalFunc) updateSceneCB, this);
 		gtk_widget_set_events (window, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
+		
+	gtk_signal_connect_after(GTK_OBJECT(window), "size_request", (GtkSignalFunc) sizeRequestCB, this);
 }

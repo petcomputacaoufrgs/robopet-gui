@@ -26,8 +26,8 @@ class Game
         int getNplayers(int team);
 
         GuiBall ball;
-        vector<guiPlayer> players[2];
-        guiPlayer joyPlayer;
+        vector<GuiPlayer> players[2];
+        GuiPlayer joyPlayer;
 
     private:
 		int lastAddedTeam;

@@ -65,7 +65,7 @@ void Game::resetPlayersComboBox()
 void Game::updatePlayersComboBox()
 //Fills the PlayersComboBox with the right number of players of each team
 {
-    	vector<guiPlayer>::iterator it;
+    	vector<GuiPlayer>::iterator it;
         char buffer[32];
 
         for(int i=0; i < nplayers[0]; i++) {

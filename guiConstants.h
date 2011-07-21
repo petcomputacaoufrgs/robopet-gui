@@ -4,34 +4,16 @@
 
 
 
-// MACROS
-#define PRINTVAR(x) cout << #x << " = " << x << endl //imprime vari�vel x com seu nome e seu valor
-
-
 // MEASURES
-#define SCREEN_WIDTH 640
+#define HALF_FIELD_RADIUS_MM 500
 
-#define ARENA_WIDTH SCREEN_WIDTH
-#define ARENA_HEIGHT 5400 * PIX_PER_MM
-
-#define PIX_PER_MM (SCREEN_WIDTH) / (ARENA_WIDTH_MM)
-#define MM_PER_PIX (ARENA_WIDTH_MM) / (SCREEN_WIDTH)
-
-#define HALF_FIELD_RADIUS 500 * PIX_PER_MM
-
-#define GOAL_LINE 350 * PIX_PER_MM
-#define GOAL_CIRC_RADIUS 500 * PIX_PER_MM
-#define GOAL_SIZE 700 * PIX_PER_MM
+#define GOAL_LINE_MM 350
+#define GOAL_CIRC_RADIUS_MM 500
+#define GOAL_SIZE_MM 700
 
 #define BORDER_MM 675
-#define BORDER_PIX (BORDER_MM * PIX_PER_MM)
 
-#define ROBOT_RADIUS ROBOT_RADIUS_MM * PIX_PER_MM
-#define BALL_RADIUS BALL_RADIUS_MM * PIX_PER_MM
-
-// TRANSFORMATIONS
-#define PIX_TO_MM(x) (x * MM_PER_PIX)
-#define MM_TO_PIX(x) (x * PIX_PER_MM)
+#define FIELD_RATIOXY (ARENA_HEIGHT_MM/(float)ARENA_WIDTH_MM)
 
 
 // COLORS
@@ -44,17 +26,6 @@
 #define PURPLE 0.5, 0, 0.5
 #define RED 1, 0, 0
 #define ORANGE 1, 0.5, 0
-
-
-//ASCII
-enum{
-	ENTER = 13,
-	ESC = 27,
-	U_A = 72,
-	D_A = 80,
-	L_A = 75,
-	R_A = 77
-};
 
 
 //flags para o controle de callback do click de mouse

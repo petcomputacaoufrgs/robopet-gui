@@ -15,6 +15,9 @@ using namespace std;
 
 MainWindow::MainWindow()
 {
+	fieldWidth = 640;
+	fieldHeight = MM_TO_PIX(ARENA_HEIGHT_MM);
+
 	isVerbose = true;
 	aitoguiClient = NULL;
 	guitoaiServer = NULL;
@@ -95,8 +98,6 @@ void MainWindow::iterate()
 	//generateTextOutput();
 	
 	joystick();
-	
-	//usleep(1000);
 }	
 
 void MainWindow::drawWorld()
@@ -107,7 +108,7 @@ void MainWindow::drawWorld()
 
 	drawPathplan();
 
-	game.ball.draw(cr, displaySettings);
+	drawBall();
 }
 
 gint configure_event(GtkWidget *widget, GdkEventConfigure *event, MainWindow* mw)
@@ -117,14 +118,11 @@ gint configure_event(GtkWidget *widget, GdkEventConfigure *event, MainWindow* mw
 						  widget->allocation.height,
 						  -1);
 	
-	gdk_draw_rectangle(mw->pixmap,
-					  widget->style->white_gc,
-					  TRUE,
-					  0, 0,
-					  widget->allocation.width,
-					  widget->allocation.height);
-					  
 	mw->cr = gdk_cairo_create(mw->pixmap);
+	
+	cairo_set_source_rgb (mw->cr, 1,1,1);
+	cairo_rectangle (mw->cr, 0, 0, widget->allocation.width, widget->allocation.height);
+	cairo_fill (mw->cr);
 
   return TRUE;
 }
@@ -152,11 +150,16 @@ void MainWindow::updateScene()
 
 void MainWindow::createDrawingArea()
 {
-	gtk_widget_set_size_request(soccer_field, ARENA_WIDTH, ARENA_HEIGHT);
-
+	gtk_widget_set_size_request(soccer_field, fieldWidth, fieldHeight);
+	
 	g_signal_connect(G_OBJECT(soccer_field), "configure_event", G_CALLBACK(configure_event), this);    
     g_signal_connect(G_OBJECT(soccer_field), "expose_event", G_CALLBACK(expose_event), this);    
     gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
 		gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
 		cursorEvent = CURSOR_EVENT_NOTHING;
 }
+
+double MainWindow::PIX_TO_MM(double x) { return x*ARENA_WIDTH_MM/fieldWidth; }
+//double MainWindow::PIX_TO_MM_Y(double x) { return x*ARENA_WIDTH_MM/fieldHeight; }
+
+double MainWindow::MM_TO_PIX(double x) { return x*fieldWidth/ARENA_WIDTH_MM; }

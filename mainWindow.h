@@ -52,13 +52,15 @@ class MainWindow
 	friend void loadStateButton(GtkWidget *widget, gpointer data);
 	friend void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
 	friend void deletePlayerButton(GtkWidget *widget, gpointer data);
+	friend void sizeRequestCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
+	friend void expanderCB(GtkWidget *widget, MainWindow* mw);
 	
 	public:
 		MainWindow();
 		~MainWindow() {};
 
 		//Interface functions
-		guiPlayer		*getSelectedPlayer();
+		GuiPlayer		*getSelectedPlayer();
 		void 			pushStatusMessage(string msg);
 		void 			fillTextOutput(char text[]);
 		int 			getStepsize();
@@ -84,8 +86,16 @@ class MainWindow
 		GtkWidget *window;
 		GtkWidget *soccer_field;
 		GdkPixmap *pixmap;
+		int fieldWidth, fieldHeight;
 		guint timeout_handler_id;
 		//GtkWidget *statusBar;
+		
+		double BORDER_PIX;
+		double GOAL_LINE;
+		double GOAL_CIRC_RADIUS;
+		double HALF_FIELD_RADIUS;
+		double ROBOT_RADIUS;
+		double BALL_RADIUS;
 
 		void updateScene();
 		void createDrawingArea();
@@ -103,6 +113,14 @@ class MainWindow
         void drawObstacles();
 		void drawPlayers();
 		void drawPathplan();
+		void drawBall();
+		void drawPlayer(GuiPlayer* p);
+		void drawLinedPath(vector<Point> path);
+		void drawPath(vector<Point> path);
+		
+		// TRANSFORMATIONS
+		double PIX_TO_MM(double x);
+		double MM_TO_PIX(double x);
 
 		//Interface variables
 		int 			cursorEvent;
