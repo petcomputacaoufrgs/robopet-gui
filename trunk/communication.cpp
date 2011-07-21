@@ -61,7 +61,7 @@ void MainWindow::listenToAI()
             game.updateNplayers(0, packet.aitogui().blue_robots_size());
             game.updateNplayers(1, packet.aitogui().yellow_robots_size());
 
-            vector<guiPlayer>::iterator it;
+            vector<GuiPlayer>::iterator it;
             it = game.players[0].begin();
             for(int i=0; it<game.players[0].end(); it++, i++) {
 
@@ -124,7 +124,7 @@ void MainWindow::listenToAI()
             game.ball.hasUpdatedInfo = true;
             if(isVerbose) printf("RECEIVED Ball: %f,%f\n", game.ball.getPosition().getX(), game.ball.getPosition().getY() );
             
-            gtk_widget_draw(this->window, NULL);
+            updateScene();
         }
     }
     else
