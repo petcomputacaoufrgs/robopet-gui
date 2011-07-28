@@ -77,13 +77,13 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 					
 				case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
 				// GUI was waiting for click event to put a yellow robot
-						mw->game.addPlayer( 0, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
+						mw->game.addPlayer( TEAM_YELLOW, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 					
 				case CURSOR_EVENT_ADD_BLUE_ROBOT:
 				// GUI was waiting for click event to put a blue robot
-						mw->game.addPlayer( 1, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
+						mw->game.addPlayer( TEAM_BLUE, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
 						mw->cursorEvent = CURSOR_EVENT_NOTHING;
 						break;
 						
