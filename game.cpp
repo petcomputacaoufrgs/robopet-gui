@@ -68,16 +68,16 @@ void Game::updatePlayersComboBox()
     	vector<GuiPlayer>::iterator it;
         char buffer[32];
 
-        for(int i=0; i < nplayers[0]; i++) {
+        for(int i=0; i < nplayers[TEAM_BLUE]; i++) {
 
-            sprintf (buffer, "Yellow player %i", i);
+            sprintf (buffer, "Blue player %i", i);
 
             gtk_combo_box_insert_text( GTK_COMBO_BOX(playersComboBox), i, buffer);
         }
 
-        for(int i=0; i < nplayers[1]; i++) {
+        for(int i=0; i < nplayers[TEAM_YELLOW]; i++) {
 
-            sprintf (buffer, "Blue player %i", i);
+            sprintf (buffer, "Yellow player %i", i);
 
             gtk_combo_box_insert_text( GTK_COMBO_BOX(playersComboBox), nplayers[0]+i, buffer);
         }

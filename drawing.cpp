@@ -63,10 +63,10 @@ void MainWindow::drawPlayers()
 {
 	for(int team=0; team<2; team++)
 		for(int i=0; i<game.getNplayers(team); i++) {
-			if(team==0)
-				cairo_set_source_rgb(cr, YELLOW);
-			else
+			if(team==TEAM_BLUE)
 				cairo_set_source_rgb(cr, BLUE);
+			else
+				cairo_set_source_rgb(cr, YELLOW);
 			drawPlayer( &game.players[team][i] );
 		}
 }
@@ -131,28 +131,26 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 		}
 		
 		if( !displaySettings.isHidePlayerFuture() ) {
-			if( p->getFuturePosition().getX()!=-1 && p->getFuturePosition().getY()!=-1 ) {
-					float endX = MM_TO_PIX( p->getFuturePosition().getX() ) + BORDER_PIX;
-					float endY = MM_TO_PIX( p->getFuturePosition().getY() ) + BORDER_PIX;
-					
-					double dashes[] = {2.5};
-					int    ndash  = sizeof (dashes)/sizeof(dashes[0]);
-					cairo_set_dash (cr, dashes, ndash, 0);
-						cairo_set_line_width( cr, 1);
-						cairo_move_to(cr, posx, posy);
-						cairo_line_to(cr, endX, endY);
-						cairo_stroke(cr);	
-					cairo_set_dash (cr, dashes, 0, 0);
-					
-					#define CROSS_SIZE 3
-					cairo_move_to(cr, endX-CROSS_SIZE, endY-CROSS_SIZE);
-					cairo_line_to(cr, endX+CROSS_SIZE, endY+CROSS_SIZE);
-					cairo_move_to(cr, endX+CROSS_SIZE, endY-CROSS_SIZE);
-					cairo_line_to(cr, endX-CROSS_SIZE, endY+CROSS_SIZE);
-					cairo_stroke(cr);
-					
-					cairo_set_line_width( cr, 2);
-			}
+			float endX = MM_TO_PIX( p->getFuturePosition().getX() ) + BORDER_PIX;
+			float endY = MM_TO_PIX( p->getFuturePosition().getY() ) + BORDER_PIX;
+			
+			double dashes[] = {2.5};
+			int    ndash  = sizeof (dashes)/sizeof(dashes[0]);
+			cairo_set_dash (cr, dashes, ndash, 0);
+				cairo_set_line_width( cr, 1);
+				cairo_move_to(cr, posx, posy);
+				cairo_line_to(cr, endX, endY);
+				cairo_stroke(cr);	
+			cairo_set_dash (cr, dashes, 0, 0);
+			
+			#define CROSS_SIZE 3
+			cairo_move_to(cr, endX-CROSS_SIZE, endY-CROSS_SIZE);
+			cairo_line_to(cr, endX+CROSS_SIZE, endY+CROSS_SIZE);
+			cairo_move_to(cr, endX+CROSS_SIZE, endY-CROSS_SIZE);
+			cairo_line_to(cr, endX-CROSS_SIZE, endY+CROSS_SIZE);
+			cairo_stroke(cr);
+			
+			cairo_set_line_width( cr, 2);
 		}
 		
 		if( !displaySettings.isHidePlayerPath() )

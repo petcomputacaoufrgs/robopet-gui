@@ -58,12 +58,12 @@ void MainWindow::listenToAI()
 			
             if(isVerbose) printf("----------------------------\nReceived AI-To-GUI\n");
 
-            game.updateNplayers(0, packet.aitogui().blue_robots_size());
-            game.updateNplayers(1, packet.aitogui().yellow_robots_size());
+            game.updateNplayers(TEAM_BLUE, packet.aitogui().blue_robots_size());
+            game.updateNplayers(TEAM_YELLOW, packet.aitogui().yellow_robots_size());
 
             vector<GuiPlayer>::iterator it;
-            it = game.players[0].begin();
-            for(int i=0; it<game.players[0].end(); it++, i++) {
+            it = game.players[TEAM_BLUE].begin();
+            for(int i=0; it<game.players[TEAM_BLUE].end(); it++, i++) {
 
                 (*it).setCurrentPosition( packet.aitogui().blue_robots(i).current_x() ,
 											packet.aitogui().blue_robots(i).current_y() );
@@ -91,8 +91,8 @@ void MainWindow::listenToAI()
 
             }
 
-            it = game.players[1].begin();
-            for(int i=0; it<game.players[1].end(); it++, i++) {
+            it = game.players[TEAM_YELLOW].begin();
+            for(int i=0; it<game.players[TEAM_YELLOW].end(); it++, i++) {
 
                 (*it).setCurrentPosition( packet.aitogui().yellow_robots(i).current_x() ,
                                                     packet.aitogui().yellow_robots(i).current_y() );
