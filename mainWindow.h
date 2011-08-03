@@ -54,6 +54,7 @@ class MainWindow
 	friend void deletePlayerButton(GtkWidget *widget, gpointer data);
 	friend void sizeRequestCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
 	friend void expanderCB(GtkWidget *widget, MainWindow* mw);
+	friend void validatePathplanButtonCB(GtkWidget *widget, gpointer data);
 	
 	public:
 		MainWindow();
@@ -134,6 +135,7 @@ class MainWindow
 		GtkWidget		*clientPort, *serverPort;
 		GtkWidget		*pathplanGridX, *pathplanGridY;
 		GtkWidget*		obstaculesRadius;
+		GtkWidget*		validatePathplanButton;
 		int 			joystickFd;
 		GtkWidget		*rrtTimeLimit, *rrtGoalProb, *rrtStepsize, *gstarPath;
 

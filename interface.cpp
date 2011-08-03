@@ -71,6 +71,11 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 							case NOTHING:
 								mw->pushStatusMessage("Pathplan completed with no status flag."); break;
 						}
+
+						if(mw->pathplan->status == SUCCESS)
+							gtk_widget_show( mw->validatePathplanButton );
+						else
+							gtk_widget_hide( mw->validatePathplanButton );
 					
 						mw->pathplanSettings.toDraw = true;
 						break;
@@ -217,13 +222,11 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 												selected->getCurrentPosition().getY() )	);
 			
 			// obstacules
-			vector<ppObstacle> obstacles;
 			for(int team=0; team<2; team++)
 				for(int i=0; i<mw->game.getNplayers(team); i++)
 					if( selected != &(mw->game.players[team][i]) )
-							obstacles.push_back( ppObstacle(mw->game.players[team][i].getCurrentPosition(),ROBOT) );
-			obstacles.push_back( ppObstacle(mw->game.ball.getCurrentPosition(),BALL) );
-			mw->pathplan->obstacles = obstacles;
+							mw->pathplan->obstacles.push_back( ppObstacle(mw->game.players[team][i].getCurrentPosition(),ROBOT) );
+			//mw->pathplan->obstacles.push_back( ppObstacle(mw->game.ball.getCurrentPosition(),BALL) );
 			
 			if(mw->pathplanSettings.isGridBased)
 				((DiscretePathplan*)mw->pathplan)->fillEnv(); //fill obstacules in the grid
@@ -241,11 +244,32 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		mw->cursorEvent = CURSOR_EVENT_NOTHING;
 		mw->pathplanSettings.toDraw = false;
 		mw->pushStatusMessage("");
+		gtk_widget_hide( mw->validatePathplanButton );
 	}
 	
 	// Update the drawing widget on demand
 	mw->updateScene();
 } 
+
+void validatePathplanButtonCB(GtkWidget *widget, gpointer data)
+{
+	parametersType* parametros = (parametersType*) data;
+	MainWindow* mw = parametros->mw;
+	
+	mw->pathplan->obstacles.clear();
+	GuiPlayer *selected = mw->getSelectedPlayer();
+	for(int team=0; team<2; team++)
+		for(int i=0; i<mw->game.getNplayers(team); i++)
+			if( selected != &(mw->game.players[team][i]) )
+					mw->pathplan->obstacles.push_back( ppObstacle(mw->game.players[team][i].getCurrentPosition(),ROBOT) );
+	if(mw->pathplanSettings.isGridBased)
+				((DiscretePathplan*)mw->pathplan)->fillEnv(); //fill obstacules in the grid
+	
+	if(mw->pathplan->validatePath(mw->pathplan->getFinalPos(),0))
+		mw->pushStatusMessage("Path is VALID!");
+	else
+		mw->pushStatusMessage("Path is NOT valid!");
+}
 
 
 GuiPlayer* MainWindow::getSelectedPlayer()
@@ -690,6 +714,7 @@ void MainWindow::createInterface()
 		gtk_spin_button_set_value((GtkSpinButton*)rrtStepsize, RRT_DEFAULT_STEPSIZE);
 	this->gstarPath = GTK_WIDGET( gtk_builder_get_object(builder,"gstarPathSpin") );
 		gtk_spin_button_set_value((GtkSpinButton*)gstarPath, -1);
+	this->validatePathplanButton = GTK_WIDGET(gtk_builder_get_object(builder,"validatePath"));
 		
 	g_signal_connect_after( GTK_WIDGET(GTK_WIDGET(gtk_builder_get_object(builder,"expander"))), "activate", G_CALLBACK(expanderCB), this);
 		
@@ -710,6 +735,7 @@ void MainWindow::createInterface()
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"deletepp")), "clicked", G_CALLBACK(deletePlayerButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"setballpos")), "clicked", G_CALLBACK(setBallButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"setdestination")), "clicked", G_CALLBACK(pathplanButton), &args);
+	g_signal_connect( validatePathplanButton, "clicked", G_CALLBACK(validatePathplanButtonCB), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"openclient")), "clicked", G_CALLBACK(clientCommunicationButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"openserver")), "clicked", G_CALLBACK(serverCommunicationButton), &args);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"joyButton")), "clicked", G_CALLBACK(openJoystick), &args);
