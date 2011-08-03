@@ -92,6 +92,7 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 			cairo_line_to(cr, posx + cos(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2 , posy + sin(ang) * ROBOT_RADIUS*scaleFactorLength * 1.2);
 			cairo_stroke (cr);
 		}		
+		
 		if( !displaySettings.isHidePlayerData() ) {
 			char text[16], tmp[8];
 			int fontSize = 10;
@@ -130,7 +131,7 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 			cairo_stroke (cr);
 		}
 		
-		if( !displaySettings.isHidePlayerFuture() ) {
+		if( !displaySettings.isHidePlayerFuture() && p->getFuturePosition().getX()!=-1 && p->getFuturePosition().getY()!=-1) {
 			float endX = MM_TO_PIX( p->getFuturePosition().getX() ) + BORDER_PIX;
 			float endY = MM_TO_PIX( p->getFuturePosition().getY() ) + BORDER_PIX;
 			
