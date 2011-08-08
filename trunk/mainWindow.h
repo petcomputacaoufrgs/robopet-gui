@@ -70,7 +70,7 @@ class MainWindow
 		
 		//Communication (communication.cpp)
 		void 			communicate();
-		void 			openClient(int port, char* host);
+		void 			openClient(int port);
 		void 			closeClient();
 		void 			openServer(int port, char* host);
 		void 			closeServer();
