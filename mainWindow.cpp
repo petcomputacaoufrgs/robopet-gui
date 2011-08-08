@@ -9,8 +9,6 @@ using namespace std;
 #include <fcntl.h>
 #include <linux/joystick.h>
 
-#include "global.cpp"
-
 
 
 MainWindow::MainWindow()
