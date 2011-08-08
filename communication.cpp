@@ -4,9 +4,9 @@
 
 
 
-void MainWindow::openClient(int port, char* host)
+void MainWindow::openClient(int port)
 {
-    aitoguiClient = new RoboPETClient(port,host);
+    aitoguiClient = new RoboPETClient(port,"127.0.0.1");
 
     if(isVerbose) cout<<"Ready to receive from AI..."<<endl;
     pushStatusMessage("Ready to receive from AI...");

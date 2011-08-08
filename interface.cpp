@@ -310,7 +310,7 @@ void clientCommunicationButton(GtkWidget *widget, gpointer data)
 	int port = gtk_spin_button_get_value_as_int((GtkSpinButton*)mw->clientPort);
 
 	if( gtk_toggle_button_get_active((GtkToggleButton*)widget) ) {
-		mw->openClient(port, "localhost");
+		mw->openClient(port);
 		gtk_button_set_label((GtkButton*)widget, "Disconnect");
 	}
 	else {
