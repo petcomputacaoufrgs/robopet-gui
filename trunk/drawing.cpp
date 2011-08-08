@@ -7,8 +7,8 @@
 #include "gstar.h"
 
 
-extern double scaleFactorLength;
-extern double scaleFactorWidth;
+double scaleFactorLength;
+double scaleFactorWidth;
 
 void MainWindow::drawField()
 {
