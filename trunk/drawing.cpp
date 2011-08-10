@@ -100,7 +100,7 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 			
 			cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 			cairo_move_to(cr, posx - fontSize - ROBOT_RADIUS*scaleFactorLength,
-							  posy - ROBOT_RADIUS*scaleFactorLength);
+							  posy - ROBOT_RADIUS*scaleFactorLength); //top
 			itoa(p->getId(),text,fontSize);
 			cairo_show_text(cr, text);
 			
@@ -110,7 +110,7 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 			fontSize = 8;
 			cairo_set_font_size(cr, fontSize);
 			cairo_move_to(cr, posx + fontSize + ROBOT_RADIUS*scaleFactorLength,
-							  posy - ROBOT_RADIUS*scaleFactorLength);
+							  posy - ROBOT_RADIUS*scaleFactorLength);  //left corner
 			itoa(p->getCurrentAngle(),text,10);
 			strcat(text,"º");
 			cairo_show_text(cr, text);
@@ -123,12 +123,20 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 			itoa(p->getCurrentPosition().getY(),tmp,10);
 			strcat(text,tmp);
 			cairo_move_to(cr, posx - strlen(text)*fontSize/4,
-							  posy + fontSize + ROBOT_RADIUS*scaleFactorLength);
+							  posy + fontSize + ROBOT_RADIUS*scaleFactorLength); //bottom
+			cairo_show_text(cr, text);
+			
+			// role data
+			fontSize = 8;
+			cairo_set_font_size(cr, fontSize);
+			sprintf(text,"%s",p->role.c_str());
+			cairo_move_to(cr, posx - strlen(text)*fontSize/4,
+							  posy + 2*fontSize + ROBOT_RADIUS*scaleFactorLength); //bottom
 			cairo_show_text(cr, text);
 			
 			//sprintf(text+strlen(text),"\n- %i: %.0f,%.0f (%.0f°)",game.players[1][i].getId(), game.players[1][i].getCurrentPosition().getX(),game.players[1][i].getCurrentPosition().getY(),);
 			
-			cairo_stroke (cr);
+			cairo_stroke (cr); 
 		}
 		
 		if( !displaySettings.isHidePlayerFuture() && p->getFuturePosition().getX()!=-1 && p->getFuturePosition().getY()!=-1) {

@@ -83,6 +83,12 @@ void MainWindow::listenToAI()
                 //------
                 
                 (*it).setId( packet.aitogui().blue_robots(i).id() );
+                
+                if(packet.aitogui().blue_robots(i).has_role())
+					(*it).role = string( packet.aitogui().blue_robots(i).role() );
+				else
+					(*it).role = string("");
+					
                 //------
 
                 (*it).hasUpdatedInfo = true;
