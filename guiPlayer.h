@@ -21,6 +21,7 @@ class GuiPlayer: public Player
         
         bool hasUpdatedInfo;
         vector<Point> path;
+        string role;
         
 		void clearPath() { path.clear(); }
 		void addPathPoint(Point p) { path.push_back(p); }
