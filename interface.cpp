@@ -33,77 +33,71 @@ void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data
 {
 	MainWindow* mw = (MainWindow*) data;
 	
-	// click with left button
-	if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING){
-
-		// if click is inside arena area
-		if( ( event->x < mw->fieldWidth - mw->BORDER_PIX) && (event->x > mw->BORDER_PIX) 
-			&& (event->y < mw->fieldHeight - mw->BORDER_PIX) && (event->y > mw->BORDER_PIX)) { 
+	if (event->button == 1 && mw->cursorEvent != CURSOR_EVENT_NOTHING // click with left button
+		&& (event->x < mw->fieldWidth - mw->BORDER_PIX) && (event->x > mw->BORDER_PIX)  // if click is inside arena area
+		&& (event->y < mw->fieldHeight - mw->BORDER_PIX) && (event->y > mw->BORDER_PIX)) { 
 	  
-		    switch(mw->cursorEvent) {
+		switch(mw->cursorEvent) {
 
-				case CURSOR_EVENT_PATHPLAN:	
-				// GUI was waiting for click event to set final pathplan position
-						mw->pushStatusMessage("Running pathplanning...");
-						while(gtk_events_pending()) gtk_main_iteration(); //force gtk to update the StatusBar widget before running the algorithm
-						
-						mw->pathplan->setFinalPos( Point(mw->PIX_TO_MM(event->x)-BORDER_MM, mw->PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
-						mw->pathplan->run();
-						
-						switch(mw->pathplan->status) {
-							case SUCCESS:
-								{
-									char msg[128];
-									sprintf(msg,"Pathplan DONE (%f sec)", mw->pathplan->elapsedTime);
-									mw->pushStatusMessage(msg);
-								}
-								break;
-								
-							case ERROR_TIMELIMIT:
-								mw->pushStatusMessage("Pathplan ERROR: time limit exceeded."); break;
-								
-							case ERROR_UNKNOWN:
-								mw->pushStatusMessage("Pathplan ERROR: unkown cause."); break;
-								
-							case ERROR_UNREACHABLE:
-								mw->pushStatusMessage("Pathplan ERROR: objective is unreachable."); break;
-								
-							case NOTHING:
-								mw->pushStatusMessage("Pathplan completed with no status flag."); break;
-						}
+			case CURSOR_EVENT_PATHPLAN:	
+			// GUI was waiting for click event to set final pathplan position
+					mw->pushStatusMessage("Running pathplanning...");
+					//while(gtk_events_pending()) gtk_main_iteration(); //force gtk to update the StatusBar widget before running the algorithm
+					
+					mw->pathplan->setFinalPos( Point(mw->PIX_TO_MM(event->x)-BORDER_MM, mw->PIX_TO_MM(event->y)-BORDER_MM) ); //convert screen coordinates into mm, which is the what setFinalPos receives
+					mw->pathplan->run();
+					
+					switch(mw->pathplan->status) {
+						case SUCCESS:
+							{
+								char msg[128];
+								sprintf(msg,"Pathplan DONE (%f sec)", mw->pathplan->elapsedTime);
+								mw->pushStatusMessage(msg);
+							}
+							break;
+							
+						case ERROR_TIMELIMIT:
+							mw->pushStatusMessage("Pathplan ERROR: time limit exceeded."); break;
+							
+						case ERROR_UNKNOWN:
+							mw->pushStatusMessage("Pathplan ERROR: unkown cause."); break;
+							
+						case ERROR_UNREACHABLE:
+							mw->pushStatusMessage("Pathplan ERROR: objective is unreachable."); break;
+							
+						case NOTHING:
+							mw->pushStatusMessage("Pathplan completed with no status flag."); break;
+					}
 
-						if(mw->pathplan->status == SUCCESS)
-							gtk_widget_show( mw->validatePathplanButton );
-						else
-							gtk_widget_hide( mw->validatePathplanButton );
+					if(mw->pathplan->status == SUCCESS)
+						gtk_widget_show( mw->validatePathplanButton );
+					else
+						gtk_widget_hide( mw->validatePathplanButton );
+				
+					mw->pathplanSettings.toDraw = true;
+					break;
+				
+			case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
+			// GUI was waiting for click event to put a yellow robot
+					mw->game.addPlayer( TEAM_YELLOW, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
+					mw->cursorEvent = CURSOR_EVENT_NOTHING;
+					break;
+				
+			case CURSOR_EVENT_ADD_BLUE_ROBOT:
+			// GUI was waiting for click event to put a blue robot
+					mw->game.addPlayer( TEAM_BLUE, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
+					mw->cursorEvent = CURSOR_EVENT_NOTHING;
+					break;
 					
-						mw->pathplanSettings.toDraw = true;
-						break;
-					
-				case CURSOR_EVENT_ADD_YELLOW_ROBOT: 
-				// GUI was waiting for click event to put a yellow robot
-						mw->game.addPlayer( TEAM_YELLOW, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
-						mw->cursorEvent = CURSOR_EVENT_NOTHING;
-						break;
-					
-				case CURSOR_EVENT_ADD_BLUE_ROBOT:
-				// GUI was waiting for click event to put a blue robot
-						mw->game.addPlayer( TEAM_BLUE, Point(mw->PIX_TO_MM(event->x)-BORDER_MM,mw->PIX_TO_MM(event->y)-BORDER_MM) );
-						mw->cursorEvent = CURSOR_EVENT_NOTHING;
-						break;
-						
-				case CURSOR_EVENT_SET_BALL:
-				// GUI was waiting for click event to set the ball position
-						mw->game.ball.setCurrentPosition(Point(mw->PIX_TO_MM(event->x)-BORDER_MM, mw->PIX_TO_MM(event->y)-BORDER_MM));
-						mw->cursorEvent = CURSOR_EVENT_NOTHING;
-						break;
-			}
-			
-			// Update the drawing widget on demand
-			mw->updateScene();
-		} 
-	}
-	
+			case CURSOR_EVENT_SET_BALL:
+			// GUI was waiting for click event to set the ball position
+					mw->game.ball.setCurrentPosition(Point(mw->PIX_TO_MM(event->x)-BORDER_MM, mw->PIX_TO_MM(event->y)-BORDER_MM));
+					mw->cursorEvent = CURSOR_EVENT_NOTHING;
+					break;
+		}
+		
+		mw->updateScene();
+	} 	
 }
 
 void key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
@@ -149,7 +143,6 @@ void key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
         }
     }
 
-	// Update the drawing widget on demand	
 	mw->updateScene();
 }
 
@@ -247,7 +240,6 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 		gtk_widget_hide( mw->validatePathplanButton );
 	}
 	
-	// Update the drawing widget on demand
 	mw->updateScene();
 } 
 
@@ -413,7 +405,6 @@ void deletePlayerButton(GtkWidget *widget, gpointer data)
 	if ( index>=0 )
 		mw->game.deletePlayer( team, index );
 
-	// Update the drawing widget on demand
 	mw->updateScene();
 
 	//mw->pushStatusMessage("Player Deleted");
@@ -501,7 +492,6 @@ void loadStateButton(GtkWidget *widget, gpointer data)
 		fclose(arq);
 	}
 	
-	// Update the drawing widget on demand
 	mw->updateScene();
 }
 
@@ -542,6 +532,11 @@ void launchSimulator(string param)
 void launchCom(string param)
 {
 	launch("../communication/", "communication_test", param);
+}
+
+void launchRefbox()
+{
+	system("gnome-terminal -e sslrefbox");
 }
 
 void simLoopButton(GtkWidget *widget, gpointer data)
@@ -598,11 +593,6 @@ void launchComButton(GtkWidget *widget, gpointer data)
 void MainWindow::pushStatusMessage(string msg)
 {
 	gtk_statusbar_push((GtkStatusbar*)statusBar, gtk_statusbar_get_context_id((GtkStatusbar*)statusBar,""), msg.c_str());
-}
-
-void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
-{
-	gtk_widget_draw(mw->window, NULL);
 }
 
 void sizeRequestCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
@@ -723,6 +713,7 @@ void MainWindow::createInterface()
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"aboutmenu")), "activate", G_CALLBACK(helpAbout), NULL);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"exitmenu")), "activate", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"simLoopButton")), "clicked", G_CALLBACK(simLoopButton), NULL);
+	g_signal_connect( GTK_WIDGET(gtk_builder_get_object(builder,"refboxButton")), "clicked", G_CALLBACK(launchRefbox), NULL);
 
 	static parametersType args;
 	args.mw = this;
@@ -762,9 +753,6 @@ void MainWindow::createInterface()
 	//Connect the event of a key pressing with our own signal handling funciont
 	//  Must use the "after" signal connection to don't overhide GTK's signal handling (i.e. accelerators handling)
 	gtk_signal_connect_after(GTK_OBJECT(window), "key_press_event", (GtkSignalFunc) key_press_event, this);
-	
-	gtk_signal_connect_after(GTK_OBJECT(window), "button_press_event", (GtkSignalFunc) updateSceneCB, this);
-		gtk_widget_set_events (window, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
-		
+			
 	gtk_signal_connect_after(GTK_OBJECT(window), "size_request", (GtkSignalFunc) sizeRequestCB, this);
 }
