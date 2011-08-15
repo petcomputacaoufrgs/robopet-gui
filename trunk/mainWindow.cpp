@@ -87,13 +87,7 @@ void MainWindow::joystick()
 
 void MainWindow::iterate()
 {
-	//system("clear");
-	
 	communicate();
-
-	drawWorld();
-
-	//generateTextOutput();
 	
 	joystick();
 }	
@@ -128,7 +122,7 @@ gint configure_event(GtkWidget *widget, GdkEventConfigure *event, MainWindow* mw
 
 gint expose_event(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw)
 {
-	mw->iterate();
+	mw->drawWorld();
 	
 	gdk_draw_pixmap(widget->window,
 				  widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
@@ -145,6 +139,15 @@ void MainWindow::updateScene()
 	gtk_widget_draw(this->window, NULL);
 }
 
+void updateSceneCB(MainWindow* mw)
+{
+	gtk_widget_draw(mw->window, NULL);
+}
+
+void iterateCB(MainWindow *mw)
+{
+	mw->iterate();
+}
 
 void MainWindow::createDrawingArea()
 {
@@ -155,6 +158,12 @@ void MainWindow::createDrawingArea()
     gtk_signal_connect (GTK_OBJECT (soccer_field), "button_press_event", (GtkSignalFunc) button_press_event, this);
 		gtk_widget_set_events (soccer_field, GDK_KEY_PRESS_MASK|GDK_BUTTON_PRESS_MASK);
 		cursorEvent = CURSOR_EVENT_NOTHING;
+	
+	// Calls iteration whenever possible
+	g_idle_add((GSourceFunc)iterateCB, this);
+	
+	// Calls drawing at least each 500 miliseconds
+	//g_timeout_add(500, (GSourceFunc)updateSceneCB, this);
 }
 
 double MainWindow::PIX_TO_MM(double x) { return x*ARENA_WIDTH_MM/fieldWidth; }

@@ -28,7 +28,6 @@ using namespace std;
 
 
 
-
 class MainWindow
 {
 	//GTK Callbacks
@@ -39,6 +38,7 @@ class MainWindow
 	friend void realize(GtkWidget *widget, MainWindow* mw);
 
 	//Interface Callbacks
+	// these functions aren't methods of the class because GTK does not accept this (they must be out of and namespace).
 	friend void pathplanButton(GtkWidget *widget, gpointer data);
 	friend void setBolaPos(GtkWidget *widget, gpointer data);
 	friend void button_press_event (GtkWidget *widget, GdkEventButton *event, gpointer data); //controle de cliques do mouse
@@ -50,11 +50,12 @@ class MainWindow
 	friend void serverCommunicationButton(GtkWidget *widget, gpointer data);
 	friend void openJoystick(GtkWidget *widget, gpointer data);
 	friend void loadStateButton(GtkWidget *widget, gpointer data);
-	friend void updateSceneCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
 	friend void deletePlayerButton(GtkWidget *widget, gpointer data);
 	friend void sizeRequestCB(GtkWidget *widget, GdkEventExpose *event, MainWindow* mw);
 	friend void expanderCB(GtkWidget *widget, MainWindow* mw);
 	friend void validatePathplanButtonCB(GtkWidget *widget, gpointer data);
+	friend void iterateCB(MainWindow *mw);
+	friend void updateSceneCB(MainWindow* mw);
 	
 	public:
 		MainWindow();
@@ -88,8 +89,6 @@ class MainWindow
 		GtkWidget *soccer_field;
 		GdkPixmap *pixmap;
 		int fieldWidth, fieldHeight;
-		guint timeout_handler_id;
-		//GtkWidget *statusBar;
 		
 		double BORDER_PIX;
 		double GOAL_LINE;

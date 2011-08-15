@@ -27,6 +27,7 @@ void MainWindow::openServer(int port, char* host)
 void MainWindow::closeClient()
 {
     delete aitoguiClient;
+    aitoguiClient = NULL;
     if(isVerbose)  printf("AI->GUI Communication closed.\n");
     pushStatusMessage("AI->GUI Communication closed.");
 }
@@ -34,6 +35,7 @@ void MainWindow::closeClient()
 void MainWindow::closeServer()
 {
     delete guitoaiServer;
+    guitoaiServer = NULL;
     if(isVerbose)  printf("GUI->AI Communication closed.\n");
     pushStatusMessage("GUI->AI Communication closed.");
 }
