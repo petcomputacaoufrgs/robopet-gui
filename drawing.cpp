@@ -94,10 +94,11 @@ void MainWindow::drawPlayer(GuiPlayer* p)
 		}		
 		
 		if( !displaySettings.isHidePlayerData() ) {
-			char text[16], tmp[8];
+			char text[64], tmp[64];
 			int fontSize = 10;
 			cairo_set_font_size(cr, fontSize);
 			
+			// ID data
 			cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 			cairo_move_to(cr, posx - fontSize - ROBOT_RADIUS*scaleFactorLength,
 							  posy - ROBOT_RADIUS*scaleFactorLength); //top
