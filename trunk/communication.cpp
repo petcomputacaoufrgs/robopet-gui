@@ -95,7 +95,8 @@ void MainWindow::listenToAI()
 
                 (*it).hasUpdatedInfo = true;
 
-                if(isVerbose) printf("RECEIVED Blue Robot %i: %f,%f (%fº)\n", i, (*it).getPosition().getX(), (*it).getPosition().getY(), (*it).getCurrentAngle());
+                if(isVerbose) printf("RECEIVED Blue Robot %i: %f,%f (%fº) %s\n", i, (*it).getPosition().getX(), (*it).getPosition().getY(), (*it).getCurrentAngle(), (*it).role.c_str());
+                
 
             }
 
