@@ -219,7 +219,7 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 				for(int i=0; i<mw->game.getNplayers(team); i++)
 					if( selected != &(mw->game.players[team][i]) )
 							mw->pathplan->obstacles.push_back( ppObstacle(mw->game.players[team][i].getCurrentPosition(),ROBOT) );
-			//mw->pathplan->obstacles.push_back( ppObstacle(mw->game.ball.getCurrentPosition(),BALL) );
+			mw->pathplan->obstacles.push_back( ppObstacle(mw->game.ball.getCurrentPosition(),BALL) );
 			
 			if(mw->pathplanSettings.isGridBased)
 				((DiscretePathplan*)mw->pathplan)->fillEnv(); //fill obstacules in the grid
