@@ -10,6 +10,7 @@
 #include "rrt.h"
 #include "astar.h"
 #include "gstar.h"
+#include "sgstar.h"
 #include "game.h"
 
 #define CLIENT_INITIAL_PORT PORT_AI_TO_GUI
@@ -193,7 +194,10 @@ void pathplanButton(GtkWidget *widget, gpointer data)
 					mw->pathplanSettings.isGridBased = true;
 			}
 			else if( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useGstar) ) {
-					mw->pathplan = new GStar();
+					if ( gtk_toggle_button_get_active( (GtkToggleButton*)mw->useDijkstra) )
+						mw->pathplan = new SGStar();
+					else
+						mw->pathplan = new GStar();
 					mw->pathplanSettings.isGridBased = false;
 			}
 			
@@ -681,6 +685,7 @@ void MainWindow::createInterface()
 	this->useRrt = GTK_WIDGET( gtk_builder_get_object(builder,"userrt") );
 	this->useAstar = GTK_WIDGET( gtk_builder_get_object(builder,"useastar") );
 	this->useGstar = GTK_WIDGET( gtk_builder_get_object(builder,"usegstar") );
+	this->useDijkstra = GTK_WIDGET( gtk_builder_get_object(builder,"usedijkstra") );
 	this->printFullPathplan = GTK_WIDGET( gtk_builder_get_object(builder,"showfullpath") );
 	this->printObstacles = GTK_WIDGET( gtk_builder_get_object(builder,"showobstacles") );
 	this->clientHost = GTK_WIDGET( gtk_builder_get_object(builder,"clienthost") );

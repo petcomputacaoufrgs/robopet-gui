@@ -138,7 +138,7 @@ class MainWindow
 		int 			joystickFd;
 		GtkWidget		*rrtTimeLimit, *rrtGoalProb, *rrtStepsize, *gstarPath;
 
-		GtkWidget		*useRrt, *useAstar, *useGstar;
+		GtkWidget		*useRrt, *useAstar, *useGstar, *useDijkstra;
 		cairo_t 		*cr;
 
 		//Communication (communication.cpp)

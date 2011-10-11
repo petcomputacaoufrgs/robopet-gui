@@ -274,57 +274,59 @@ void MainWindow::drawPathplan()
 		}
 		else//GStar
 		{
-			GStar* g = (GStar*) pathplan;
-			
-			Obstacle o;
-			vector<Point> temp;
-
-			cairo_set_line_width( cr, 2);
-			cairo_set_source_rgb( cr, BLACK);
-
-			/*for(unsigned int i=0; i<g->obstacles.size(); i++)
+			if ( !gtk_toggle_button_get_active( (GtkToggleButton*)this->useDijkstra) )
 			{
-				o = g->getObstacle(i);
+				GStar* g = (GStar*) pathplan;
+				
+				Obstacle o;
+				vector<Point> temp;
 
-				if(o.p[0].getX()!=-1)
+				cairo_set_line_width( cr, 2);
+				cairo_set_source_rgb( cr, BLACK);
+
+				/*for(unsigned int i=0; i<g->obstacles.size(); i++)
 				{
-					for(int j=0; j<4; j++)
+					o = g->getObstacle(i);
+
+					if(o.p[0].getX()!=-1)
 					{
-						//o.p[j].setX(((o.center.getX()-o.p[j].getX())*scaleFactorLength)+o.center.getX());
-						//o.p[j].setY(((o.center.getY()-o.p[j].getY())*scaleFactorWidth)+o.center.getY());
-						drawCircle( cr, MM_TO_PIX(o.p[j].getX()) + BORDER_PIX, MM_TO_PIX(o.p[j].getY()) + BORDER_PIX, 1);
+						for(int j=0; j<4; j++)
+						{
+							//o.p[j].setX(((o.center.getX()-o.p[j].getX())*scaleFactorLength)+o.center.getX());
+							//o.p[j].setY(((o.center.getY()-o.p[j].getY())*scaleFactorWidth)+o.center.getY());
+							drawCircle( cr, MM_TO_PIX(o.p[j].getX()) + BORDER_PIX, MM_TO_PIX(o.p[j].getY()) + BORDER_PIX, 1);
+						}
 					}
-				}
-			}*/
+				}*/
 
-			cairo_set_line_width( cr, 2);
-			cairo_set_source_rgb( cr, BLACK);
-			
-			/*float colors[8][3]={{WHITE},{YELLOW},{BLUE},{CIANO},{BLACK},{PURPLE}
-			,{RED},{ORANGE}};*/
-			
-			if(gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)==-1)
-			for(unsigned int i=0; i<g->paths.size(); i++)
-			{
-			//	cairo_set_source_rgb( cr, colors[i%8][0], colors[i%8][1], colors[i%8][2]);
-				drawLinedPath(g->paths[i]);
-			}
-			else
-				if(gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)<g->paths.size())
+				cairo_set_line_width( cr, 2);
+				cairo_set_source_rgb( cr, BLACK);
+				
+				/*float colors[8][3]={{WHITE},{YELLOW},{BLUE},{CIANO},{BLACK},{PURPLE}
+				,{RED},{ORANGE}};*/
+				
+				if(gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)==-1)
+				for(unsigned int i=0; i<g->paths.size(); i++)
 				{
-					//cairo_set_source_rgb( cr, colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][0], colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][1], colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][2]);
-					drawLinedPath(g->paths[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)]);
+				//	cairo_set_source_rgb( cr, colors[i%8][0], colors[i%8][1], colors[i%8][2]);
+					drawLinedPath(g->paths[i]);
 				}
-			
-//			for(unsigned int i=0; i<g->path.size(); i+=2)
-//			{
-//				temp.clear();
-//				temp.push_back(g->path[i]);
-//				temp.push_back(g->path[i+1]);
-//				drawLinedPath( cr, temp);
-//			}
+				else
+					if(gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)<(int)g->paths.size())
+					{
+						//cairo_set_source_rgb( cr, colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][0], colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][1], colors[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)%8][2]);
+						drawLinedPath(g->paths[gtk_spin_button_get_value_as_int((GtkSpinButton*)gstarPath)]);
+					}
+				
+	//			for(unsigned int i=0; i<g->path.size(); i+=2)
+	//			{
+	//				temp.clear();
+	//				temp.push_back(g->path[i]);
+	//				temp.push_back(g->path[i+1]);
+	//				drawLinedPath( cr, temp);
+	//			}
+			}
 		}
-		
 		// draw the path
 		cairo_set_source_rgb(cr, CIANO);
 		drawLinedPath(pathplan->path);
